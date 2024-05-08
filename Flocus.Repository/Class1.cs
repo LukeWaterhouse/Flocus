@@ -1,4 +1,4 @@
-﻿namespace Repository
+﻿namespace Flocus.Repository
 {
     public class Class1
     {

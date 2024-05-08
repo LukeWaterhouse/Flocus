@@ -9,7 +9,7 @@ services:
     restart: always
     user: postgres
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: 123
     ports:
       - 5432:5432
 
@@ -17,7 +17,7 @@ services:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: luke@hotmail.com
-      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_DEFAULT_PASSWORD: 123
       PGADMIN_SERVER_JSON_FILE: /tmp/servers.json
       PGADMIN_SERVER_JSON: |
         {

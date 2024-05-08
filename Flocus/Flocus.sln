@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus", "Flocus.csproj", "{67EDBB98-D73F-4691-959A-C69CC8B19382}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{662CA685-34CC-4B94-858E-86DD54E80779}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus", "Flocus.csproj", "{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,19 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{67EDBB98-D73F-4691-959A-C69CC8B19382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67EDBB98-D73F-4691-959A-C69CC8B19382}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67EDBB98-D73F-4691-959A-C69CC8B19382}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67EDBB98-D73F-4691-959A-C69CC8B19382}.Release|Any CPU.Build.0 = Release|Any CPU
-		{662CA685-34CC-4B94-858E-86DD54E80779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{662CA685-34CC-4B94-858E-86DD54E80779}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{662CA685-34CC-4B94-858E-86DD54E80779}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{662CA685-34CC-4B94-858E-86DD54E80779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {08D205FF-918C-45A1-8C97-CBC4CE8FF911}
+		SolutionGuid = {3470E8CB-02B1-447F-92E7-F2A890E6A3D1}
 	EndGlobalSection
 EndGlobal
