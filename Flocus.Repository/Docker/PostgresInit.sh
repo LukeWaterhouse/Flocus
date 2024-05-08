@@ -1,10 +1,9 @@
-﻿psql --username="postgres" --dbname="postgres" -c "CREATE USER flocusUser PASSWORD 'password'"
-psql --username="postgres" --dbname="postgres" -l
+﻿psql --username="myuser" --dbname="mydatabase" -l
 
-psql --username "postgres" --dbname "postgres" <<-EOSQL
+psql --username "myuser" --dbname "mydatabase" <<-EOSQL
     CREATE DATABASE flocusdb
            WITH
-           OWNER = postgres
+           OWNER = myuser
            ENCODING = 'UTF8'
            LC_COLLATE = 'en_US.utf8'
 		   LC_CTYPE = 'en_US.utf8'
@@ -12,13 +11,7 @@ psql --username "postgres" --dbname "postgres" <<-EOSQL
 		   CONNECTION LIMIT = -1; 
 EOSQL
 
-psql --username "postgres" --dbname "postgres" <<-EOSQL
-    GRANT CONNECT ON DATABASE flocusdb TO flocusUser;
-	GRANT ALL ON DATABASE flocusdb TO flocusUser;
-EOSQL
-
-
-psql --username="postgres" --dbname="flocusdb" <<-EOSQL
+psql --username="myuser" --dbname="flocusdb" <<-EOSQL
 
     CREATE TABLE IF NOT EXISTS public.client (
         client_id varchar(20) primary key,
@@ -42,12 +35,12 @@ psql --username="postgres" --dbname="flocusdb" <<-EOSQL
 
 EOSQL
 
-psql --username="postgres" --dbname="flocusdb" <<-EOSQL
+psql --username="myuser" --dbname="flocusdb" <<-EOSQL
     INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, password_salt, admin_rights)
     VALUES ('345', 'my profile picture', '1999-01-01', 'lukey', 'passwordHash', 'passwordSalt', true);
 EOSQL
 
-psql --username="postgres" --dbname="flocusdb" <<-EOSQL
+psql --username="myuser" --dbname="flocusdb" <<-EOSQL
     INSERT INTO public.habit (habit_id, client_id, title, description, creation_date, streak, highest_streak)
     VALUES ('123', '345', 'Piano', 'gonna play piano every day :)', '1999-01-01', 12, 24);
 EOSQL

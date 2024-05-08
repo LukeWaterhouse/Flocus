@@ -12,11 +12,11 @@ namespace Flocus.Domain.Services
         public UserService(IRepositoryService repositoryService)
         {
             _repositoryService = repositoryService;
-        }   
+        }
 
         public async Task CreateUserAsync(string username, string password, bool isAdmin, string? key)
         {
-            if(isAdmin && adminKey != key)
+            if (isAdmin && adminKey != key)
             {
                 throw new Exception("admin key was not correct");
             }
@@ -26,16 +26,16 @@ namespace Flocus.Domain.Services
             {
                 await _repositoryService.CreateDbUserAsync(username, passwordHash, isAdmin);
             }
-            catch(Exception ex) 
-            { 
-
+            catch (Exception ex)
+            {
+               Console.WriteLine(ex);
             }
         }
 
         public async Task LoginUserAsync(string username, string password)
         {
 
-                    
+
         }
     }
 }
