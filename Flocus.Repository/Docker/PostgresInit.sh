@@ -19,7 +19,6 @@ psql --username="myuser" --dbname="flocusdb" <<-EOSQL
         account_creation_date date,
         username varchar(20),
         password_hash varchar(100),
-        password_salt varchar(100),
         admin_rights boolean
     );
 
@@ -36,8 +35,8 @@ psql --username="myuser" --dbname="flocusdb" <<-EOSQL
 EOSQL
 
 psql --username="myuser" --dbname="flocusdb" <<-EOSQL
-    INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, password_salt, admin_rights)
-    VALUES ('345', 'my profile picture', '1999-01-01', 'lukey', 'passwordHash', 'passwordSalt', true);
+    INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, admin_rights)
+    VALUES ('345', 'my profile picture', '1999-01-01', 'lukey', 'passwordHash', true);
 EOSQL
 
 psql --username="myuser" --dbname="flocusdb" <<-EOSQL

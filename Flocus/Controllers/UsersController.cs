@@ -18,8 +18,8 @@ namespace Flocus.Controllers
             _userService = userService;
         }
 
-        [HttpPost(Name = "CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request, CancellationToken ct)
+        [HttpPost(Name = "Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request, CancellationToken ct)
         {
             if (!ModelState.IsValid)
             {
@@ -28,7 +28,28 @@ namespace Flocus.Controllers
 
             try
             {
-                await _userService.CreateUserAsync(request.username, request.password, request.isAdmin, request.key);
+                await _userService.RegisterAsync(request.username, request.password, request.isAdmin, request.key);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+            var asd = request;
+            return Ok();
+        }
+
+        [HttpPost(Name = "CreateUser")]
+        public async Task<IActionResult> CreateUser([FromBody] RegisterRequestDto request, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                await _userService.RegisterAsync(request.username, request.password, request.isAdmin, request.key);
             }
             catch (Exception ex)
             {

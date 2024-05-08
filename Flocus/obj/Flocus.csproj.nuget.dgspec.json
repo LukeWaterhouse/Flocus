@@ -10,11 +10,11 @@
         "projectUniqueName": "C:\\repos\\Flocus\\Flocus.Domain\\Flocus.Domain.csproj",
         "projectName": "Flocus.Domain",
         "projectPath": "C:\\repos\\Flocus\\Flocus.Domain\\Flocus.Domain.csproj",
-        "packagesPath": "C:\\Users\\LukeW\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\Luke.Waterhouse\\.nuget\\packages\\",
         "outputPath": "C:\\repos\\Flocus\\Flocus.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\LukeW\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Luke.Waterhouse\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,7 +22,8 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://repo.ihsmarkit.com/artifactory/api/nuget/v3/nuget-pcm/": {}
         },
         "frameworks": {
           "net6.0": {
@@ -55,7 +56,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -64,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -74,11 +76,11 @@
         "projectUniqueName": "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj",
         "projectName": "Flocus.Repository",
         "projectPath": "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj",
-        "packagesPath": "C:\\Users\\LukeW\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\Luke.Waterhouse\\.nuget\\packages\\",
         "outputPath": "C:\\repos\\Flocus\\Flocus.Repository\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\LukeW\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Luke.Waterhouse\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -86,7 +88,8 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://repo.ihsmarkit.com/artifactory/api/nuget/v3/nuget-pcm/": {}
         },
         "frameworks": {
           "net6.0": {
@@ -108,6 +111,14 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.35, )"
+            },
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
               "target": "Package",
               "version": "[8.0.1, )"
@@ -123,7 +134,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -132,7 +144,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
@@ -142,11 +154,11 @@
         "projectUniqueName": "C:\\repos\\Flocus\\Flocus\\Flocus.csproj",
         "projectName": "Flocus",
         "projectPath": "C:\\repos\\Flocus\\Flocus\\Flocus.csproj",
-        "packagesPath": "C:\\Users\\LukeW\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\Luke.Waterhouse\\.nuget\\packages\\",
         "outputPath": "C:\\repos\\Flocus\\Flocus\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\LukeW\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Luke.Waterhouse\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -154,7 +166,9 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
+          "C:\\Program Files\\dotnet\\sdk\\7.0.302\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://repo.ihsmarkit.com/artifactory/api/nuget/v3/nuget-pcm/": {}
         },
         "frameworks": {
           "net6.0": {
@@ -194,7 +208,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -206,7 +221,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -2,6 +2,6 @@
 
 public interface IUserService
 {
-    Task CreateUserAsync(string username, string password, bool isAdmin, string? key);
-    Task LoginUserAsync(string username, string password);
+    Task RegisterAsync(string username, string password, bool isAdmin, string? key);
+    Task GetAuthTokenAsync(string username, string password);
 }

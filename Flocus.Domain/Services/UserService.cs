@@ -14,17 +14,20 @@ namespace Flocus.Domain.Services
             _repositoryService = repositoryService;
         }
 
-        public async Task CreateUserAsync(string username, string password, bool isAdmin, string? key)
+        public async Task RegisterAsync(string username, string password, bool isAdmin, string? key)
         {
             if (isAdmin && adminKey != key)
             {
                 throw new Exception("admin key was not correct");
             }
+
             string passwordHash = BC.HashPassword(password);
+
 
             try
             {
-                await _repositoryService.CreateDbUserAsync(username, passwordHash, isAdmin);
+                //await _repositoryService.CreateDbUserAsync(username, passwordHash, isAdmin);
+                var user = await _repositoryService.GetUserAsync("lukey");
             }
             catch (Exception ex)
             {
@@ -32,10 +35,18 @@ namespace Flocus.Domain.Services
             }
         }
 
-        public async Task LoginUserAsync(string username, string password)
+        public async Task GetAuthTokenAsync(string username, string password)
         {
 
-
+            try
+            {
+                //await _repositoryService.CreateDbUserAsync(username, passwordHash, isAdmin);
+                var user = await _repositoryService.GetUserAsync("lukey");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }
