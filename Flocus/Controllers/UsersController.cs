@@ -1,3 +1,5 @@
+using Flocus.Domain.Interfaces;
+using Flocus.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flocus.Controllers
@@ -7,18 +9,34 @@ namespace Flocus.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
+        private readonly IUserService _userService;
 
-        public UsersController(ILogger<UsersController> logger)
+
+        public UsersController(ILogger<UsersController> logger, IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
-        [HttpGet(Name = "CreateUser")]
-        public async Task<IActionResult> CreateUser()
+        [HttpPost(Name = "CreateUser")]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request, CancellationToken ct)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            try
+            {
+                await _userService.CreateUserAsync(request.username, request.password, request.isAdmin, request.key);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+            var asd = request;
             return Ok();
-    
         }
     }
 }
