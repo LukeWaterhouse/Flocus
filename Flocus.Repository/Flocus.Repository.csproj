@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\Flocus.Domain\Flocus.Domain.csproj" />
   </ItemGroup>
 
 </Project>
