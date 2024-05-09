@@ -29,35 +29,27 @@ namespace Flocus.Controllers
             try
             {
                 await _userService.RegisterAsync(request.username, request.password, request.isAdmin, request.key);
+                return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
-
-            var asd = request;
-            return Ok();
         }
 
-        [HttpPost(Name = "CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] RegisterRequestDto request, CancellationToken ct)
+        [HttpGet(Name = "GetAuthToken")]
+        public async Task<IActionResult> GetToken(string username, string password, CancellationToken ct)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                await _userService.RegisterAsync(request.username, request.password, request.isAdmin, request.key);
+                var token = await _userService.GetAuthTokenAsync(username, password);
+                return Ok(token);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return Unauthorized(ex.Message);
             }
-
-            var asd = request;
-            return Ok();
         }
     }
 }
