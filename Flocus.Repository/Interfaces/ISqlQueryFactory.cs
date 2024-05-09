@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Flocus.Repository.Models;
+using Npgsql;
 
-namespace Flocus.Repository.Interfaces
+namespace Flocus.Repository.Interfaces;
+
+internal interface ISqlQueryFactory
 {
-    internal interface ISqlQueryFactory
-    {
-    }
+    string GenerateInsertClientQuery(string username, string passwordHash, bool AdminRights);
+
+    string GenerateGetUserQuery(string username);
 }

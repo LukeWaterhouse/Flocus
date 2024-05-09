@@ -14,7 +14,7 @@ EOSQL
 psql --username="myuser" --dbname="flocusdb" <<-EOSQL
 
     CREATE TABLE IF NOT EXISTS public.client (
-        client_id varchar(20) primary key,
+        client_id varchar(100) primary key,
         profile_picture varchar(20),
         account_creation_date date,
         username varchar(20),
@@ -23,7 +23,7 @@ psql --username="myuser" --dbname="flocusdb" <<-EOSQL
     );
 
     CREATE TABLE IF NOT EXISTS public.habit (
-        habit_id varchar(20) primary key,
+        habit_id varchar(100) primary key,
         client_id varchar(20) references client(client_id),
         title varchar(20),
         description varchar(400),

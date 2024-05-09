@@ -4,6 +4,6 @@ namespace Flocus.Domain.Interfacesl;
 
 public interface IRepositoryService
 {
-    Task CreateDbUserAsync(string username, string passwordHash, bool AdminRights);
+    Task<bool> CreateDbUserAsync(string username, string passwordHash, bool adminRights);
     Task<User> GetUserAsync(string username);
 }

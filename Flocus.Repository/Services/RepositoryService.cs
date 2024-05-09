@@ -2,6 +2,7 @@
 using Dapper;
 using Flocus.Domain.Interfacesl;
 using Flocus.Domain.Models;
+using Flocus.Repository.Exceptions;
 using Flocus.Repository.Interfaces;
 using Flocus.Repository.Models;
 using Npgsql;
@@ -13,41 +14,65 @@ internal class RepositoryService : IRepositoryService
 
     private readonly IMapper _mapper;
     private readonly IDbConnectionFactory _dbConnectionFactory;
+    private readonly ISqlQueryFactory _sqlQueryFactory;
 
-    public RepositoryService(IMapper mapper, IDbConnectionFactory dbConnectionFactory)
+    public RepositoryService(
+        IMapper mapper,
+        IDbConnectionFactory dbConnectionFactory,
+        ISqlQueryFactory sqlQueryFactory)
     {
         _mapper = mapper;
         _dbConnectionFactory = dbConnectionFactory;
+        _sqlQueryFactory = sqlQueryFactory;
     }
 
-    public async Task CreateDbUserAsync(string username, string passwordHash, bool AdminRights)
+    public async Task<bool> CreateDbUserAsync(string username, string passwordHash, bool adminRights)
     {
-        var connString = "Host=localhost;Port=5432;Database=flocusdb;Username=myuser;Password=mypassword;";
-        var clientId = Guid.NewGuid();
-        var creationDate = DateTime.Now;
+
+        int affectedRows = 0;
 
         await using (var conn = _dbConnectionFactory.CreateNpgSqlConnection())
         {
+
+            var DbUserList = conn.Query<DbUser>(_sqlQueryFactory.GenerateGetUserQuery(username)).ToList();
+            if(DbUserList.Count > 0)
+            {
+                throw new DuplicateRecordException($"user already exists with username: {username}");
+            }
+
             await conn.OpenAsync();
-            await using (var cmd = new NpgsqlCommand($"INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, password_salt, admin_rights)\n    VALUES ({clientId}, 'my profile picture', {creationDate}, {username}, {passwordHash}, {AdminRights});", conn))
-
+            await using (var cmd = new NpgsqlCommand(_sqlQueryFactory.GenerateInsertClientQuery(username, passwordHash, adminRights), conn))
+            {
+                affectedRows = await cmd.ExecuteNonQueryAsync();
+            }
         }
 
-        await using (var cmd = new NpgsqlCommand($"INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, password_salt, admin_rights)\n    VALUES ({clientId}, 'my profile picture', {creationDate}, {username}, {passwordHash}, {AdminRights});", conn))
-        await using (var reader = await cmd.ExecuteReaderAsync())
+        if (affectedRows > 0)
         {
-            while (await reader.ReadAsync())
-                Console.WriteLine(reader.GetString(0));
+            return true;
         }
+
+        return false;
     }
 
     public async Task<User> GetUserAsync(string username)
     {
-        var connString = "Host=localhost;Port=5432;Database=flocusdb;Username=myuser;Password=mypassword;";
+        await using (var conn = _dbConnectionFactory.CreateNpgSqlConnection())
+        {
+            var DbUserList = conn.Query<DbUser>(_sqlQueryFactory.GenerateGetUserQuery(username)).ToList();
 
-        await using var conn = new NpgsqlConnection(connString);
-        var DbUserList = conn.Query<DbUser>($"SELECT * FROM public.client WHERE username='{username}'").ToList();
-        var user = _mapper.Map<User>(DbUserList[0]);
-        return user;
+            if(DbUserList.Count == 0)
+            {
+                throw new RecordNotFoundException($"No user could be found with username: {username}");
+            }
+
+            if (DbUserList.Count != 1)
+            {
+                throw new Exception($"invalid number of users with username: {username}, found {DbUserList.Count}");
+            }
+
+            var user = _mapper.Map<User>(DbUserList[0]);
+            return user;
+        };
     }
 }

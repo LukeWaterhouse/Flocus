@@ -70,6 +70,83 @@
         }
       }
     },
+    "C:\\repos\\Flocus\\Flocus.Identity\\Flocus.Identity.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\repos\\Flocus\\Flocus.Identity\\Flocus.Identity.csproj",
+        "projectName": "Flocus.Identity",
+        "projectPath": "C:\\repos\\Flocus\\Flocus.Identity\\Flocus.Identity.csproj",
+        "packagesPath": "C:\\Users\\Luke.Waterhouse\\.nuget\\packages\\",
+        "outputPath": "C:\\repos\\Flocus\\Flocus.Identity\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Luke.Waterhouse\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://repo.ihsmarkit.com/artifactory/api/nuget/v3/nuget-pcm/": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "C:\\repos\\Flocus\\Flocus.Domain\\Flocus.Domain.csproj": {
+                "projectPath": "C:\\repos\\Flocus\\Flocus.Domain\\Flocus.Domain.csproj"
+              },
+              "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj": {
+                "projectPath": "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.IdentityModel.Tokens": {
+              "target": "Package",
+              "version": "[7.5.1, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[7.5.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.302\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
     "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -118,6 +195,10 @@
             "Dapper": {
               "target": "Package",
               "version": "[2.1.35, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
             },
             "Microsoft.Extensions.DependencyInjection.Abstractions": {
               "target": "Package",
@@ -176,6 +257,9 @@
             "projectReferences": {
               "C:\\repos\\Flocus\\Flocus.Domain\\Flocus.Domain.csproj": {
                 "projectPath": "C:\\repos\\Flocus\\Flocus.Domain\\Flocus.Domain.csproj"
+              },
+              "C:\\repos\\Flocus\\Flocus.Identity\\Flocus.Identity.csproj": {
+                "projectPath": "C:\\repos\\Flocus\\Flocus.Identity\\Flocus.Identity.csproj"
               },
               "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj": {
                 "projectPath": "C:\\repos\\Flocus\\Flocus.Repository\\Flocus.Repository.csproj"

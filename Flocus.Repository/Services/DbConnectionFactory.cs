@@ -1,4 +1,5 @@
 ﻿using Flocus.Repository.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 
 namespace Flocus.Repository.Services;
@@ -7,10 +8,9 @@ public class DbConnectionFactory : IDbConnectionFactory
 {
     private readonly string _connectionString;
 
-    public DbConnectionFactory(string dbConnectionString)
+    public DbConnectionFactory(IConfiguration configuration)
     {
-        _connectionString = dbConnectionString;
-
+        _connectionString = configuration.GetSection("ConnectionStrings")["FlocusDb"];
     }
     public NpgsqlConnection CreateNpgSqlConnection()
     {

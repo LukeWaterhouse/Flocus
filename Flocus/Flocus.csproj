@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Flocus.Domain\Flocus.Domain.csproj" />
+    <ProjectReference Include="..\Flocus.Identity\Flocus.Identity.csproj" />
     <ProjectReference Include="..\Flocus.Repository\Flocus.Repository.csproj" />
   </ItemGroup>
 

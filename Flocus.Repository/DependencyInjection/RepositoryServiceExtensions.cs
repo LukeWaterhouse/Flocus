@@ -9,10 +9,11 @@ namespace Flocus.Repository.DependencyInjection;
 
 public static class RepositoryServiceExtensions
 {
-    public static IServiceCollection AddRepositoryServices(this IServiceCollection services, string dbConnectionString)
+    public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryService, RepositoryService>();
-        services.AddScoped<IDbConnectionFactory, DbConnectionFactory>((IServiceProvider provider) => new DbConnectionFactory(dbConnectionString));
+        services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+        services.AddScoped<ISqlQueryFactory, SqlQueryFactory>();
         services.AddAutoMapper(Assembly.GetAssembly(typeof(UserMappingProfile)));
 
         return services;
