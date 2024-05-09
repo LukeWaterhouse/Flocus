@@ -4,11 +4,11 @@ using Npgsql;
 
 namespace Flocus.Repository.Services;
 
-public class DbConnectionFactory : IDbConnectionFactory
+public class DbConnectionService : IDbConnectionFactory
 {
     private readonly string _connectionString;
 
-    public DbConnectionFactory(IConfiguration configuration)
+    public DbConnectionService(IConfiguration configuration)
     {
         _connectionString = configuration.GetSection("ConnectionStrings")["FlocusDb"];
     }

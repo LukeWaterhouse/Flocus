@@ -12,8 +12,8 @@ public static class RepositoryServiceExtensions
     public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryService, RepositoryService>();
-        services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
-        services.AddScoped<ISqlQueryFactory, SqlQueryFactory>();
+        services.AddScoped<IDbConnectionFactory, DbConnectionService>();
+        services.AddScoped<ISqlQueryFactory, SqlQueryService>();
         services.AddAutoMapper(Assembly.GetAssembly(typeof(UserMappingProfile)));
 
         return services;

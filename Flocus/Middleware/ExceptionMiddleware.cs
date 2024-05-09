@@ -48,9 +48,7 @@ public sealed class ExceptionMiddleware : IMiddleware
             new ErrorsDto(
                 new List<ErrorDto>
                 {
-                    new ErrorDto(
-                    status,
-                    message)
+                    new ErrorDto(status, message)
                 }));
     }
 }

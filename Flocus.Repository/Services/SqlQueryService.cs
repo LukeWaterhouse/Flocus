@@ -2,7 +2,7 @@
 
 namespace Flocus.Repository.Services;
 
-internal class SqlQueryFactory : ISqlQueryFactory
+internal class SqlQueryService : ISqlQueryFactory
 {
     public string GenerateGetUserQuery(string username)
     {

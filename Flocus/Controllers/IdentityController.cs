@@ -1,4 +1,5 @@
 using Flocus.Identity.Interfaces;
+using Flocus.Models.Errors;
 using Flocus.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,23 +19,38 @@ public class IdentityController : ControllerBase
         _identityService = identityService;
     }
 
-    [HttpPost(Name = "Register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequestDto request, CancellationToken ct)
+    [HttpPost("register", Name = "Register")]
+    public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequestDto request, CancellationToken ct)
     {
-        if (!ModelState.IsValid)
+        if (request.isAdmin && request.key == null)
         {
-            return BadRequest(ModelState);
+            return BadRequest(new ErrorsDto(new List<ErrorDto>
+            {
+                new ErrorDto(StatusCodes.Status400BadRequest, "Must provide key when creating admin")
+            }));
+        }
+
+        if (!ModelState.IsValid) //TODO: consider moving this to a common function
+        {
+            var errors = new List<ErrorDto>();
+            foreach (var error in ModelState)
+            {
+                if (error.Value != null && error.Value.Errors.Any())
+                {
+                    errors.Add(new ErrorDto(StatusCodes.Status400BadRequest, error.Value.Errors.First().ErrorMessage));
+                }
+            }
+            return BadRequest(new ErrorsDto(errors));
         }
 
         await _identityService.RegisterAsync(request.username, request.password, request.isAdmin, request.key);
         return Ok();
-
     }
 
-    [HttpGet(Name = "GetAuthToken")]
-    public async Task<IActionResult> GetToken(string username, string password, CancellationToken ct)
+    [HttpPost("getToken", Name = "GetToken")]
+    public async Task<IActionResult> GetTokenAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
     {
         var token = await _identityService.GetAuthTokenAsync(username, password);
-        return Ok(token);
+        return token != null ? Ok(token) : StatusCode(500, "Error generating token");
     }
 }
