@@ -10,13 +10,13 @@ using Xunit;
 
 namespace Flocus.Tests.Controllers.IdentityControllerTests;
 
-public class RegisterTests
+public class RegisterEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IIdentityService _identityServiceMock;
     private readonly IdentityController _identityController;
 
-    public RegisterTests()
+    public RegisterEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IIdentityService>();

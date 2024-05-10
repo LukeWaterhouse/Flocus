@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus.Domain.Tests", "..\F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus.Tests", "..\Flocus.Tests\Flocus.Tests.csproj", "{A920EF20-1454-4856-B7FA-89C3B4F23360}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus.Identity.Tests", "..\Flocus.Identity.Tests\Flocus.Identity.Tests.csproj", "{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

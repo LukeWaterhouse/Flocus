@@ -11,15 +11,15 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace Flocus.Identity.Services;
 
-internal class IdentityService : IIdentityService
+public class IdentityService : IIdentityService
 {
-    private readonly IRepositoryService _repositoryService;
+    private readonly IRepositoryService _repositoryServiceMock;
     private readonly string? _adminKey;
     private readonly string? _signingKey;
 
     public IdentityService(IRepositoryService repositoryService, IConfiguration configuration)
     {
-        _repositoryService = repositoryService;
+        _repositoryServiceMock = repositoryService;
         _signingKey = configuration.GetSection("AppSettings")["SigningKey"];
         _adminKey = configuration.GetSection("AppSettings")["AdminKey"];
 
@@ -29,20 +29,20 @@ internal class IdentityService : IIdentityService
     {
         if (isAdmin && _adminKey != key)
         {
-            throw new AuthenticationException("Key was incorrect");
+            throw new AuthenticationException("Key was incorrect.");
         }
 
         string passwordHash = BC.HashPassword(password);
-        var isSuccessful = await _repositoryService.CreateDbUserAsync(username, passwordHash, isAdmin);
+        var isSuccessful = await _repositoryServiceMock.CreateDbUserAsync(username, passwordHash, isAdmin);
 
-        if (!isSuccessful) { throw new Exception("There was an error when creating the user"); }
+        if (!isSuccessful) { throw new Exception("There was an error when creating the user."); }
     }
 
     public async Task<string> GetAuthTokenAsync(string username, string password)
     {
         try
         {
-            var user = await _repositoryService.GetUserAsync(username);
+            var user = await _repositoryServiceMock.GetUserAsync(username);
             var isVerified = BC.Verify(password, user.PasswordHash);
 
             if (isVerified)
