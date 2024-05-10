@@ -25,7 +25,7 @@ public class IdentityService : IIdentityService
 
     }
 
-    public async Task RegisterAsync(string username, string password, bool isAdmin, string? key)
+    public async Task RegisterAsync(string username, string password, string emailAddress, bool isAdmin, string? key)
     {
         if (isAdmin && _adminKey != key)
         {
@@ -33,7 +33,7 @@ public class IdentityService : IIdentityService
         }
 
         string passwordHash = BC.HashPassword(password);
-        var isSuccessful = await _repositoryServiceMock.CreateDbUserAsync(username, passwordHash, isAdmin);
+        var isSuccessful = await _repositoryServiceMock.CreateDbUserAsync(username, passwordHash, emailAddress, isAdmin);
 
         if (!isSuccessful) { throw new Exception("There was an error when creating the user."); }
     }
@@ -64,9 +64,9 @@ public class IdentityService : IIdentityService
         {
             new Claim(ClaimTypes.Name, username)
         };
-        if (_signingKey == null)
+        if (_signingKey == null || _signingKey == "")
         {
-            throw new Exception("failed to get signing key from config");
+            throw new Exception("invalid signing key from config");
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_signingKey));

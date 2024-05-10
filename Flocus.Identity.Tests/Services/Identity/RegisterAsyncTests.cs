@@ -1,5 +1,6 @@
 ﻿using Flocus.Domain.Interfacesl;
 using Flocus.Identity.Services;
+using Flocus.Identity.Tests.Services.Identity.IdentityTestHelpers;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
@@ -21,7 +22,7 @@ public class RegisterAsyncTests
     {
         _repositoryServiceMock = Substitute.For<IRepositoryService>();
         _configurationMock = Substitute.For<IConfiguration>();
-        _configurationMock.GetSection("AppSettings").Returns(GenerateConfigSection());
+        _configurationMock.GetSection("AppSettings").Returns(ConfigTestHelper.GenerateConfigSection("signingKeyValue", "adminKeyValue"));
         _identityService = new IdentityService(_repositoryServiceMock, _configurationMock);
     }
 
@@ -29,21 +30,22 @@ public class RegisterAsyncTests
     public async Task RegisterAsync_WithValidParameters_CallsRepositoryService()
     {
         //Arrange
-
         var username = "luke";
         var password = "hashedPassword";
         var isAdmin = false;
+        var email = "luke@hotmail.com";
         var key = "key";
 
-        _repositoryServiceMock.CreateDbUserAsync(username, Arg.Is<string>(hash => VerifyPassword(password, hash)), isAdmin).Returns(true);
+        _repositoryServiceMock.CreateDbUserAsync(username, Arg.Is<string>(hash => VerifyPassword(password, hash)), email, isAdmin).Returns(true);
 
         //Act
-        await _identityService.RegisterAsync(username, password, isAdmin, key);
+        await _identityService.RegisterAsync(username, password, email, isAdmin, key);
 
         //Assert
         await _repositoryServiceMock.Received().CreateDbUserAsync(
             username,
             Arg.Is<string>(hash => VerifyPassword(password, hash)),
+            email,
             isAdmin);
     }
 
@@ -51,21 +53,22 @@ public class RegisterAsyncTests
     public async Task RegisterAsync_WithValidAdmin_CallsRepositoryService()
     {
         //Arrange
-
         var username = "luke";
         var password = "hashedPassword";
         var isAdmin = true;
+        var email = "luke@hotmail.com";
         var key = "adminKeyValue";
 
-        _repositoryServiceMock.CreateDbUserAsync(username, Arg.Is<string>(hash => VerifyPassword(password, hash)), isAdmin).Returns(true);
+        _repositoryServiceMock.CreateDbUserAsync(username, Arg.Is<string>(hash => VerifyPassword(password, hash)), email, isAdmin).Returns(true);
 
         //Act
-        await _identityService.RegisterAsync(username, password, isAdmin, key);
+        await _identityService.RegisterAsync(username, password, email, isAdmin, key);
 
         //Assert
         await _repositoryServiceMock.Received().CreateDbUserAsync(
             username,
             Arg.Is<string>(hash => VerifyPassword(password, hash)),
+            email,
             isAdmin);
     }
 
@@ -76,12 +79,13 @@ public class RegisterAsyncTests
         var username = "luke";
         var password = "hashedPassword";
         var isAdmin = true;
+        var email = "luke@hotmail.com";
         var key = "incorrectValue";
 
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _identityService.RegisterAsync(username, password, isAdmin, key);
+            await _identityService.RegisterAsync(username, password, email, isAdmin, key);
         });
 
         //Assert
@@ -97,14 +101,15 @@ public class RegisterAsyncTests
         var username = "luke";
         var password = "hashedPassword";
         var isAdmin = true;
+        var email = "luke@hotmail.com";
         var key = "adminKeyValue";
 
-        _repositoryServiceMock.CreateDbUserAsync(username, Arg.Is<string>(hash => VerifyPassword(password, hash)), isAdmin).Returns(false);
+        _repositoryServiceMock.CreateDbUserAsync(username, Arg.Is<string>(hash => VerifyPassword(password, hash)), email, isAdmin).Returns(false);
 
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _identityService.RegisterAsync(username, password, isAdmin, key);
+            await _identityService.RegisterAsync(username, password, email, isAdmin, key);
         });
 
         //Assert
@@ -113,25 +118,12 @@ public class RegisterAsyncTests
         await _repositoryServiceMock.Received().CreateDbUserAsync(
                     username,
                     Arg.Is<string>(hash => VerifyPassword(password, hash)),
+                    email,
                     isAdmin);
     }
 
     bool VerifyPassword(string password, string input)
     {
         return BC.Verify(password, input);
-    }
-
-    IConfigurationSection GenerateConfigSection()
-    {
-        var appSettings = @"{""AppSettings"":{
-            ""SigningKey"" : ""signingKeyValue"",
-            ""AdminKey"" : ""adminKeyValue""
-            }}";
-
-        var builder = new ConfigurationBuilder();
-        builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(appSettings)));
-        var configuration = builder.Build();
-
-        return configuration.GetSection("AppSettings");
     }
 }

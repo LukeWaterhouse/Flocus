@@ -1,23 +1,50 @@
-﻿using Flocus.Repository.Interfaces;
+﻿using Dapper;
+using Flocus.Repository.Interfaces;
+using Flocus.Repository.Models;
+using Npgsql;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Flocus.Repository.Services;
 
-internal class SqlQueryService : ISqlQueryFactory
+// Mocking is very awkward here just do sanity testing and integration tests to cover this.
+// The methods here should have as little logic as possible.
+[ExcludeFromCodeCoverage]
+public class SqlQueryService : ISqlQueryService
 {
-    public string GenerateGetUserQuery(string username)
+    private readonly IDbConnectionService _dbConnectionService;
+
+    public SqlQueryService(IDbConnectionService dbConnectionService)
     {
-        var query = $"SELECT * FROM public.client WHERE username='{username}'";
-        return query;
+        _dbConnectionService = dbConnectionService;
     }
 
-    public string GenerateInsertClientQuery(string username, string passwordHash, bool adminRights)
+    public async Task<List<DbUser>> GetUsersByUsernameAsync(string username)
     {
-        var clientId = Guid.NewGuid();
-        var creationDate = DateTime.Now;
+        await using (var conn = _dbConnectionService.CreateDbConnection())
+        {
+            var query = $"SELECT * FROM public.client WHERE username='{username}'";
+            var dbUserList = await conn.QueryAsync<DbUser>(query);
 
-        var query = $"INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, admin_rights) " +
-            $"VALUES ('{clientId}', 'my profile picture', '{creationDate}', '{username}', '{passwordHash}', {adminRights});";
+            return dbUserList.ToList();
+        }
+    }
 
-        return query;
+    public async Task<bool> CreateUserAsync(DbUser dbUser)
+    {
+        await using (var conn = _dbConnectionService.CreateDbConnection())
+        {
+            await conn.OpenAsync();
+
+            var query = $"INSERT INTO public.client (client_id, email_address, account_creation_date, username, password_hash, admin_rights) " +
+                $"VALUES ('{dbUser.Client_id}', '{dbUser.Email_address}', '{dbUser.Account_creation_date}', '{dbUser.Username}', '{dbUser.Password_hash}', {dbUser.Admin_rights});";
+
+            var affectedRows = 0;
+            await using (var cmd = new NpgsqlCommand(query, conn))
+            {
+                affectedRows = await cmd.ExecuteNonQueryAsync();
+            }
+
+            return affectedRows > 0;
+        }
     }
 }

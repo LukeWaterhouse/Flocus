@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace Flocus.Repository.Services;
 
-public class DbConnectionService : IDbConnectionFactory
+public class DbConnectionService : IDbConnectionService
 {
     private readonly string _connectionString;
 
@@ -12,7 +12,7 @@ public class DbConnectionService : IDbConnectionFactory
     {
         _connectionString = configuration.GetSection("ConnectionStrings")["FlocusDb"];
     }
-    public NpgsqlConnection CreateNpgSqlConnection()
+    public NpgsqlConnection CreateDbConnection()
     {
         return new NpgsqlConnection(_connectionString);
     }

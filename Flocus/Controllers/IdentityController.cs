@@ -43,7 +43,7 @@ public class IdentityController : ControllerBase
             return BadRequest(new ErrorsDto(errors));
         }
 
-        await _identityService.RegisterAsync(request.username, request.password, request.isAdmin, request.key);
+        await _identityService.RegisterAsync(request.username, request.password, request.emailAddress, request.isAdmin, request.key);
         return Ok();
     }
 

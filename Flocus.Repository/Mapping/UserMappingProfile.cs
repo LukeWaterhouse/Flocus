@@ -4,7 +4,7 @@ using Flocus.Repository.Models;
 
 namespace Flocus.Repository.Mapping;
 
-internal class UserMappingProfile : Profile
+public class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {

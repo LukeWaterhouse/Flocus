@@ -1,78 +1,66 @@
 ﻿using AutoMapper;
-using Dapper;
 using Flocus.Domain.Interfacesl;
 using Flocus.Domain.Models;
 using Flocus.Repository.Exceptions;
 using Flocus.Repository.Interfaces;
 using Flocus.Repository.Models;
-using Npgsql;
 
 namespace Flocus.Repository.Services;
 
-internal class RepositoryService : IRepositoryService
+public class RepositoryService : IRepositoryService
 {
 
     private readonly IMapper _mapper;
-    private readonly IDbConnectionFactory _dbConnectionFactory;
-    private readonly ISqlQueryFactory _sqlQueryFactory;
+    private readonly IDbConnectionService _dbConnectionService;
+    private readonly ISqlQueryService _sqlQueryService;
 
     public RepositoryService(
         IMapper mapper,
-        IDbConnectionFactory dbConnectionFactory,
-        ISqlQueryFactory sqlQueryFactory)
+        IDbConnectionService dbConnectionFactory,
+        ISqlQueryService sqlQueryFactory)
     {
         _mapper = mapper;
-        _dbConnectionFactory = dbConnectionFactory;
-        _sqlQueryFactory = sqlQueryFactory;
+        _dbConnectionService = dbConnectionFactory;
+        _sqlQueryService = sqlQueryFactory;
     }
 
-    public async Task<bool> CreateDbUserAsync(string username, string passwordHash, bool adminRights)
+    public async Task<bool> CreateDbUserAsync(string username, string passwordHash, string emailAddress, bool adminRights)
     {
-
-        int affectedRows = 0;
-
-        await using (var conn = _dbConnectionFactory.CreateNpgSqlConnection())
+        var dbUserList = await _sqlQueryService.GetUsersByUsernameAsync(username);
+        if (dbUserList.Count > 0)
         {
-
-            var DbUserList = conn.Query<DbUser>(_sqlQueryFactory.GenerateGetUserQuery(username)).ToList();
-            if(DbUserList.Count > 0)
-            {
-                throw new DuplicateRecordException($"user already exists with username: {username}");
-            }
-
-            await conn.OpenAsync();
-            await using (var cmd = new NpgsqlCommand(_sqlQueryFactory.GenerateInsertClientQuery(username, passwordHash, adminRights), conn))
-            {
-                affectedRows = await cmd.ExecuteNonQueryAsync();
-            }
+            throw new DuplicateRecordException($"user already exists with username: {username}");
         }
 
-        if (affectedRows > 0)
+        var dbUserToCreate = new DbUser
         {
-            return true;
-        }
+            Client_id = Guid.NewGuid().ToString(),
+            Email_address = emailAddress,
+            Account_creation_date = DateTime.Now,
+            Username = username,
+            Password_hash = passwordHash,
+            Admin_rights = adminRights
+        };
 
-        return false;
+        var success = await _sqlQueryService.CreateUserAsync(dbUserToCreate);
+        return success;
     }
 
     public async Task<User> GetUserAsync(string username)
     {
-        await using (var conn = _dbConnectionFactory.CreateNpgSqlConnection())
+        var dbUserList = await _sqlQueryService.GetUsersByUsernameAsync(username);
+
+        if (dbUserList.Count == 0)
         {
-            var DbUserList = conn.Query<DbUser>(_sqlQueryFactory.GenerateGetUserQuery(username)).ToList();
+            throw new RecordNotFoundException($"No user could be found with username: {username}");
+        }
 
-            if(DbUserList.Count == 0)
-            {
-                throw new RecordNotFoundException($"No user could be found with username: {username}");
-            }
+        if (dbUserList.Count != 1)
+        {
+            throw new Exception($"invalid number of users with username: {username}, found {dbUserList.Count}");
+        }
 
-            if (DbUserList.Count != 1)
-            {
-                throw new Exception($"invalid number of users with username: {username}, found {DbUserList.Count}");
-            }
-
-            var user = _mapper.Map<User>(DbUserList[0]);
-            return user;
-        };
+        var user = _mapper.Map<User>(dbUserList[0]);
+        return user;
     }
 }

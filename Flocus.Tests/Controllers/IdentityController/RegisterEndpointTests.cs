@@ -27,7 +27,7 @@ public class RegisterEndpointTests
     public async Task RegisterAsync_ValidNonAdminRequest_CallsIdentityServiceReturnsOk()
     {
         //Arrange
-        var registerRequest = new RegisterRequestDto("luke", "rollo123", false, null);
+        var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", false, null);
 
         //Act
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
@@ -37,6 +37,7 @@ public class RegisterEndpointTests
         await _identityServiceMock.Received().RegisterAsync(
             registerRequest.username,
             registerRequest.password,
+            registerRequest.emailAddress,
             registerRequest.isAdmin,
             registerRequest.key
             );
@@ -46,7 +47,7 @@ public class RegisterEndpointTests
     public async Task RegisterAsync_ValidAdminRequest_CallsIdentityServiceReturnsOk()
     {
         //Arrange
-        var registerRequest = new RegisterRequestDto("luke", "rollo123", true, "123");
+        var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, "123");
 
         //Act
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
@@ -56,6 +57,7 @@ public class RegisterEndpointTests
         await _identityServiceMock.Received().RegisterAsync(
             registerRequest.username,
             registerRequest.password,
+            registerRequest.emailAddress,
             registerRequest.isAdmin,
             registerRequest.key);
     }
@@ -64,7 +66,7 @@ public class RegisterEndpointTests
     public async Task RegisterAsync_AdminRequestNoKey_DoesNotCallIdentityServiceReturnsBadRequest()
     {
         //Arrange
-        var registerRequest = new RegisterRequestDto("luke", "rollo123", true, null);
+        var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, null);
 
         //Act
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
@@ -83,7 +85,7 @@ public class RegisterEndpointTests
     public async Task RegisterAsync_InvalidRequestModel_DoesNotCallIdentityServiceReturnsBadRequestWithErrors()
     {
         //Arrange
-        var registerRequest = new RegisterRequestDto("luke", "rollo123", true, "asd");
+        var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, "asd");
         var identityController = new IdentityController(_loggerMock, _identityServiceMock);
         identityController.ModelState.AddModelError("validationKey", "validationError");
         identityController.ModelState.AddModelError("validationKey2", "validationError2");

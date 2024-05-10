@@ -15,7 +15,7 @@ psql --username="myuser" --dbname="flocusdb" <<-EOSQL
 
     CREATE TABLE IF NOT EXISTS public.client (
         client_id varchar(100) primary key,
-        profile_picture varchar(20),
+        email_address varchar(100),
         account_creation_date date,
         username varchar(20),
         password_hash varchar(100),
@@ -35,8 +35,8 @@ psql --username="myuser" --dbname="flocusdb" <<-EOSQL
 EOSQL
 
 psql --username="myuser" --dbname="flocusdb" <<-EOSQL
-    INSERT INTO public.client (client_id, profile_picture, account_creation_date, username, password_hash, admin_rights)
-    VALUES ('345', 'my profile picture', '1999-01-01', 'lukey', 'passwordHash', true);
+    INSERT INTO public.client (client_id, email_address, account_creation_date, username, password_hash, admin_rights)
+    VALUES ('345', 'lukewwaterhouse@hotmail.co.uk', '1999-01-01', 'lukey', 'passwordHash', true);
 EOSQL
 
 psql --username="myuser" --dbname="flocusdb" <<-EOSQL
