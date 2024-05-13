@@ -35,7 +35,6 @@ public class CreateDbUserTests
     public async Task CreateDbUser_ValidCredentials_ReturnsTrue()
     {
         //Arrange
-
         var username = "luke";
         var passwordHash = "passwordHash";
         var emailAddress = "luke@hotmail.com";

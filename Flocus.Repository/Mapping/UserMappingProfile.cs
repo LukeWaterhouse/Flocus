@@ -13,6 +13,9 @@ public class UserMappingProfile : Profile
                 result => result.ClientId,
                 opt => opt.MapFrom(src => src.Client_id))
             .ForMember(
+                result => result.EmailAddress,
+                opt => opt.MapFrom(src => src.Email_address))
+            .ForMember(
                 result => result.CreatedAt,
                 opt => opt.MapFrom(src => src.Account_creation_date))
             .ForMember(

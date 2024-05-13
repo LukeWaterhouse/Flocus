@@ -1,9 +1,11 @@
 ﻿using Flocus.Repository.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Flocus.Repository.Services;
 
+[ExcludeFromCodeCoverage]
 public class DbConnectionService : IDbConnectionService
 {
     private readonly string _connectionString;
