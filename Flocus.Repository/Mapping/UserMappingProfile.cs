@@ -4,28 +4,28 @@ using Flocus.Repository.Models;
 
 namespace Flocus.Repository.Mapping;
 
-public class UserMappingProfile : Profile
+public sealed class UserMappingProfile : Profile
 {
     public UserMappingProfile()
     {
         CreateMap<DbUser, User>()
-            .ForMember(
-                result => result.ClientId,
+            .ForCtorParam(
+                nameof(User.ClientId),
                 opt => opt.MapFrom(src => src.Client_id))
-            .ForMember(
-                result => result.EmailAddress,
+            .ForCtorParam(
+                nameof(User.EmailAddress),
                 opt => opt.MapFrom(src => src.Email_address))
-            .ForMember(
-                result => result.CreatedAt,
+            .ForCtorParam(
+                nameof(User.CreatedAt),
                 opt => opt.MapFrom(src => src.Account_creation_date))
-            .ForMember(
-                result => result.Username,
+            .ForCtorParam(
+                nameof(User.Username),
                 opt => opt.MapFrom(src => src.Username))
-            .ForMember(
-                result => result.IsAdmin,
+            .ForCtorParam(
+                nameof(User.IsAdmin),
                 opt => opt.MapFrom(src => src.Admin_rights))
-            .ForMember(
-                result => result.PasswordHash,
+            .ForCtorParam(
+                nameof(User.PasswordHash),
                 opt => opt.MapFrom(src => src.Password_hash));
     }
 }

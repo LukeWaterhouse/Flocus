@@ -11,39 +11,35 @@ public class RepositoryService : IRepositoryService
 {
 
     private readonly IMapper _mapper;
-    private readonly IDbConnectionService _dbConnectionService;
     private readonly ISqlQueryService _sqlQueryService;
 
     public RepositoryService(
         IMapper mapper,
-        IDbConnectionService dbConnectionFactory,
         ISqlQueryService sqlQueryFactory)
     {
         _mapper = mapper;
-        _dbConnectionService = dbConnectionFactory;
         _sqlQueryService = sqlQueryFactory;
     }
 
     public async Task<bool> CreateDbUserAsync(string username, string passwordHash, string emailAddress, bool adminRights)
     {
-        var dbUserList = await _sqlQueryService.GetUsersByUsernameAsync(username);
-        if (dbUserList.Count > 0)
-        {
-            throw new DuplicateRecordException($"user already exists with username: {username}");
-        }
+        await ExistingUserGuard(username, emailAddress);
 
-        var dbUserToCreate = new DbUser
-        {
-            Client_id = Guid.NewGuid().ToString(),
-            Email_address = emailAddress,
-            Account_creation_date = DateTime.Now,
-            Username = username,
-            Password_hash = passwordHash,
-            Admin_rights = adminRights
-        };
+        var dbUserToCreate = new DbUser(
+            Guid.NewGuid().ToString(),
+            emailAddress,
+            DateTime.UtcNow,
+            username,
+            passwordHash,
+            adminRights);
 
         var success = await _sqlQueryService.CreateUserAsync(dbUserToCreate);
         return success;
+    }
+
+    public async Task<bool> DeleteUser(string userId)
+    {
+        return await _sqlQueryService.DeleteUserWithRelatedTables(userId);
     }
 
     public async Task<User> GetUserAsync(string username)
@@ -60,7 +56,45 @@ public class RepositoryService : IRepositoryService
             throw new Exception($"invalid number of users with username: {username}, found {dbUserList.Count}");
         }
 
-        var user = _mapper.Map<User>(dbUserList[0]);
+        var user = _mapper.Map<User>(dbUserList.FirstOrDefault());
         return user;
     }
+
+    #region HelperMethods
+    private async Task ExistingUserGuard(string username, string emailAddress)
+    {
+        var dbUserList = await _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress);
+
+        var emailExists = false;
+        var userNameExists = false;
+
+        if (dbUserList.Count > 0)
+        {
+            foreach (var dbUser in dbUserList)
+            {
+                if (dbUser.Username == username)
+                {
+                    userNameExists = true;
+                }
+
+                if (dbUser.Email_address == emailAddress)
+                {
+                    emailExists = true;
+                }
+            }
+
+            if (userNameExists)
+            {
+                throw new DuplicateRecordException($"user already exists with username: {username}");
+            }
+
+            if (emailExists)
+            {
+                throw new DuplicateRecordException($"user already exists with email: {emailAddress}");
+            }
+
+            throw new Exception($"Results found when searching users by {username} or {emailAddress} but were not caught.");
+        }
+    }
+    #endregion
 }

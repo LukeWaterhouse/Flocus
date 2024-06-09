@@ -40,14 +40,14 @@ public class GetAuthTokenAsyncTests
         var password = "rollo123";
         var passwordHash = BC.HashPassword(password);
 
-        _repositoryServiceMock.GetUserAsync(username).Returns(new User
-        {
-            ClientId = "clientId",
-            Username = username,
-            CreatedAt = DateTime.UtcNow,
-            IsAdmin = false,
-            PasswordHash = passwordHash
-        });
+        _repositoryServiceMock.GetUserAsync(username).Returns(
+            new User(
+                "clientId",
+                "lukerollo@hotmail.co.uk",
+                DateTime.UtcNow,
+                username,
+                false,
+                passwordHash));
 
         //Act
         var token = await _identityService.GetAuthTokenAsync(username, password);
@@ -74,14 +74,14 @@ public class GetAuthTokenAsyncTests
         var incorrectPassword = "rollo1234";
         var passwordHash = BC.HashPassword(correctPassword);
 
-        _repositoryServiceMock.GetUserAsync(username).Returns(new User
-        {
-            ClientId = "clientId",
-            Username = username,
-            CreatedAt = DateTime.UtcNow,
-            IsAdmin = false,
-            PasswordHash = passwordHash
-        });
+        _repositoryServiceMock.GetUserAsync(username).Returns(
+            new User(
+                "clientId",
+                "lukerollo@hotmail.co.uk",
+                DateTime.UtcNow,
+                username,
+                false,
+                passwordHash));
 
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
@@ -123,14 +123,14 @@ public class GetAuthTokenAsyncTests
         var password = "rollo123";
         var passwordHash = BC.HashPassword(password);
 
-        _repositoryServiceMock.GetUserAsync(username).Returns(new User
-        {
-            ClientId = "clientId",
-            Username = username,
-            CreatedAt = DateTime.UtcNow,
-            IsAdmin = false,
-            PasswordHash = passwordHash
-        });
+        _repositoryServiceMock.GetUserAsync(username).Returns(
+            new User(
+                "clientId",
+                "lukerollo@hotmail.co.uk",
+                DateTime.UtcNow,
+                username,
+                false,
+                passwordHash));
 
         var configurationMock = Substitute.For<IConfiguration>();
         configurationMock.GetSection("AppSettings").Returns(ConfigTestHelper.GenerateConfigSection(null, "adminKeyValue"));

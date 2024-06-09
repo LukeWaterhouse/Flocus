@@ -53,4 +53,11 @@ public class IdentityController : ControllerBase
         var token = await _identityService.GetAuthTokenAsync(username, password);
         return token != null ? Ok(token) : StatusCode(500, "Error generating token");
     }
+
+    [HttpDelete("deleteUser", Name = "deleteUser")]
+    public async Task<IActionResult> DeleteAccountAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
+    {
+        await _identityService.DeleteUser(username, password);
+        return Ok();
+    }
 }

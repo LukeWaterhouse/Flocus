@@ -13,7 +13,6 @@ namespace Flocus.Repository.Tests.Services.Repository;
 public class CreateDbUserTests
 {
     private readonly IMapper _mapper;
-    private readonly IDbConnectionService _dbConnectionService;
     private readonly ISqlQueryService _sqlQueryService;
     private readonly RepositoryService _repositoryService;
 
@@ -26,9 +25,8 @@ public class CreateDbUserTests
         });
 
         _mapper = mappingConfig.CreateMapper();
-        _dbConnectionService = Substitute.For<IDbConnectionService>();
         _sqlQueryService = Substitute.For<ISqlQueryService>();
-        _repositoryService = new RepositoryService(_mapper, _dbConnectionService, _sqlQueryService);
+        _repositoryService = new RepositoryService(_mapper, _sqlQueryService);
     }
 
     [Fact]
@@ -40,17 +38,15 @@ public class CreateDbUserTests
         var emailAddress = "luke@hotmail.com";
         var adminRights = false;
 
-        var dbUser = new DbUser
-        {
-            Client_id = Guid.NewGuid().ToString(),
-            Email_address = emailAddress,
-            Account_creation_date = DateTime.Now,
-            Username = username,
-            Password_hash = passwordHash,
-            Admin_rights = adminRights
-        };
+        var dbUser = new DbUser(
+            Guid.NewGuid().ToString(),
+            emailAddress,
+            DateTime.UtcNow,
+            username,
+            passwordHash,
+            adminRights);
 
-        _sqlQueryService.GetUsersByUsernameAsync(username).Returns(new List<DbUser>());
+        _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser>());
         _sqlQueryService.CreateUserAsync(Arg.Is<DbUser>(user =>
             user.Email_address == dbUser.Email_address &&
             EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
@@ -63,7 +59,7 @@ public class CreateDbUserTests
 
         //Assert
         Assert.True(result);
-        await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
         await _sqlQueryService.Received().CreateUserAsync(Arg.Is<DbUser>(user =>
             user.Email_address == dbUser.Email_address &&
             EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
@@ -82,17 +78,15 @@ public class CreateDbUserTests
         var emailAddress = "luke@hotmail.com";
         var adminRights = false;
 
-        var dbUser = new DbUser
-        {
-            Client_id = Guid.NewGuid().ToString(),
-            Email_address = emailAddress,
-            Account_creation_date = DateTime.Now,
-            Username = username,
-            Password_hash = passwordHash,
-            Admin_rights = adminRights
-        };
+        var dbUser = new DbUser(
+            Guid.NewGuid().ToString(),
+            emailAddress,
+            DateTime.UtcNow,
+            username,
+            passwordHash,
+            adminRights);
 
-        _sqlQueryService.GetUsersByUsernameAsync(username).Returns(new List<DbUser>());
+        _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser>());
         _sqlQueryService.CreateUserAsync(Arg.Is<DbUser>(user =>
            user.Email_address == dbUser.Email_address &&
            EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
@@ -105,7 +99,7 @@ public class CreateDbUserTests
 
         //Assert
         Assert.False(result);
-        await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
         await _sqlQueryService.Received().CreateUserAsync(Arg.Is<DbUser>(user =>
             user.Email_address == dbUser.Email_address &&
             EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
@@ -115,7 +109,7 @@ public class CreateDbUserTests
     }
 
     [Fact]
-    public async Task CreateDbUser_DuplicateUser_ThrowsException()
+    public async Task CreateDbUser_DuplicateUsernameUser_ThrowsException()
     {
         //Arrange
         var username = "luke";
@@ -123,17 +117,15 @@ public class CreateDbUserTests
         var emailAddress = "luke@hotmail.com";
         var adminRights = false;
 
-        var dbUser = new DbUser
-        {
-            Client_id = Guid.NewGuid().ToString(),
-            Email_address = emailAddress,
-            Account_creation_date = DateTime.Now,
-            Username = username,
-            Password_hash = passwordHash,
-            Admin_rights = adminRights
-        };
+        var dbUser = new DbUser(
+            Guid.NewGuid().ToString(),
+            emailAddress,
+            DateTime.UtcNow,
+            username,
+            passwordHash,
+            adminRights);
 
-        _sqlQueryService.GetUsersByUsernameAsync(username).Returns(new List<DbUser> { new DbUser() });
+        _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser> { dbUser });
 
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
@@ -144,7 +136,39 @@ public class CreateDbUserTests
         //Assert
         exception.Should().BeOfType<DuplicateRecordException>();
         exception.Message.Should().Be("user already exists with username: luke");
-        await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
+        await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
+    }
+
+    [Fact]
+    public async Task CreateDbUser_DuplicateEmailUser_ThrowsException()
+    {
+        //Arrange
+        var username = "luke";
+        var passwordHash = "passwordHash";
+        var emailAddress = "luke@hotmail.com";
+        var adminRights = false;
+
+        var dbUser = new DbUser(
+            Guid.NewGuid().ToString(),
+            emailAddress,
+            DateTime.UtcNow,
+            "differentUsername",
+            passwordHash,
+            adminRights);
+
+        _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser> { dbUser });
+
+        //Act
+        Exception exception = await Record.ExceptionAsync(async () =>
+        {
+            var result = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+        });
+
+        //Assert
+        exception.Should().BeOfType<DuplicateRecordException>();
+        exception.Message.Should().Be("user already exists with email: luke@hotmail.com");
+        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
         await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
     }
 

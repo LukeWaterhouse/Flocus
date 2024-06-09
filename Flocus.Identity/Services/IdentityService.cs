@@ -13,13 +13,13 @@ namespace Flocus.Identity.Services;
 
 public class IdentityService : IIdentityService
 {
-    private readonly IRepositoryService _repositoryServiceMock;
+    private readonly IRepositoryService _repositoryService;
     private readonly string? _adminKey;
     private readonly string? _signingKey;
 
     public IdentityService(IRepositoryService repositoryService, IConfiguration configuration)
     {
-        _repositoryServiceMock = repositoryService;
+        _repositoryService = repositoryService;
         _signingKey = configuration.GetSection("AppSettings")["SigningKey"];
         _adminKey = configuration.GetSection("AppSettings")["AdminKey"];
 
@@ -33,7 +33,7 @@ public class IdentityService : IIdentityService
         }
 
         string passwordHash = BC.HashPassword(password);
-        var isSuccessful = await _repositoryServiceMock.CreateDbUserAsync(username, passwordHash, emailAddress, isAdmin);
+        var isSuccessful = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, isAdmin);
 
         if (!isSuccessful) { throw new Exception("There was an error when creating the user."); }
     }
@@ -42,7 +42,7 @@ public class IdentityService : IIdentityService
     {
         try
         {
-            var user = await _repositoryServiceMock.GetUserAsync(username);
+            var user = await _repositoryService.GetUserAsync(username);
             var isVerified = BC.Verify(password, user.PasswordHash);
 
             if (isVerified)
@@ -58,6 +58,26 @@ public class IdentityService : IIdentityService
         }
     }
 
+    public async Task DeleteUser(string username, string password)
+    {
+        var user = await _repositoryService.GetUserAsync(username);
+        var isVerified = BC.Verify(password, user.PasswordHash);
+
+        if (isVerified)
+        {
+            var isUserDeleted = await _repositoryService.DeleteUser(user.ClientId);
+            if (!isUserDeleted)
+            {
+                throw new Exception("There was an issue deleting the user");
+            }
+        }
+        else
+        {
+            throw new AuthenticationException("Invalid username and password combination");
+        }
+    }
+
+    #region HelperMethods
     private string GenerateToken(string username)
     {
         List<Claim> claims = new List<Claim>
@@ -74,9 +94,10 @@ public class IdentityService : IIdentityService
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddDays(1),
+            expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+    #endregion
 }

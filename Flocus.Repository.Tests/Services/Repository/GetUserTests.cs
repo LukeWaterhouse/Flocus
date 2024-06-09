@@ -7,7 +7,6 @@ using Flocus.Repository.Models;
 using Flocus.Repository.Services;
 using FluentAssertions;
 using NSubstitute;
-using System.Net.Mail;
 using Xunit;
 
 namespace Flocus.Repository.Tests.Services.Repository;
@@ -30,11 +29,11 @@ public class GetUserTests
         _mapper = mappingConfig.CreateMapper();
         _dbConnectionService = Substitute.For<IDbConnectionService>();
         _sqlQueryService = Substitute.For<ISqlQueryService>();
-        _repositoryService = new RepositoryService(_mapper, _dbConnectionService, _sqlQueryService);
+        _repositoryService = new RepositoryService(_mapper, _sqlQueryService);
     }
 
     [Fact]
-    public async Task GetUserTests_ValidUsername_ReturnsUSer()
+    public async Task GetUserTests_ValidUsername_ReturnsUser()
     {
         //Arrange
         var username = "luke";
@@ -42,31 +41,27 @@ public class GetUserTests
         _sqlQueryService.GetUsersByUsernameAsync(username).Returns(
             new List<DbUser>
             {
-                new DbUser()
-                {
-                    Client_id = "123",
-                    Email_address = "luke@hotmail.com",
-                    Account_creation_date = new DateTime(2024, 05, 13),
-                    Username = username,
-                    Password_hash = "hash-123",
-                    Admin_rights = true
-                }
-            });;
+                new DbUser(
+                    "123",
+                    "luke@hotmail.com",
+                    new DateTime(2024, 05, 13),
+                    username,
+                    "hash-123",
+                    true)
+            });
 
 
         //Act
         var result = await _repositoryService.GetUserAsync(username);
 
         //Assert
-        var expectedUser = new User()
-        {
-            ClientId = "123",
-            EmailAddress = "luke@hotmail.com",
-            CreatedAt = new DateTime(2024, 05, 13),
-            Username = "luke",
-            PasswordHash = "hash-123",
-            IsAdmin = true
-        };
+        var expectedUser = new User(
+            "123",
+            "luke@hotmail.com",
+            new DateTime(2024, 05, 13),
+            username,
+            true,
+            "hash-123");
 
         result.Should().BeEquivalentTo(expectedUser);
         await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
@@ -102,25 +97,21 @@ public class GetUserTests
         _sqlQueryService.GetUsersByUsernameAsync(username).Returns(
             new List<DbUser>
             {
-                new DbUser()
-                {
-                    Client_id = "123",
-                    Email_address = "luke@hotmail.com",
-                    Account_creation_date = new DateTime(2024, 05, 13),
-                    Username = username,
-                    Password_hash = "hash-123",
-                    Admin_rights = true
-                },
-                new DbUser()
-                {
-                    Client_id = "234",
-                    Email_address = "luke2@hotmail.com",
-                    Account_creation_date = new DateTime(2024, 05, 13),
-                    Username = username,
-                    Password_hash = "hash-234",
-                    Admin_rights = false
-                }
-            }); ;
+                new DbUser(
+                    "123",
+                    "luke@hotmail.com",
+                    new DateTime(2024, 05, 13),
+                    username,
+                    "hash-123",
+                    true),
+                new DbUser(
+                    "234",
+                    "luke2@hotmail.com",
+                    new DateTime(2024, 05, 13),
+                    username,
+                    "hash-234",
+                    false)
+            });
 
 
         //Act

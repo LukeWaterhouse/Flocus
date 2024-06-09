@@ -1,8 +1,10 @@
 ﻿using Flocus.Domain.DependencyInjection;
 using Flocus.Identity.DependencyInjection;
+using Flocus.Mapping;
 using Flocus.Middleware;
 using Flocus.Repository.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace Flocus.DependencyInjection;
 
@@ -15,7 +17,7 @@ public static class FlocusServiceExtensions
         services.AddDomainServices();
         services.AddIdentityServices();
         services.AddTransient<ExceptionMiddleware>();
-
+        services.AddAutoMapper(Assembly.GetAssembly(typeof(UserDtoMappingProfile)));
         return services;
     }
 }

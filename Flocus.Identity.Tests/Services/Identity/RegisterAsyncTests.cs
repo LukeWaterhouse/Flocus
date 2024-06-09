@@ -5,7 +5,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using System.Security.Authentication;
-using System.Text;
 using Xunit;
 using BC = BCrypt.Net.BCrypt;
 

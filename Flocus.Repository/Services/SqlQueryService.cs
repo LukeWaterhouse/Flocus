@@ -29,6 +29,17 @@ public class SqlQueryService : ISqlQueryService
         }
     }
 
+    public async Task<List<DbUser>> GetUsersByUsernameOrEmailAsync(string username, string email)
+    {
+        await using (var conn = _dbConnectionService.CreateDbConnection())
+        {
+            var query = $"SELECT * FROM public.client WHERE username='{username}' OR email_address='{email}'";
+            var dbUserList = await conn.QueryAsync<DbUser>(query);
+
+            return dbUserList.ToList();
+        }
+    }
+
     public async Task<bool> CreateUserAsync(DbUser dbUser)
     {
         await using (var conn = _dbConnectionService.CreateDbConnection())
@@ -44,6 +55,23 @@ public class SqlQueryService : ISqlQueryService
                 affectedRows = await cmd.ExecuteNonQueryAsync();
             }
 
+            return affectedRows > 0;
+        }
+    }
+
+    public async Task<bool> DeleteUserWithRelatedTables(string userId)
+    {
+        await using (var conn = _dbConnectionService.CreateDbConnection())
+        {
+            await conn.OpenAsync();
+
+            var query = $"DELETE FROM public.client WHERE client_id = '{userId}';";
+            var affectedRows = 0;
+
+            await using (var cmd = new NpgsqlCommand(query, conn))
+            {
+                affectedRows = await cmd.ExecuteNonQueryAsync();
+            }
             return affectedRows > 0;
         }
     }
