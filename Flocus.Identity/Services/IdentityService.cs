@@ -15,17 +15,17 @@ namespace Flocus.Identity.Services;
 public class IdentityService : IIdentityService
 {
     private readonly IRepositoryService _repositoryService;
-    private readonly IdentitySettings _appSettings;
+    private readonly IdentitySettings _identitySettings;
 
     public IdentityService(IRepositoryService repositoryService, IdentitySettings appSettings)
     {
         _repositoryService = repositoryService;
-        _appSettings = appSettings;
+        _identitySettings = appSettings;
     }
 
     public async Task RegisterAsync(string username, string password, string emailAddress, bool isAdmin, string? key)
     {
-        if (isAdmin && _appSettings.AdminKey != key)
+        if (isAdmin && _identitySettings.AdminKey != key)
         {
             throw new AuthenticationException("Key was incorrect.");
         }
@@ -56,14 +56,15 @@ public class IdentityService : IIdentityService
         }
     }
 
-    public async Task DeleteUser(string username, string password)
+    public async Task DeleteUserAsUser(string username, string password)
     {
         var user = await _repositoryService.GetUserAsync(username);
+
         var isVerified = BC.Verify(password, user.PasswordHash);
 
         if (isVerified)
         {
-            var isUserDeleted = await _repositoryService.DeleteUser(user.ClientId);
+            var isUserDeleted = await DeleteUserWithNonAdminCheck(user);
             if (!isUserDeleted)
             {
                 throw new Exception("There was an issue deleting the user");
@@ -75,7 +76,24 @@ public class IdentityService : IIdentityService
         }
     }
 
+    public async Task DeleteUserAsAdmin(string username)
+    {
+        var user = await _repositoryService.GetUserAsync(username);
+        var isUserDeleted = await DeleteUserWithNonAdminCheck(user);
+        if (!isUserDeleted)
+        {
+            throw new Exception("There was an issue deleting the user");
+        }
+    }
+
     #region HelperMethods
+    private async Task<bool> DeleteUserWithNonAdminCheck(User user)
+    {
+        var isUserDeleted = !user.IsAdmin ? await _repositoryService.DeleteUser(user.ClientId)
+            : throw new UnauthorizedAccessException("User is an Admin");
+        return isUserDeleted;
+    }
+
     private string GenerateToken(User user)
     {
         var role = user.IsAdmin ? "Admin" : "User";
@@ -87,14 +105,12 @@ public class IdentityService : IIdentityService
             new Claim(ClaimTypes.Role, role)
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.SigningKey));
-
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_identitySettings.SigningKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        //add issuer and audience here
         var token = new JwtSecurityToken(
-            issuer: _appSettings.Issuer,
-            audience: _appSettings.Audience,
+            issuer: _identitySettings.Issuer,
+            audience: _identitySettings.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: credentials);
