@@ -1,7 +1,8 @@
 ﻿using Flocus.Domain.Interfacesl;
+using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces;
+using Flocus.Identity.Models;
 using Flocus.Repository.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
@@ -14,20 +15,17 @@ namespace Flocus.Identity.Services;
 public class IdentityService : IIdentityService
 {
     private readonly IRepositoryService _repositoryService;
-    private readonly string? _adminKey;
-    private readonly string? _signingKey;
+    private readonly IdentitySettings _appSettings;
 
-    public IdentityService(IRepositoryService repositoryService, IConfiguration configuration)
+    public IdentityService(IRepositoryService repositoryService, IdentitySettings appSettings)
     {
         _repositoryService = repositoryService;
-        _signingKey = configuration.GetSection("AppSettings")["SigningKey"];
-        _adminKey = configuration.GetSection("AppSettings")["AdminKey"];
-
+        _appSettings = appSettings;
     }
 
     public async Task RegisterAsync(string username, string password, string emailAddress, bool isAdmin, string? key)
     {
-        if (isAdmin && _adminKey != key)
+        if (isAdmin && _appSettings.AdminKey != key)
         {
             throw new AuthenticationException("Key was incorrect.");
         }
@@ -47,7 +45,7 @@ public class IdentityService : IIdentityService
 
             if (isVerified)
             {
-                return GenerateToken(username);
+                return GenerateToken(user);
             }
             throw new AuthenticationException("Invalid username and password combination");
 
@@ -58,6 +56,7 @@ public class IdentityService : IIdentityService
         }
     }
 
+    // I think just this should have authorization
     public async Task DeleteUser(string username, string password)
     {
         var user = await _repositoryService.GetUserAsync(username);
@@ -78,21 +77,25 @@ public class IdentityService : IIdentityService
     }
 
     #region HelperMethods
-    private string GenerateToken(string username)
+    private string GenerateToken(User user)
     {
+        var role = user.IsAdmin ? "Admin" : "User";
+
         List<Claim> claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, username)
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Email, user.EmailAddress),
+            new Claim(ClaimTypes.Role, role)
         };
-        if (_signingKey == null || _signingKey == "")
-        {
-            throw new Exception("invalid signing key from config");
-        }
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_signingKey));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.SigningKey));
 
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        //add issuer and audience here
         var token = new JwtSecurityToken(
+            issuer: _appSettings.Issuer,
+            audience: _appSettings.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddDays(1),
             signingCredentials: credentials);

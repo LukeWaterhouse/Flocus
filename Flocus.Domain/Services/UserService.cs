@@ -13,7 +13,7 @@ public class UserService : IUserService
         _repositoryService = repositoryService;
     }
 
-    public async Task<User> GetUserAsync(string username)
+    public async Task<User> GetUserAsync(string username) // This should come from the token
     {
         var user = await _repositoryService.GetUserAsync(username);
         return user;

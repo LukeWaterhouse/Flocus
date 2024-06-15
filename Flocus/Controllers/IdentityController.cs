@@ -1,6 +1,7 @@
 using Flocus.Identity.Interfaces;
 using Flocus.Models.Errors;
 using Flocus.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flocus.Controllers;
@@ -54,6 +55,7 @@ public class IdentityController : ControllerBase
         return token != null ? Ok(token) : StatusCode(500, "Error generating token");
     }
 
+    [Authorize]
     [HttpDelete("deleteUser", Name = "deleteUser")]
     public async Task<IActionResult> DeleteAccountAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
     {

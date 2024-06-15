@@ -9,9 +9,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
         builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddFlocusServices(builder.Configuration);
@@ -29,6 +27,7 @@ public class Program
 
         app.UseMiddleware<ExceptionMiddleware>();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();

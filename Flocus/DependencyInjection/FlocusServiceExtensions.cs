@@ -15,7 +15,7 @@ public static class FlocusServiceExtensions
     {
         services.AddRepositoryServices();
         services.AddDomainServices();
-        services.AddIdentityServices();
+        services.AddIdentityServices(configuration);
         services.AddTransient<ExceptionMiddleware>();
         services.AddAutoMapper(Assembly.GetAssembly(typeof(UserDtoMappingProfile)));
         return services;
