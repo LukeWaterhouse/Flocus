@@ -25,7 +25,6 @@ public sealed class ExceptionMiddleware : IMiddleware
         catch (DuplicateRecordException ex)
         {
             await WriteResponseAsync(context, StatusCodes.Status409Conflict, ex.Message);
-
         }
         catch (RecordNotFoundException ex)
         {
@@ -34,6 +33,10 @@ public sealed class ExceptionMiddleware : IMiddleware
         catch (AuthenticationException ex)
         {
             await WriteResponseAsync(context, StatusCodes.Status401Unauthorized, ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            await WriteResponseAsync(context, StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {

@@ -3,8 +3,6 @@ using Flocus.Domain.Interfaces;
 using Flocus.Models.ReturnModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Authentication;
 using System.Security.Claims;
 
 namespace Flocus.Controllers;
@@ -27,10 +25,10 @@ public class UserController : ControllerBase
     [HttpGet("getUser", Name = "getUser")]
     public async Task<IActionResult> GetUserAsync()
     {
-        var username = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value 
+        var claimsUsername = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value
             ?? throw new InvalidOperationException($"{nameof(ClaimTypes.Name)} claim could not be found in JWT token.");
 
-        var user = await _userService.GetUserAsync(username);
+        var user = await _userService.GetUserAsync(claimsUsername);
         var userDto = _mapper.Map<UserDto>(user);
 
         return Ok(userDto);

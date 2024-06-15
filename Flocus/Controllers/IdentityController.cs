@@ -3,6 +3,8 @@ using Flocus.Models.Errors;
 using Flocus.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Authentication;
+using System.Security.Claims;
 
 namespace Flocus.Controllers;
 
@@ -59,6 +61,14 @@ public class IdentityController : ControllerBase
     [HttpDelete("deleteUser", Name = "deleteUser")]
     public async Task<IActionResult> DeleteAccountAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
     {
+        var claimsUsername = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value
+            ?? throw new InvalidOperationException($"{nameof(ClaimTypes.Name)} claim could not be found in JWT token.");
+
+        if(claimsUsername != username)
+        {
+            throw new UnauthorizedAccessException($"Not authorized to delete user: '{username}'");
+        }
+
         await _identityService.DeleteUser(username, password);
         return Ok();
     }

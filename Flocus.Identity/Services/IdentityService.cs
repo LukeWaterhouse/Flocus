@@ -56,7 +56,6 @@ public class IdentityService : IIdentityService
         }
     }
 
-    // I think just this should have authorization
     public async Task DeleteUser(string username, string password)
     {
         var user = await _repositoryService.GetUserAsync(username);
