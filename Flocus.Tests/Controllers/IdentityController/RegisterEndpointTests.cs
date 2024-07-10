@@ -1,8 +1,10 @@
 ﻿using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
+using Flocus.Identity.Models;
 using Flocus.Models.Errors;
 using Flocus.Models.Requests;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -14,13 +16,15 @@ public class RegisterEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IIdentityService _identityServiceMock;
+    private readonly IdentitySettings _identitySettings;
     private readonly IdentityController _identityController;
 
     public RegisterEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IIdentityService>();
-        _identityController = new IdentityController(_loggerMock, _identityServiceMock);
+        _identitySettings = new IdentitySettings("signingKey", "issuer", "audience", "adminKey");
+        _identityController = new IdentityController(_loggerMock, _identityServiceMock, _identitySettings);
     }
 
     [Fact]
@@ -33,14 +37,17 @@ public class RegisterEndpointTests
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
 
         //Assert
-        result.Should().BeOfType<OkResult>();
-        await _identityServiceMock.Received().RegisterAsync(
-            registerRequest.username,
-            registerRequest.password,
-            registerRequest.emailAddress,
-            registerRequest.isAdmin,
-            registerRequest.key
-            );
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkResult>();
+            await _identityServiceMock.Received().RegisterAsync(
+                registerRequest.username,
+                registerRequest.password,
+                registerRequest.emailAddress,
+                registerRequest.isAdmin,
+                registerRequest.key
+                );
+        }
     }
 
     [Fact]
@@ -53,13 +60,16 @@ public class RegisterEndpointTests
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
 
         //Assert
-        result.Should().BeOfType<OkResult>();
-        await _identityServiceMock.Received().RegisterAsync(
-            registerRequest.username,
-            registerRequest.password,
-            registerRequest.emailAddress,
-            registerRequest.isAdmin,
-            registerRequest.key);
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<OkResult>();
+            await _identityServiceMock.Received().RegisterAsync(
+                registerRequest.username,
+                registerRequest.password,
+                registerRequest.emailAddress,
+                registerRequest.isAdmin,
+                registerRequest.key);
+        }
     }
 
     [Fact]
@@ -73,12 +83,15 @@ public class RegisterEndpointTests
 
         //Assert
         var expectedErrors = new ErrorsDto(new List<ErrorDto> { new ErrorDto(400, "Must provide key when creating admin") });
-
-        result.Should().BeOfType<BadRequestObjectResult>();
         var body = ((BadRequestObjectResult)result).Value;
-        body.Should().BeEquivalentTo(expectedErrors);
-        result.Should().BeOfType<BadRequestObjectResult>();
-        _identityServiceMock.ReceivedCalls().Should().BeEmpty();
+
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<BadRequestObjectResult>();
+            body.Should().BeEquivalentTo(expectedErrors);
+            result.Should().BeOfType<BadRequestObjectResult>();
+            _identityServiceMock.ReceivedCalls().Should().BeEmpty();
+        }
     }
 
     [Fact]
@@ -86,10 +99,9 @@ public class RegisterEndpointTests
     {
         //Arrange
         var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, "asd");
-        var identityController = new IdentityController(_loggerMock, _identityServiceMock);
+        var identityController = new IdentityController(_loggerMock, _identityServiceMock, _identitySettings);
         identityController.ModelState.AddModelError("validationKey", "validationError");
         identityController.ModelState.AddModelError("validationKey2", "validationError2");
-
 
         //Act
         var result = await identityController.RegisterAsync(registerRequest, CancellationToken.None);
@@ -99,11 +111,14 @@ public class RegisterEndpointTests
             new ErrorDto(400, "validationError"),
             new ErrorDto(400, "validationError2")
         });
-
-        result.Should().BeOfType<BadRequestObjectResult>();
         var body = ((BadRequestObjectResult)result).Value;
-        body.Should().BeEquivalentTo(expectedErrors);
-        result.Should().BeOfType<BadRequestObjectResult>();
-        _identityServiceMock.ReceivedCalls().Should().BeEmpty();
+
+        using (new AssertionScope())
+        {
+            result.Should().BeOfType<BadRequestObjectResult>();
+            body.Should().BeEquivalentTo(expectedErrors);
+            result.Should().BeOfType<BadRequestObjectResult>();
+            _identityServiceMock.ReceivedCalls().Should().BeEmpty();
+        }
     }
 }

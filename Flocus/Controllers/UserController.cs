@@ -13,7 +13,6 @@ public class UserController : ControllerBase
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
-
     public UserController(ILogger<UserController> logger, IUserService userService, IMapper mapper)
     {
         _logger = logger;

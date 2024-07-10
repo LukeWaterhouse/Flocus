@@ -17,23 +17,25 @@ public class IdentityService : IIdentityService
     private readonly IRepositoryService _repositoryService;
     private readonly IdentitySettings _identitySettings;
 
-    public IdentityService(IRepositoryService repositoryService, IdentitySettings appSettings)
+    private readonly string InvalidPasswordMessage = "Invalid username and password combination";
+    private readonly string AdminKeyIncorrectMessage = "Admin key is not correct";
+    private readonly string CannotDeleteAdminUserMessage = "Cannot delete admin user";
+
+    public IdentityService(IRepositoryService repositoryService, IdentitySettings identitySettings)
     {
         _repositoryService = repositoryService;
-        _identitySettings = appSettings;
+        _identitySettings = identitySettings;
     }
 
     public async Task RegisterAsync(string username, string password, string emailAddress, bool isAdmin, string? key)
     {
-        if (isAdmin && _identitySettings.AdminKey != key)
+        if (isAdmin)
         {
-            throw new AuthenticationException("Key was incorrect.");
+            CheckAdminKeyCorrect(key);
         }
 
         string passwordHash = BC.HashPassword(password);
-        var isSuccessful = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, isAdmin);
-
-        if (!isSuccessful) { throw new Exception("There was an error when creating the user."); }
+        await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, isAdmin);
     }
 
     public async Task<string> GetAuthTokenAsync(string username, string password)
@@ -47,51 +49,67 @@ public class IdentityService : IIdentityService
             {
                 return GenerateToken(user);
             }
-            throw new AuthenticationException("Invalid username and password combination");
+            throw new AuthenticationException(InvalidPasswordMessage);
 
         }
         catch (RecordNotFoundException)
         {
-            throw new AuthenticationException("Invalid username and password combination");
+            throw new AuthenticationException(InvalidPasswordMessage);
         }
     }
 
     public async Task DeleteUserAsUser(string username, string password)
     {
         var user = await _repositoryService.GetUserAsync(username);
-
-        var isVerified = BC.Verify(password, user.PasswordHash);
-
-        if (isVerified)
-        {
-            var isUserDeleted = await DeleteUserWithNonAdminCheck(user);
-            if (!isUserDeleted)
-            {
-                throw new Exception("There was an issue deleting the user");
-            }
-        }
-        else
-        {
-            throw new AuthenticationException("Invalid username and password combination");
-        }
+        EnsureUserNotAdmin(user);
+        await VerifyAndDeleteUser(user, password);
     }
+
 
     public async Task DeleteUserAsAdmin(string username)
     {
         var user = await _repositoryService.GetUserAsync(username);
-        var isUserDeleted = await DeleteUserWithNonAdminCheck(user);
-        if (!isUserDeleted)
+        EnsureUserNotAdmin(user);
+        await DeleteUser(user);
+    }
+
+    public async Task DeleteAdminAsAdmin(string username, string password)
+    {
+        var adminUser = await _repositoryService.GetUserAsync(username);
+        await VerifyAndDeleteUser(adminUser, password);
+    }
+
+    public async Task DeleteAdminAsAdminWithKey(string username, string key)
+    {
+        var user = await _repositoryService.GetUserAsync(username);
+        CheckAdminKeyCorrect(key);
+        await DeleteUser(user);
+    }
+
+
+    #region HelperMethods
+    private void EnsureUserNotAdmin(User user)
+    {
+        if (user.IsAdmin)
         {
-            throw new Exception("There was an issue deleting the user");
+            throw new UnauthorizedAccessException(CannotDeleteAdminUserMessage);
         }
     }
 
-    #region HelperMethods
-    private async Task<bool> DeleteUserWithNonAdminCheck(User user)
+    private async Task DeleteUser(User user)
     {
-        var isUserDeleted = !user.IsAdmin ? await _repositoryService.DeleteUser(user.ClientId)
-            : throw new UnauthorizedAccessException("User is an Admin");
-        return isUserDeleted;
+        await _repositoryService.DeleteUser(user.ClientId);
+    }
+
+    private async Task VerifyAndDeleteUser(User user, string password)
+    {
+        var isVerified = BC.Verify(password, user.PasswordHash);
+        if (isVerified)
+        {
+            await DeleteUser(user);
+            return;
+        }
+        throw new AuthenticationException(InvalidPasswordMessage);
     }
 
     private string GenerateToken(User user)
@@ -116,6 +134,14 @@ public class IdentityService : IIdentityService
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private void CheckAdminKeyCorrect(string? adminKey)
+    {
+        if (adminKey != _identitySettings.AdminKey)
+        {
+            throw new AuthenticationException(AdminKeyIncorrectMessage);
+        }
     }
     #endregion
 }

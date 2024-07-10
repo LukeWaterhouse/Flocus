@@ -21,7 +21,7 @@ public class RepositoryService : IRepositoryService
         _sqlQueryService = sqlQueryFactory;
     }
 
-    public async Task<bool> CreateDbUserAsync(string username, string passwordHash, string emailAddress, bool adminRights)
+    public async Task CreateDbUserAsync(string username, string passwordHash, string emailAddress, bool adminRights)
     {
         await ExistingUserGuard(username, emailAddress);
 
@@ -32,14 +32,14 @@ public class RepositoryService : IRepositoryService
             username,
             passwordHash,
             adminRights);
-
         var success = await _sqlQueryService.CreateUserAsync(dbUserToCreate);
-        return success;
+        if (!success) { throw new Exception("There was an error when creating the user."); }
     }
 
-    public async Task<bool> DeleteUser(string userId)
+    public async Task DeleteUser(string userId)
     {
-        return await _sqlQueryService.DeleteUserWithRelatedTables(userId);
+        var success = await _sqlQueryService.DeleteUserWithRelatedTables(userId);
+        if (!success) { throw new Exception("There was an error when deleting the user."); }
     }
 
     public async Task<User> GetUserAsync(string username)

@@ -6,6 +6,7 @@ using Flocus.Repository.Mapping;
 using Flocus.Repository.Models;
 using Flocus.Repository.Services;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NSubstitute;
 using Xunit;
 
@@ -63,8 +64,11 @@ public class GetUserTests
             true,
             "hash-123");
 
-        result.Should().BeEquivalentTo(expectedUser);
-        await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        using (new AssertionScope())
+        {
+            result.Should().BeEquivalentTo(expectedUser);
+            await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        }
     }
 
     [Fact]
@@ -83,9 +87,12 @@ public class GetUserTests
         });
 
         //Assert
-        exception.Should().BeOfType<RecordNotFoundException>();
-        exception.Message.Should().Be("No user could be found with username: luke");
-        await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        using (new AssertionScope())
+        {
+            exception.Should().BeOfType<RecordNotFoundException>();
+            exception.Message.Should().Be("No user could be found with username: luke");
+            await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        }
     }
 
     [Fact]
@@ -121,8 +128,11 @@ public class GetUserTests
         });
 
         //Assert
-        exception.Should().BeOfType<Exception>();
-        exception.Message.Should().Be("invalid number of users with username: luke, found 2");
-        await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        using (new AssertionScope())
+        {
+            exception.Should().BeOfType<Exception>();
+            exception.Message.Should().Be("invalid number of users with username: luke, found 2");
+            await _sqlQueryService.Received().GetUsersByUsernameAsync(username);
+        }
     }
 }

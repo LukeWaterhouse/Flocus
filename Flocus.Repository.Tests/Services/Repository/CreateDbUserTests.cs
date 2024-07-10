@@ -5,6 +5,7 @@ using Flocus.Repository.Mapping;
 using Flocus.Repository.Models;
 using Flocus.Repository.Services;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NSubstitute;
 using Xunit;
 
@@ -55,24 +56,25 @@ public class CreateDbUserTests
             user.Admin_rights == dbUser.Admin_rights)).Returns(true);
 
         //Act
-        var result = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+        await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
 
         //Assert
-        Assert.True(result);
-        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
-        await _sqlQueryService.Received().CreateUserAsync(Arg.Is<DbUser>(user =>
-            user.Email_address == dbUser.Email_address &&
-            EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
-            user.Username == dbUser.Username &&
-            user.Password_hash == dbUser.Password_hash &&
-            user.Admin_rights == dbUser.Admin_rights));
+        using (new AssertionScope())
+        {
+            await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
+            await _sqlQueryService.Received().CreateUserAsync(Arg.Is<DbUser>(user =>
+                user.Email_address == dbUser.Email_address &&
+                EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
+                user.Username == dbUser.Username &&
+                user.Password_hash == dbUser.Password_hash &&
+                user.Admin_rights == dbUser.Admin_rights));
+        }
     }
 
     [Fact]
-    public async Task CreateDbUser_IssueSaving_ReturnsFalse()
+    public async Task CreateDbUser_IssueSaving_ThrowsException()
     {
         //Arrange
-
         var username = "luke";
         var passwordHash = "passwordHash";
         var emailAddress = "luke@hotmail.com";
@@ -95,17 +97,24 @@ public class CreateDbUserTests
            user.Admin_rights == dbUser.Admin_rights)).Returns(false);
 
         //Act
-        var result = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+        Exception exception = await Record.ExceptionAsync(async () =>
+        {
+            await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+        });
 
         //Assert
-        Assert.False(result);
-        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
-        await _sqlQueryService.Received().CreateUserAsync(Arg.Is<DbUser>(user =>
-            user.Email_address == dbUser.Email_address &&
-            EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
-            user.Username == dbUser.Username &&
-            user.Password_hash == dbUser.Password_hash &&
-            user.Admin_rights == dbUser.Admin_rights));
+        using (new AssertionScope())
+        {
+            exception.Should().BeOfType<Exception>();
+            exception.Message.Should().Be("There was an error when creating the user.");
+            await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
+            await _sqlQueryService.Received().CreateUserAsync(Arg.Is<DbUser>(user =>
+                user.Email_address == dbUser.Email_address &&
+                EqualWithinFiveMinutes(user.Account_creation_date, dbUser.Account_creation_date) &&
+                user.Username == dbUser.Username &&
+                user.Password_hash == dbUser.Password_hash &&
+                user.Admin_rights == dbUser.Admin_rights));
+        }
     }
 
     [Fact]
@@ -130,14 +139,17 @@ public class CreateDbUserTests
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            var result = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+            await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
         });
 
         //Assert
-        exception.Should().BeOfType<DuplicateRecordException>();
-        exception.Message.Should().Be("user already exists with username: luke");
-        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
-        await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
+        using (new AssertionScope())
+        {
+            exception.Should().BeOfType<DuplicateRecordException>();
+            exception.Message.Should().Be("user already exists with username: luke");
+            await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
+            await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
+        }
     }
 
     [Fact]
@@ -162,14 +174,17 @@ public class CreateDbUserTests
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            var result = await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+            await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
         });
 
         //Assert
-        exception.Should().BeOfType<DuplicateRecordException>();
-        exception.Message.Should().Be("user already exists with email: luke@hotmail.com");
-        await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
-        await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
+        using (new AssertionScope())
+        {
+            exception.Should().BeOfType<DuplicateRecordException>();
+            exception.Message.Should().Be("user already exists with email: luke@hotmail.com");
+            await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
+            await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
+        }
     }
 
     public static bool EqualWithinFiveMinutes(DateTime dateTime1, DateTime dateTime2)

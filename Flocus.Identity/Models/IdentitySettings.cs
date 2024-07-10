@@ -1,6 +1,6 @@
 ﻿namespace Flocus.Identity.Models;
 
-public sealed class IdentitySettings
+public class IdentitySettings
 {
     public string SigningKey { get; }
     public string Issuer { get; }
