@@ -21,12 +21,12 @@ public sealed class UserRegistrationTestFixture : IDisposable
             BaseAddress = new Uri(Constants.BaseUrl),
         };
 
-        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password).Wait();
+        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password, IsAdmin).Wait();
     }
 
     public void Dispose()
     {
-        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password).Wait();
+        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password, IsAdmin).Wait();
         return;
     }
 }

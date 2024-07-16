@@ -15,6 +15,8 @@ public static class Constants
     public static readonly string GetTokenSegment = IdentityController + "/getToken";
     public static readonly string RegisterSegment = IdentityController + "/register";
     public static readonly string DeleteUserAsUserSegment = IdentityController + "/deleteUserAsUser";
+    public static readonly string DeleteUserAsAdmin = IdentityController + "/deleteUserAsAdmin";
+    public static readonly string DeleteAdmin = IdentityController + "/deleteAdmin";
 
     public static readonly string GetUserSegment = UserController + "/getUser";
 
@@ -23,7 +25,7 @@ public static class Constants
     public static readonly string PasswordRequestKey = "password";
     public static readonly string EmailAddressRequestKey = "emailAddress";
     public static readonly string IsAdminRequestKey = "isAdmin";
-    public static readonly string KeyRequestKey = "key";
+    public static readonly string AdminKeyRequestKey = "key";
 
     //Test Collections
     public static readonly string UserRegistration = "UserRegistration";

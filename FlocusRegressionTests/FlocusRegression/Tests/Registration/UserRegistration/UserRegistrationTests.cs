@@ -32,7 +32,7 @@ public sealed class UserRegistrationTests
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.KeyRequestKey, _fixture.Key }
+                { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
         //Act
@@ -56,7 +56,7 @@ public sealed class UserRegistrationTests
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.KeyRequestKey, _fixture.Key }
+                { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
         //Act
@@ -88,7 +88,7 @@ public sealed class UserRegistrationTests
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.KeyRequestKey, _fixture.Key }
+                { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
         //Act

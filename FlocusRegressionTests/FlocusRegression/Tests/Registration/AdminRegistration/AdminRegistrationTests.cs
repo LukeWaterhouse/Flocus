@@ -28,7 +28,7 @@ public sealed class AdminRegistrationTests
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.KeyRequestKey, Constants.AdminKey }
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
         //Act

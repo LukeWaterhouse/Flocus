@@ -7,34 +7,79 @@ namespace FlocusRegressionTests.Common.HelperMethods;
 
 public static class TestHelpers
 {
-    public static async Task EnsureNoExsitingUser(HttpClient httpClient, string username, string password)
+    public static async Task EnsureNoExsitingUser(HttpClient httpClient, string username, string password, bool isAdmin)
     {
-        var requestBody = new FormUrlEncodedContent(
+        //Create admin user
+        var adminUserUsername = "adminUser";
+        var adminUserPassword = "adminUserPassword";
+        var adminUserEmail = "adminUserEmail@hotmail.com";
+
+        var adminUserRegisterRequestBody = new Dictionary<string, object>
+            {
+                { Constants.UsernameRequestKey, adminUserUsername },
+                { Constants.PasswordRequestKey, adminUserPassword },
+                { Constants.EmailAddressRequestKey, adminUserEmail },
+                { Constants.IsAdminRequestKey, true },
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
+            };
+        var response = await httpClient.PostAsync(Constants.RegisterSegment, GetStringContentFromDict(adminUserRegisterRequestBody));
+        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Conflict)
+        {
+            throw new Exception("failed to create admin user for test preparation");
+        }
+
+        var adminUserGetTokenRequestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, adminUserUsername },
+                { Constants.PasswordRequestKey, adminUserPassword }
+            });
+
+        var getAdminTokenResponse = await httpClient.PostAsync(Constants.GetTokenSegment, adminUserGetTokenRequestBody);
+        var adminToken = await getAdminTokenResponse.Content.ReadAsStringAsync();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
+
+        HttpStatusCode? deleteStatusCode = null;
+
+        //Delete passed in user
+        if (!isAdmin)
+        {
+            var deleteUserAsAdminRequestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, username }
+            });
+
+            var deleteResponse = await httpClient.SendAsync(
+                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+                {
+                    Content = deleteUserAsAdminRequestBody
+                });
+            deleteStatusCode = deleteResponse.StatusCode;
+        }
+
+        if (isAdmin)
+        {
+            var deleteAdminAsAdminRequestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
                 { Constants.UsernameRequestKey, username },
-                { Constants.PasswordRequestKey, password }//do this as super user so always works
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
             });
 
-        var getTokenResponse = await httpClient.PostAsync(Constants.GetTokenSegment, requestBody);
-
-        var token = await getTokenResponse.Content.ReadAsStringAsync();
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        var deleteResponse = await httpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
-            {
-                Content = requestBody
-            });
-
-        if (getTokenResponse.StatusCode != HttpStatusCode.Unauthorized && getTokenResponse.StatusCode != HttpStatusCode.OK)
-        {
-            throw new Exception($"getToken response during preparation should have status code {HttpStatusCode.Unauthorized} or {HttpStatusCode.OK}");
+            var deleteResponse = await httpClient.SendAsync(
+                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+                {
+                    Content = deleteAdminAsAdminRequestBody
+                });
+            deleteStatusCode = deleteResponse.StatusCode;
         }
 
-        if (getTokenResponse.StatusCode == HttpStatusCode.OK && deleteResponse.StatusCode != HttpStatusCode.OK)
+        httpClient.DefaultRequestHeaders.Authorization = null;
+
+        if (deleteStatusCode != HttpStatusCode.OK && deleteStatusCode != HttpStatusCode.NotFound)
         {
-            throw new Exception("preparationUser was not successfully reset");
+            throw new Exception($"deleteAccount response during preparation should have status code {HttpStatusCode.NotFound} or {HttpStatusCode.OK}");
         }
     }
 

@@ -83,7 +83,7 @@ public class IdentityController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("deleteAdmin", Name = "deleteAdmin")]
-    public async Task<IActionResult> DeleteAdminAsync([FromForm] string username, [FromForm] string? password, [FromForm] string? adminKey, CancellationToken ct)
+    public async Task<IActionResult> DeleteAdminAsync([FromForm] string username, [FromForm] string? password, [FromForm] string? key, CancellationToken ct)
     {
         var claimsUsername = GetClaimByType(ClaimTypes.Name);
 
@@ -94,7 +94,7 @@ public class IdentityController : ControllerBase
             return Ok();
         }
 
-        var notNullAdminKey = adminKey ?? throw new UnauthorizedAccessException($"You must provide an admin key when deleting another admin account: {username}");
+        var notNullAdminKey = key ?? throw new UnauthorizedAccessException($"You must provide an admin key when deleting another admin account: {username}");
         await _identityService.DeleteAdminAsAdminWithKey(username, notNullAdminKey);
         return Ok();
     }
