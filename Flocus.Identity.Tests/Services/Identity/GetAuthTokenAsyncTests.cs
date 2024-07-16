@@ -59,7 +59,6 @@ public class GetAuthTokenAsyncTests
         var token = await _identityService.GetAuthTokenAsync(username, password);
 
         //Assert
-
         var jwtHandler = new JwtSecurityTokenHandler();
         var jwt = jwtHandler.ReadJwtToken(token);
         var claims = jwt.Claims.ToList();

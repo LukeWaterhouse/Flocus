@@ -14,7 +14,7 @@ public class IdentityController : ControllerBase
 {
     private readonly ILogger<IdentityController> _logger;
     private readonly IIdentityService _identityService;
-    private readonly IdentitySettings _identitySettings;
+    private readonly IdentitySettings _identitySettings; //TODO: remove
 
     public IdentityController(ILogger<IdentityController> logger, IIdentityService identityService, IdentitySettings identitySettings)
     {
