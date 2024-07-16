@@ -4,6 +4,7 @@ namespace FlocusRegressionTests.Common;
 
 public static class Constants
 {
+    //Base Url
     public static readonly string BaseUrl = "https://localhost:7207";
 
     //Controllers
@@ -33,4 +34,7 @@ public static class Constants
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
     };
+
+    //AdminKey
+    public static readonly string AdminKey = "9bad5eb4-86fd-4d69-a28f-cb353bbc4d48-64f29fe9-d198-4e7d-8784-e396dc9a4756";
 }

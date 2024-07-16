@@ -1,4 +1,5 @@
 ﻿using FlocusRegressionTests.Common;
+using FlocusRegressionTests.Common.HelperMethods;
 using FlocusRegressionTests.Common.Models.ErrorResponse;
 using FlocusRegressionTests.Common.Models.UserResponse;
 using FluentAssertions;
@@ -6,8 +7,6 @@ using FluentAssertions.Execution;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -37,13 +36,13 @@ public sealed class UserRegistrationTests
             };
 
         //Act
-        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, GetStringContentFromDict(requestBody));
+        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
         //Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            GetHttpResponseBodyAsString(response).Should().Be("");
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
         }
     }
 
@@ -61,10 +60,10 @@ public sealed class UserRegistrationTests
             };
 
         //Act
-        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, GetStringContentFromDict(requestBody));
+        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
         //Assert
-        var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -93,10 +92,10 @@ public sealed class UserRegistrationTests
             };
 
         //Act
-        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, GetStringContentFromDict(requestBody));
+        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
         //Assert
-        var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -126,7 +125,7 @@ public sealed class UserRegistrationTests
         var response = await _fixture.HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
 
         //Assert
-        var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -156,7 +155,7 @@ public sealed class UserRegistrationTests
         var response = await _fixture.HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
 
         //Assert
-        var token = GetHttpResponseBodyAsString(response);
+        var token = TestHelpers.GetHttpResponseBodyAsString(response);
         _fixture.AccessToken = token;
 
         var jwtHandler = new JwtSecurityTokenHandler();
@@ -177,7 +176,7 @@ public sealed class UserRegistrationTests
             claims[2].Value.Should().Be("User");
 
             claims[3].Type.Should().Be("exp");
-            UnixTimeStampStringToDateTime(claims[3].Value).Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
+            TestHelpers.UnixTimeStampStringToDateTime(claims[3].Value).Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
         }
     }
 
@@ -194,7 +193,7 @@ public sealed class UserRegistrationTests
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            GetHttpResponseBodyAsString(response).Should().Be("");
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
         }
     }
 
@@ -208,7 +207,7 @@ public sealed class UserRegistrationTests
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
         //Assert
-        var responseUser = DeserializeHttpResponseBody<UserDto>(response);
+        var responseUser = TestHelpers.DeserializeHttpResponseBody<UserDto>(response);
         var expectedUser = new UserDto(_fixture.Username, _fixture.EmailAddress, DateTime.UtcNow);
 
         using (new AssertionScope())
@@ -244,7 +243,7 @@ public sealed class UserRegistrationTests
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            GetHttpResponseBodyAsString(response).Should().Be("");
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
         }
     }
 
@@ -269,7 +268,7 @@ public sealed class UserRegistrationTests
             });
 
         //Assert
-        var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -304,7 +303,7 @@ public sealed class UserRegistrationTests
             });
 
         //Assert
-        var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -341,7 +340,7 @@ public sealed class UserRegistrationTests
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            GetHttpResponseBodyAsString(response).Should().Be("");
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
         }
     }
 
@@ -352,7 +351,7 @@ public sealed class UserRegistrationTests
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
         //Assert
-        var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -367,34 +366,7 @@ public sealed class UserRegistrationTests
         }
     }
 
-    #region HelperMethods
-    private StringContent GetStringContentFromDict(Dictionary<string, object> dictionary)
-    {
-        var json = JsonSerializer.Serialize(dictionary);
-        return new StringContent(json, Encoding.UTF8, "application/json");
-    }
-
-    private T DeserializeHttpResponseBody<T>(HttpResponseMessage httpResponseMessage)
-    {
-        var body = httpResponseMessage.Content.ReadAsStringAsync().Result;
-        return JsonSerializer.Deserialize<T>(body, Constants.JsonSerializerOptions) ?? throw new Exception($"Failed to deserialize string into {typeof(T).Name}: {body}");
-    }
-
-    private string GetHttpResponseBodyAsString(HttpResponseMessage httpResponseMessage)
-    {
-        return httpResponseMessage.Content.ReadAsStringAsync().Result;
-    }
-
-    private DateTime UnixTimeStampStringToDateTime(string unixTimestampString)
-    {
-        if (!long.TryParse(unixTimestampString, out long unixTimestamp))
-        {
-            throw new ArgumentException("Invalid Unix timestamp string", nameof(unixTimestampString));
-        }
-
-        DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return unixEpoch.AddSeconds(unixTimestamp);
-    }
+    #region HelperMethods   
 
     private void SetAccessTokenAsync(bool setAsNull = false)
     {

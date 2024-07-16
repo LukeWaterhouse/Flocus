@@ -1,8 +1,5 @@
 ﻿using FlocusRegressionTests.Common;
 using FlocusRegressionTests.Common.HelperMethods;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace FlocusRegressionTests.Tests.Registration.UserRegistration;
 
@@ -29,6 +26,7 @@ public sealed class UserRegistrationTestFixture : IDisposable
 
     public void Dispose()
     {
+        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password).Wait();
         return;
     }
 }
