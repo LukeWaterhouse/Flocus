@@ -8,10 +8,9 @@ namespace FlocusRegressionTests.Common.HelperMethods;
 
 public static class TestHelpers
 {
-
-    private readonly static string superUserUsername = "adminUser";
-    private readonly static string superUserPassword = "adminUserPassword";
-    private readonly static string superUserEmail = "adminUserEmail@hotmail.com";
+    private readonly static string testHelperUserUsername = "testHelperUser";
+    private readonly static string testHelperUserPassword = "testHelperUserPassword";
+    private readonly static string testHelperUserEmail = "testHelperUserEmail@hotmail.com";
 
     private readonly static HttpClient HttpClient = new HttpClient
     {
@@ -20,9 +19,7 @@ public static class TestHelpers
 
     public static async Task EnsureNoExsitingAccount(string username, bool isAdmin)
     {
-        var accessToken = await EnsureTestHelperUserAndGetToken();
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
+        await EnsureTestHelperUserAndGetToken();
         HttpStatusCode? deleteStatusCode = null;
 
         if (!isAdmin)
@@ -88,8 +85,7 @@ public static class TestHelpers
 
     public static async Task<(UserDto? User, HttpStatusCode statusCode)> GetUser(string username)
     {
-        var accessToken = await EnsureTestHelperUserAndGetToken();
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        await EnsureTestHelperUserAndGetToken();
 
         var response = await HttpClient.GetAsync(Constants.GetUserSegment + $"?username={username}");
 
@@ -133,16 +129,20 @@ public static class TestHelpers
         return unixEpoch.AddSeconds(unixTimestamp);
     }
 
+    public static void SetAccessToken(HttpClient httpClient, string? accessToken)
+    {
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+    }
 
     #region Helper Methods
-    private static async Task<string> EnsureTestHelperUserAndGetToken()
+    private static async Task EnsureTestHelperUserAndGetToken()
     {
         //Create admin user
         var adminUserRegisterRequestBody = new Dictionary<string, object>
             {
-                { Constants.UsernameRequestKey, superUserUsername },
-                { Constants.PasswordRequestKey, superUserPassword },
-                { Constants.EmailAddressRequestKey, superUserEmail },
+                { Constants.UsernameRequestKey, testHelperUserUsername },
+                { Constants.PasswordRequestKey, testHelperUserPassword },
+                { Constants.EmailAddressRequestKey, testHelperUserEmail },
                 { Constants.IsAdminRequestKey, true },
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
@@ -155,13 +155,13 @@ public static class TestHelpers
         var adminUserGetTokenRequestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, superUserUsername },
-                { Constants.PasswordRequestKey, superUserPassword }
+                { Constants.UsernameRequestKey, testHelperUserUsername },
+                { Constants.PasswordRequestKey, testHelperUserPassword }
             });
 
         var getAdminTokenResponse = await HttpClient.PostAsync(Constants.GetTokenSegment, adminUserGetTokenRequestBody);
         var adminToken = await getAdminTokenResponse.Content.ReadAsStringAsync();
-        return adminToken;
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
     }
     #endregion
 }

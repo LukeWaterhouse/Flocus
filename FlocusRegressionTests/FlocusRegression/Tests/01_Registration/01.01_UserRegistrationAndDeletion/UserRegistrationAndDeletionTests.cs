@@ -6,7 +6,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http.Headers;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -22,6 +21,7 @@ public sealed class UserRegistrationAndDeletionTests
         _fixture = fixture;
     }
 
+    #region Registration
     [Fact, Order(1)]
     public async Task RegisterUser_ValidInputs_ShouldReturn200()
     {
@@ -184,7 +184,7 @@ public sealed class UserRegistrationAndDeletionTests
     public async Task GetUser_Unauthenticated_Returns401()
     {
         //Arrange
-        SetAccessTokenAsync(true);
+        TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
         //Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
@@ -201,7 +201,7 @@ public sealed class UserRegistrationAndDeletionTests
     public async Task GetUser_Authenticated_Returns200()
     {
         //Arrange
-        SetAccessTokenAsync();
+        TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
         //Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
@@ -218,12 +218,14 @@ public sealed class UserRegistrationAndDeletionTests
             responseUser.CreatedAt.Should().BeCloseTo(expectedUser.CreatedAt, TimeSpan.FromMinutes(2));
         }
     }
+    #endregion
 
+    #region Deletion
     [Fact, Order(8)]
     public async Task DeleteUser_Unauthenticated_Returns401()
     {
         //Arrange
-        SetAccessTokenAsync(true);
+        TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
@@ -251,7 +253,7 @@ public sealed class UserRegistrationAndDeletionTests
     public async Task DeleteUser_WrongPassword_Returns401()
     {
         //Arrange
-        SetAccessTokenAsync();
+        TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
@@ -364,18 +366,6 @@ public sealed class UserRegistrationAndDeletionTests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
             errors.Should().BeEquivalentTo(expectedErrors);
         }
-    }
-
-    #region HelperMethods   
-
-    private void SetAccessTokenAsync(bool setAsNull = false)
-    {
-        if (!setAsNull)
-        {
-            _fixture.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _fixture.AccessToken);
-            return;
-        }
-        _fixture.HttpClient.DefaultRequestHeaders.Authorization = null;
     }
     #endregion
 }

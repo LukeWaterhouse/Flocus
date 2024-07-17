@@ -248,7 +248,7 @@ public sealed class AdminRegistrationAndDeletionTests
     public async Task GetAdminUser_Unauthenticated_Returns401()
     {
         //Arrange
-        SetAccessTokenAsync(true);
+        TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
         //Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
@@ -265,7 +265,7 @@ public sealed class AdminRegistrationAndDeletionTests
     public async Task GetAdminUser_Authenticated_Returns200()
     {
         //Arrange
-        SetAccessTokenAsync();
+        TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
         //Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
@@ -289,7 +289,7 @@ public sealed class AdminRegistrationAndDeletionTests
     public async Task DeleteAdmin_Unauthenticated_Returns401()
     {
         //Arrange
-        SetAccessTokenAsync(true);
+        TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
@@ -317,7 +317,7 @@ public sealed class AdminRegistrationAndDeletionTests
     public async Task DeleteAdmin_WrongPassword_Returns401()
     {
         //Arrange
-        SetAccessTokenAsync();
+        TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
@@ -536,14 +536,4 @@ public sealed class AdminRegistrationAndDeletionTests
         }
     }
     #endregion
-
-    private void SetAccessTokenAsync(bool setAsNull = false)
-    {
-        if (!setAsNull)
-        {
-            _fixture.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _fixture.AccessToken);
-            return;
-        }
-        _fixture.HttpClient.DefaultRequestHeaders.Authorization = null;
-    }
 }
