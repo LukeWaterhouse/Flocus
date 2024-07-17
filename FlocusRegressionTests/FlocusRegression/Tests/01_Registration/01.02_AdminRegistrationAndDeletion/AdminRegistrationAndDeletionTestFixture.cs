@@ -28,8 +28,8 @@ public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
 
         Cleanup().Wait();
 
-        TestHelpers.CreateUser(HttpClient, DifferentAdminUsername, "differentAdminPassword", "differentAdminEmail@hotmail.com", true).Wait();
-        TestHelpers.CreateUser(HttpClient, DifferentUserUsername, "differentUserPassword", "differentUserEmail@hotmail.com", false).Wait();
+        TestHelpers.CreateUser(DifferentAdminUsername, "differentAdminPassword", "differentAdminEmail@hotmail.com", true).Wait();
+        TestHelpers.CreateUser(DifferentUserUsername, "differentUserPassword", "differentUserEmail@hotmail.com", false).Wait();
     }
 
     public void Dispose()
@@ -40,8 +40,8 @@ public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
 
     private async Task Cleanup()
     {
-        await TestHelpers.EnsureNoExsitingAccount(HttpClient, Username, IsAdmin);
-        await TestHelpers.EnsureNoExsitingAccount(HttpClient, DifferentAdminUsername, true);
-        await TestHelpers.EnsureNoExsitingAccount(HttpClient, DifferentUserUsername, false);
+        await TestHelpers.EnsureNoExsitingAccount(Username, IsAdmin);
+        await TestHelpers.EnsureNoExsitingAccount(DifferentAdminUsername, true);
+        await TestHelpers.EnsureNoExsitingAccount(DifferentUserUsername, false);
     }
 }

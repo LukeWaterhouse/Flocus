@@ -418,7 +418,7 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(14)]
-    public async Task DeleteAdminAsAdmin_UsernameMismatchCorrectKey_Returns200()
+    public async Task DeleteAdmin_UsernameMismatchCorrectKey_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -444,7 +444,32 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(15)]
-    public async Task DeleteAdminAsAdmin_UsernameMatch_Returns200()
+    public async Task DeleteUserAsAdmin_ValidUser_Returns200()
+    {
+        //Arrange
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, _fixture.DifferentUserUsername },
+            });
+
+        //Act
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+            {
+                Content = requestBody
+            });
+
+        //Assert
+        using (new AssertionScope())
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
+        }
+    }
+
+    [Fact, Order(16)]
+    public async Task DeleteAdmin_UsernameMatch_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -469,51 +494,45 @@ public sealed class AdminRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(16)]
-    public async Task DeleteUserAsAdmin_ValidUsername_Returns200()
-    {
-        //Arrange
-        var requestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, _fixture.Username },
-                { Constants.PasswordRequestKey, _fixture.Password }
-            });
-
-        //Act
-        var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
-            {
-                Content = requestBody
-            });
-
-        //Assert
-        using (new AssertionScope())
-        {
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
-        }
-    }
-
     [Fact, Order(17)]
     public async Task GetAdmin_DeletedAdmin_Returns404()
     {
         //Act
-        var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
+        var (user, statusCode) = await TestHelpers.GetUser(_fixture.Username);
 
         //Assert
-        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
-
-        var expectedErrors = new ErrorsDto(
-            new List<ErrorDto>
-            {
-                new ErrorDto(404, $"No user could be found with username: {_fixture.Username}")
-            });
-
         using (new AssertionScope())
         {
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            errors.Should().BeEquivalentTo(expectedErrors);
+            statusCode.Should().Be(HttpStatusCode.NotFound);
+            user.Should().BeNull();
+        }
+    }
+
+    [Fact, Order(18)]
+    public async Task GetAdmin_DeletedByDifferentAdmin_Returns404()
+    {
+        //Act
+        var (user, statusCode) = await TestHelpers.GetUser(_fixture.DifferentAdminUsername);
+
+        //Assert
+        using (new AssertionScope())
+        {
+            statusCode.Should().Be(HttpStatusCode.NotFound);
+            user.Should().BeNull();
+        }
+    }
+
+    [Fact, Order(19)]
+    public async Task GetUser_DeletedByAdmin_Returns404()
+    {
+        //Act
+        var (user, statusCode) = await TestHelpers.GetUser(_fixture.DifferentUserUsername);
+
+        //Assert
+        using (new AssertionScope())
+        {
+            statusCode.Should().Be(HttpStatusCode.NotFound);
+            user.Should().BeNull();
         }
     }
     #endregion

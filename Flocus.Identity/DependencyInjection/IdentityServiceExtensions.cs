@@ -47,6 +47,7 @@ public static class IdentityServiceExtensions
 
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRegisterValidationService, RegisterValidationService>();
+        services.AddScoped<IClaimsService, ClaimsService>();
         return services;
     }
 }
