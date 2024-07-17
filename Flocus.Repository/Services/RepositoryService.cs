@@ -85,6 +85,7 @@ public class RepositoryService : IRepositoryService
 
             if (userNameExists)
             {
+                //TODO: think about changing user in message to admin if admin
                 throw new DuplicateRecordException($"user already exists with username: {username}");
             }
 

@@ -3,7 +3,7 @@ using FlocusRegressionTests.Common.HelperMethods;
 
 namespace FlocusRegressionTests.Tests.Registration.UserRegistration;
 
-public sealed class UserRegistrationTestFixture : IDisposable
+public sealed class UserRegistrationAndDeletionTestFixture : IDisposable
 {
     public HttpClient HttpClient { get; set; }
     public string AccessToken { get; set; }
@@ -14,20 +14,28 @@ public sealed class UserRegistrationTestFixture : IDisposable
     public readonly bool IsAdmin = false;
     public readonly string Key = "n/a";
 
-    public UserRegistrationTestFixture()
+    public readonly string DifferentUserUsername = "differentUserName";
+
+    public UserRegistrationAndDeletionTestFixture()
     {
         HttpClient = new HttpClient
         {
             BaseAddress = new Uri(Constants.BaseUrl),
         };
 
-        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password, IsAdmin).Wait();
+        Cleanup().Wait();
     }
 
     public void Dispose()
     {
-        TestHelpers.EnsureNoExsitingUser(HttpClient, Username, Password, IsAdmin).Wait();
+        Cleanup().Wait();
         return;
+    }
+
+    private async Task Cleanup()
+    {
+        await TestHelpers.EnsureNoExsitingAccount(HttpClient, Username, IsAdmin);
+        await TestHelpers.EnsureNoExsitingAccount(HttpClient, DifferentUserUsername, false);
     }
 }
 

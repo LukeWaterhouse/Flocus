@@ -7,7 +7,7 @@ namespace FlocusRegressionTests.Common.HelperMethods;
 
 public static class TestHelpers
 {
-    public static async Task EnsureNoExsitingUser(HttpClient httpClient, string username, string password, bool isAdmin)
+    public static async Task EnsureNoExsitingAccount(HttpClient httpClient, string username, bool isAdmin)
     {
         //Create admin user
         var adminUserUsername = "adminUser";
@@ -41,7 +41,7 @@ public static class TestHelpers
 
         HttpStatusCode? deleteStatusCode = null;
 
-        //Delete passed in user
+        //Delete passed in account
         if (!isAdmin)
         {
             var deleteUserAsAdminRequestBody = new FormUrlEncodedContent(
@@ -80,6 +80,28 @@ public static class TestHelpers
         if (deleteStatusCode != HttpStatusCode.OK && deleteStatusCode != HttpStatusCode.NotFound)
         {
             throw new Exception($"deleteAccount response during preparation should have status code {HttpStatusCode.NotFound} or {HttpStatusCode.OK}");
+        }
+    }
+
+    public static async Task CreateUser(HttpClient httpClient, string username, string password, string email, bool isAdmin)
+    {
+        var registerRequestBody = new Dictionary<string, object>
+            {
+                { Constants.UsernameRequestKey, username },
+                { Constants.PasswordRequestKey, password },
+                { Constants.EmailAddressRequestKey, email },
+                { Constants.IsAdminRequestKey, isAdmin },
+            };
+
+        if (isAdmin)
+        {
+            registerRequestBody.Add(Constants.AdminKeyRequestKey, Constants.AdminKey);
+        }
+
+        var response = await httpClient.PostAsync(Constants.RegisterSegment, GetStringContentFromDict(registerRequestBody));
+        if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Conflict)
+        {
+            throw new Exception($"failed to create user for test preparation: {username}");
         }
     }
 

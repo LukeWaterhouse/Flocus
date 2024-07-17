@@ -14,15 +14,13 @@ public class GetTokenEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IIdentityService _identityServiceMock;
-    private readonly IdentitySettings _identitySettings;
     private readonly IdentityController _identityController;
 
     public GetTokenEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IIdentityService>();
-        _identitySettings = new IdentitySettings("signingKey", "issuer", "audience", "adminKey");
-        _identityController = new IdentityController(_loggerMock, _identityServiceMock, _identitySettings);
+        _identityController = new IdentityController(_loggerMock, _identityServiceMock);
     }
 
     [Fact]

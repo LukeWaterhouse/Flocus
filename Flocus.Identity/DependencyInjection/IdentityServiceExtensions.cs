@@ -46,6 +46,7 @@ public static class IdentityServiceExtensions
         services.AddAuthorization();
 
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IRegisterValidationService, RegisterValidationService>();
         return services;
     }
 }

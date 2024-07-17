@@ -16,15 +16,13 @@ public class RegisterEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IIdentityService _identityServiceMock;
-    private readonly IdentitySettings _identitySettings;
     private readonly IdentityController _identityController;
 
     public RegisterEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IIdentityService>();
-        _identitySettings = new IdentitySettings("signingKey", "issuer", "audience", "adminKey");
-        _identityController = new IdentityController(_loggerMock, _identityServiceMock, _identitySettings);
+        _identityController = new IdentityController(_loggerMock, _identityServiceMock);
     }
 
     [Fact]
@@ -41,11 +39,11 @@ public class RegisterEndpointTests
         {
             result.Should().BeOfType<OkResult>();
             await _identityServiceMock.Received().RegisterAsync(
-                registerRequest.username,
-                registerRequest.password,
-                registerRequest.emailAddress,
-                registerRequest.isAdmin,
-                registerRequest.key
+                registerRequest.Username,
+                registerRequest.Password,
+                registerRequest.EmailAddress,
+                registerRequest.IsAdmin,
+                registerRequest.Key
                 );
         }
     }
@@ -99,7 +97,7 @@ public class RegisterEndpointTests
     {
         //Arrange
         var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, "asd");
-        var identityController = new IdentityController(_loggerMock, _identityServiceMock, _identitySettings);
+        var identityController = new IdentityController(_loggerMock, _identityServiceMock);
         identityController.ModelState.AddModelError("validationKey", "validationError");
         identityController.ModelState.AddModelError("validationKey2", "validationError2");
 

@@ -1,4 +1,5 @@
-﻿using Flocus.Models.Errors;
+﻿using Flocus.Identity.Exceptions;
+using Flocus.Models.Errors;
 using Flocus.Repository.Exceptions;
 using System.Security.Authentication;
 
@@ -29,6 +30,10 @@ public sealed class ExceptionMiddleware : IMiddleware
         catch (RecordNotFoundException ex)
         {
             await WriteResponseAsync(context, StatusCodes.Status404NotFound, ex.Message);
+        }
+        catch (InputValidationException ex)
+        {
+            await WriteResponseAsync(context, StatusCodes.Status400BadRequest, ex.Message);
         }
         catch (AuthenticationException ex)
         {

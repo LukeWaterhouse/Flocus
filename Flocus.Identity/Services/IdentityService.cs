@@ -15,27 +15,31 @@ namespace Flocus.Identity.Services;
 public class IdentityService : IIdentityService
 {
     private readonly IRepositoryService _repositoryService;
+    private readonly IRegisterValidationService _registerValidationService;
     private readonly IdentitySettings _identitySettings;
 
     private readonly string InvalidPasswordMessage = "Invalid username and password combination";
     private readonly string AdminKeyIncorrectMessage = "Admin key is not correct";
     private readonly string CannotDeleteAdminUserMessage = "Cannot delete admin user";
 
-    public IdentityService(IRepositoryService repositoryService, IdentitySettings identitySettings)
+    public IdentityService(IRepositoryService repositoryService, IRegisterValidationService registerValidationService, IdentitySettings identitySettings)
     {
         _repositoryService = repositoryService;
         _identitySettings = identitySettings;
+        _registerValidationService = registerValidationService;
     }
 
-    public async Task RegisterAsync(string username, string password, string emailAddress, bool isAdmin, string? key)
+    public async Task RegisterAsync(RegistrationModel registrationModel)
     {
-        if (isAdmin)
+        _registerValidationService.ValidateRegistrationModel(registrationModel);
+
+        if (registrationModel.IsAdmin)
         {
-            CheckAdminKeyCorrect(key);
+            CheckAdminKeyCorrect(registrationModel.Key);
         }
 
-        string passwordHash = BC.HashPassword(password);
-        await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, isAdmin);
+        string passwordHash = BC.HashPassword(registrationModel.Password);
+        await _repositoryService.CreateDbUserAsync(registrationModel.Username, passwordHash, registrationModel.EmailAddress, registrationModel.IsAdmin);
     }
 
     public async Task<string> GetAuthTokenAsync(string username, string password)

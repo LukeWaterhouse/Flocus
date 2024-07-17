@@ -37,6 +37,12 @@ public static class Constants
         PropertyNameCaseInsensitive = true
     };
 
+    //Claim Keys
+    public static readonly string NameClaimKey = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+    public static readonly string EmailAddressClaimKey = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress";
+    public static readonly string RoleClaimKey = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+    public static readonly string ExpiryDateClaimKey = "exp";
+
     //AdminKey
     public static readonly string AdminKey = "9bad5eb4-86fd-4d69-a28f-cb353bbc4d48-64f29fe9-d198-4e7d-8784-e396dc9a4756";
 }

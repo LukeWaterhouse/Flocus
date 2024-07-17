@@ -1,3 +1,4 @@
+using AutoMapper;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
 using Flocus.Models.Errors;
@@ -14,26 +15,19 @@ public class IdentityController : ControllerBase
 {
     private readonly ILogger<IdentityController> _logger;
     private readonly IIdentityService _identityService;
-    private readonly IdentitySettings _identitySettings; //TODO: remove
+    private readonly IMapper _mapper;
 
-    public IdentityController(ILogger<IdentityController> logger, IIdentityService identityService, IdentitySettings identitySettings)
+
+    public IdentityController(ILogger<IdentityController> logger, IMapper mapper, IIdentityService identityService)
     {
         _logger = logger;
         _identityService = identityService;
-        _identitySettings = identitySettings;
+        _mapper = mapper;
     }
 
     [HttpPost("register", Name = "Register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequestDto request, CancellationToken ct)
     {
-        if (request.isAdmin && request.key == null)
-        {
-            return BadRequest(new ErrorsDto(new List<ErrorDto>
-            {
-                new ErrorDto(StatusCodes.Status400BadRequest, "Must provide key when creating admin")
-            }));
-        }
-
         if (!ModelState.IsValid)
         {
             var errors = new List<ErrorDto>();
@@ -47,7 +41,8 @@ public class IdentityController : ControllerBase
             return BadRequest(new ErrorsDto(errors));
         }
 
-        await _identityService.RegisterAsync(request.username, request.password, request.emailAddress, request.isAdmin, request.key);
+        var registrationModel = _mapper.Map<RegistrationModel>(request);
+        await _identityService.RegisterAsync(registrationModel);
         return Ok();
     }
 

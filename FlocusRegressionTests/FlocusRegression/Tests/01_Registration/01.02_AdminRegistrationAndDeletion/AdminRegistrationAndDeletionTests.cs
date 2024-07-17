@@ -10,20 +10,84 @@ using System.Net.Http.Headers;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
-namespace FlocusRegressionTests.Tests.Registration.UserRegistration;
+namespace FlocusRegressionTests.Tests.Registration.AdminRegistration;
 
-[Collection("User Registration"), Order(1)]
-public sealed class UserRegistrationTests
+[Collection("Admin Registration/Deletion"), Order(2)]
+public sealed class AdminRegistrationAndDeletionTests
 {
-    private readonly UserRegistrationTestFixture _fixture;
+    private readonly AdminRegistrationAndDeletionTestFixture _fixture;
 
-    public UserRegistrationTests(UserRegistrationTestFixture fixture)
+    public AdminRegistrationAndDeletionTests(AdminRegistrationAndDeletionTestFixture fixture)
     {
         _fixture = fixture;
     }
 
+    #region Registration
     [Fact, Order(1)]
-    public async Task RegisterUser_ValidInputs_ShouldReturn200()
+    public async Task RegisterAdmin_IncorrectAdminUserKey_ShouldReturn401()
+    {
+        //Arrange
+        var requestBody = new Dictionary<string, object>
+            {
+                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
+                { Constants.PasswordRequestKey, _fixture.Password },
+                { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
+                { Constants.IsAdminRequestKey, _fixture.IsAdmin },
+                { Constants.AdminKeyRequestKey, "incorrect key" }
+            };
+
+        //Act
+        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
+
+        //Assert
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
+
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(401, "Admin key is not correct")
+            });
+
+        using (new AssertionScope())
+        {
+            errors.Should().BeEquivalentTo(expectedErrors);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+    }
+
+    [Fact, Order(2)]
+    public async Task RegisterAdmin_NoAdminKey_ShouldReturn400()
+    {
+        //Arrange
+        var requestBody = new Dictionary<string, object>
+            {
+                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
+                { Constants.PasswordRequestKey, _fixture.Password },
+                { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
+                { Constants.IsAdminRequestKey, _fixture.IsAdmin }
+            };
+
+        //Act
+        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
+
+        //Assert
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
+
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(400, "Must provide key when creating an admin")
+            });
+
+        using (new AssertionScope())
+        {
+            errors.Should().BeEquivalentTo(expectedErrors);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+    }
+
+    [Fact, Order(3)]
+    public async Task RegisterAdmin_ValidInputs_ShouldReturn200()
     {
         //Arrange
         var requestBody = new Dictionary<string, object>
@@ -32,7 +96,7 @@ public sealed class UserRegistrationTests
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.AdminKeyRequestKey, _fixture.Key }
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
         //Act
@@ -46,8 +110,8 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(2)]
-    public async Task RegisterUser_ExistingUsername_ShouldReturn409()
+    [Fact, Order(4)]
+    public async Task RegisterAdmin_ExistingUsername_ShouldReturn409()
     {
         //Arrange
         var requestBody = new Dictionary<string, object>
@@ -56,7 +120,7 @@ public sealed class UserRegistrationTests
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.AdminKeyRequestKey, _fixture.Key }
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
         //Act
@@ -68,7 +132,7 @@ public sealed class UserRegistrationTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(409, "user already exists with username: lukosparta123")
+                new ErrorDto(409, $"user already exists with username: {_fixture.Username}")
             });
 
         using (new AssertionScope())
@@ -78,17 +142,17 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(3)]
-    public async Task RegisterUser_ExistingEmail_ShouldReturn409()
+    [Fact, Order(5)]
+    public async Task RegisterAdmin_ExistingEmail_ShouldReturn409()
     {
         //Arrange
         var requestBody = new Dictionary<string, object>
             {
-                { Constants.UsernameRequestKey, "different username" },
+                { Constants.UsernameRequestKey, "nonExistingName" },
                 { Constants.PasswordRequestKey, _fixture.Password },
                 { Constants.EmailAddressRequestKey, _fixture.EmailAddress },
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin },
-                { Constants.AdminKeyRequestKey, _fixture.Key }
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
         //Act
@@ -110,7 +174,7 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(4)]
+    [Fact, Order(6)]
     public async Task GetToken_IncorrectPassword_ShouldReturn401()
     {
         //Arrange
@@ -140,7 +204,7 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(5)]
+    [Fact, Order(7)]
     public async Task GetToken_CorrectDetails_ShouldReturn200()
     {
         //Arrange
@@ -166,22 +230,22 @@ public sealed class UserRegistrationTests
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             token.Should().NotBeNull();
-            claims[0].Type.Should().Be("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+            claims[0].Type.Should().Be(Constants.NameClaimKey);
             claims[0].Value.Should().Be(_fixture.Username);
 
-            claims[1].Type.Should().Be("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+            claims[1].Type.Should().Be(Constants.EmailAddressClaimKey);
             claims[1].Value.Should().Be(_fixture.EmailAddress);
 
-            claims[2].Type.Should().Be("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
-            claims[2].Value.Should().Be("User");
+            claims[2].Type.Should().Be(Constants.RoleClaimKey);
+            claims[2].Value.Should().Be("Admin");
 
-            claims[3].Type.Should().Be("exp");
+            claims[3].Type.Should().Be(Constants.ExpiryDateClaimKey);
             TestHelpers.UnixTimeStampStringToDateTime(claims[3].Value).Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
         }
     }
 
-    [Fact, Order(6)]
-    public async Task GetUser_Unauthenticated_Returns401()
+    [Fact, Order(8)]
+    public async Task GetAdminUser_Unauthenticated_Returns401()
     {
         //Arrange
         SetAccessTokenAsync(true);
@@ -197,8 +261,8 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(7)]
-    public async Task GetUser_Authenticated_Returns200()
+    [Fact, Order(9)]
+    public async Task GetAdminUser_Authenticated_Returns200()
     {
         //Arrange
         SetAccessTokenAsync();
@@ -218,9 +282,11 @@ public sealed class UserRegistrationTests
             responseUser.CreatedAt.Should().BeCloseTo(expectedUser.CreatedAt, TimeSpan.FromMinutes(2));
         }
     }
+    #endregion
 
-    [Fact, Order(8)]
-    public async Task DeleteUser_Unauthenticated_Returns401()
+    #region Deletion
+    [Fact, Order(10)]
+    public async Task DeleteAdmin_Unauthenticated_Returns401()
     {
         //Arrange
         SetAccessTokenAsync(true);
@@ -234,7 +300,7 @@ public sealed class UserRegistrationTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
             {
                 Content = requestBody
             });
@@ -247,8 +313,8 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(9)]
-    public async Task DeleteUser_WrongPassword_Returns401()
+    [Fact, Order(11)]
+    public async Task DeleteAdmin_WrongPassword_Returns401()
     {
         //Arrange
         SetAccessTokenAsync();
@@ -262,7 +328,7 @@ public sealed class UserRegistrationTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
             {
                 Content = requestBody
             });
@@ -283,21 +349,20 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(10)]
-    public async Task DeleteUser_UsernameMismatch_Returns403()
+    [Fact, Order(12)]
+    public async Task DeleteAdmin_UsernameMismatchNoKey_Returns403()
     {
         //Arrange
-        var differentUsername = "different username";
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, differentUsername },
+                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
             {
                 Content = requestBody
             });
@@ -308,7 +373,7 @@ public sealed class UserRegistrationTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(403, $"Not authorized to delete user: '{differentUsername}'")
+                new ErrorDto(403, $"You must provide an admin key when deleting another admin account: {_fixture.DifferentAdminUsername}")
             });
 
         using (new AssertionScope())
@@ -318,20 +383,54 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(11)]
-    public async Task DeleteUser_ValidCredentials_Returns200()
+    [Fact, Order(13)]
+    public async Task DeleteAdmin_UsernameMismatchWrongKey_Returns403()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
-                { Constants.PasswordRequestKey, _fixture.Password }
+                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
+                { Constants.AdminKeyRequestKey, "wrong key" }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            {
+                Content = requestBody
+            });
+
+        //Assert
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
+
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(401, "Admin key is not correct")
+            });
+
+        using (new AssertionScope())
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            errors.Should().BeEquivalentTo(expectedErrors);
+        }
+    }
+
+    [Fact, Order(14)]
+    public async Task DeleteAdminAsAdmin_UsernameMismatchCorrectKey_Returns200()
+    {
+        //Arrange
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
+                { Constants.AdminKeyRequestKey, Constants.AdminKey }
+            });
+
+        //Act
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
             {
                 Content = requestBody
             });
@@ -344,8 +443,60 @@ public sealed class UserRegistrationTests
         }
     }
 
-    [Fact, Order(12)]
-    public async Task GetUser_DeletedUser_Returns404()
+    [Fact, Order(15)]
+    public async Task DeleteAdminAsAdmin_UsernameMatch_Returns200()
+    {
+        //Arrange
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, _fixture.Username },
+                { Constants.PasswordRequestKey, _fixture.Password }
+            });
+
+        //Act
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            {
+                Content = requestBody
+            });
+
+        //Assert
+        using (new AssertionScope())
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
+        }
+    }
+
+    [Fact, Order(16)]
+    public async Task DeleteUserAsAdmin_ValidUsername_Returns200()
+    {
+        //Arrange
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, _fixture.Username },
+                { Constants.PasswordRequestKey, _fixture.Password }
+            });
+
+        //Act
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+            {
+                Content = requestBody
+            });
+
+        //Assert
+        using (new AssertionScope())
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
+        }
+    }
+
+    [Fact, Order(17)]
+    public async Task GetAdmin_DeletedAdmin_Returns404()
     {
         //Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
@@ -356,7 +507,7 @@ public sealed class UserRegistrationTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(404, "No user could be found with username: " + _fixture.Username)
+                new ErrorDto(404, $"No user could be found with username: {_fixture.Username}")
             });
 
         using (new AssertionScope())
@@ -365,8 +516,7 @@ public sealed class UserRegistrationTests
             errors.Should().BeEquivalentTo(expectedErrors);
         }
     }
-
-    #region HelperMethods   
+    #endregion
 
     private void SetAccessTokenAsync(bool setAsNull = false)
     {
@@ -377,5 +527,4 @@ public sealed class UserRegistrationTests
         }
         _fixture.HttpClient.DefaultRequestHeaders.Authorization = null;
     }
-    #endregion
 }
