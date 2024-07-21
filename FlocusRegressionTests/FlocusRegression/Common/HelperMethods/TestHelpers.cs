@@ -7,6 +7,7 @@ using System.Text.Json;
 
 namespace FlocusRegressionTests.Common.HelperMethods;
 
+//TODO: see about separating out into multiple test helper classes, maybe one for api calls and another for synchronous methods
 public static class TestHelpers
 {
     private readonly static string testHelperUserUsername = "testHelperUser";
