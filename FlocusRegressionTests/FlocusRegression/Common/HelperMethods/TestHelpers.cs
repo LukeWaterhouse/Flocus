@@ -137,6 +137,22 @@ public static class TestHelpers
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
+    public static async Task<string> GetAccessToken(string username, string password)
+    {
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, username },
+                { Constants.PasswordRequestKey, password }
+            });
+        var response = await HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new Exception($"Error retrieving access token for user: '{username}'. StatusCode: {response.StatusCode}");
+        }
+        return GetHttpResponseBodyAsString(response);
+    }
+
     #region Private Methods
     private static async Task EnsureTestHelperUserAndGetToken()
     {
@@ -156,19 +172,8 @@ public static class TestHelpers
             throw new Exception($"failed to create admin user for test preparation: {errors}");
         }
 
-        var adminUserGetTokenRequestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, testHelperUserUsername },
-                { Constants.PasswordRequestKey, testHelperUserPassword }
-            });
+        var adminToken = await GetAccessToken(testHelperUserUsername, testHelperUserPassword);
 
-        var getAdminTokenResponse = await HttpClient.PostAsync(Constants.GetTokenSegment, adminUserGetTokenRequestBody);
-        if (getAdminTokenResponse.StatusCode != HttpStatusCode.OK)
-        {
-            throw new Exception("Issue when retrieving access token for test helper admin account");
-        }
-        var adminToken = await getAdminTokenResponse.Content.ReadAsStringAsync();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
     }
     #endregion

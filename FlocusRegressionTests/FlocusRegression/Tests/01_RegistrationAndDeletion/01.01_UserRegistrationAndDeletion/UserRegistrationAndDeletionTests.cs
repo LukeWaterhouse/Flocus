@@ -21,7 +21,6 @@ public sealed class UserRegistrationAndDeletionTests
         _fixture = fixture;
     }
 
-    //TODO: review all tests
     #region Registration
 
     #region Input Validation

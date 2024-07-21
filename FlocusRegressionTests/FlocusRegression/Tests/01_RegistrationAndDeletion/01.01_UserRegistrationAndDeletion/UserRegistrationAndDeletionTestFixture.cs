@@ -6,7 +6,7 @@ namespace FlocusRegressionTests.Tests.Registration.UserRegistration;
 public sealed class UserRegistrationAndDeletionTestFixture : IDisposable
 {
     public HttpClient HttpClient { get; set; }
-    public string AccessToken { get; set; }
+    public string AccessToken { get; set; } = "";
 
     public readonly string Username = "lukosparta123";
     public readonly string Password = "Rollo!234";
@@ -28,7 +28,6 @@ public sealed class UserRegistrationAndDeletionTestFixture : IDisposable
     public void Dispose()
     {
         Cleanup().Wait();
-        return;
     }
 
     private async Task Cleanup()

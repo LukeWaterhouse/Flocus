@@ -7,8 +7,7 @@ namespace FlocusRegressionTests.Tests.Registration.AdminRegistration;
 public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
 {
     public HttpClient HttpClient { get; set; }
-    public JsonSerializerOptions JsonSerializerOptions { get; set; }
-    public string AccessToken { get; set; }
+    public string AccessToken { get; set; } = "";
 
     public readonly string Username = "MasterChief";
     public readonly string Password = "Kratos!234";
@@ -26,15 +25,18 @@ public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
         };
 
         Cleanup().Wait();
-
-        TestHelpers.CreateUser(DifferentAdminUsername, "differentAdminPassword!234", "differentAdminEmail@hotmail.com", true).Wait();
-        TestHelpers.CreateUser(DifferentUserUsername, "differentUserPassword!234", "differentUserEmail@hotmail.com", false).Wait();
+        Prepare().Wait();
     }
 
     public void Dispose()
     {
         Cleanup().Wait();
-        return;
+    }
+
+    private async Task Prepare()
+    {
+        await TestHelpers.CreateUser(DifferentAdminUsername, "differentAdminPassword!234", "differentAdminEmail@hotmail.com", true);
+        await TestHelpers.CreateUser(DifferentUserUsername, "differentUserPassword!234", "differentUserEmail@hotmail.com", false);
     }
 
     private async Task Cleanup()

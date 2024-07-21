@@ -4,7 +4,6 @@ using Flocus.Identity.Interfaces;
 using Flocus.Models.ReturnModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Authentication;
 
 namespace Flocus.Controllers;
 
@@ -34,7 +33,7 @@ public class UserController : ControllerBase
 
         if (claims.Role != "Admin" && username != null && username != claims.Username)
         {
-            throw new UnauthorizedAccessException("Must be admin to access other users");
+            throw new UnauthorizedAccessException("Must be admin to access other users.");
         }
 
         if (claims.Role == "Admin" && username != null && claims.Username != username)
