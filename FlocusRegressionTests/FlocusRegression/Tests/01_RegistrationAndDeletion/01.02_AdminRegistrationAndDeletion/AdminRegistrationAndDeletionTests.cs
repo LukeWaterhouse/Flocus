@@ -6,7 +6,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Net.Http.Headers;
 using Xunit;
 using Xunit.Extensions.Ordering;
 
@@ -220,7 +219,10 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Assert
         var token = TestHelpers.GetHttpResponseBodyAsString(response);
+
+        #region Set Access Token
         _fixture.AccessToken = token;
+        #endregion
 
         var jwtHandler = new JwtSecurityTokenHandler();
         var jwt = jwtHandler.ReadJwtToken(token);
@@ -285,8 +287,10 @@ public sealed class AdminRegistrationAndDeletionTests
     #endregion
 
     #region Deletion
+
+    #region Deletion Unhappy Paths
     [Fact, Order(10)]
-    public async Task DeleteAdmin_Unauthenticated_Returns401()
+    public async Task DeleteSelfAdmin_Unauthenticated_Returns401()
     {
         //Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
@@ -314,7 +318,7 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(11)]
-    public async Task DeleteAdmin_WrongPassword_Returns401()
+    public async Task DeleteSelfAdmin_WrongPassword_Returns401()
     {
         //Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
@@ -350,7 +354,7 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(12)]
-    public async Task DeleteAdmin_UsernameMismatchNoKey_Returns403()
+    public async Task DeleteOtherAdmin_UsernameJwtMismatchNoKey_Returns403()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -384,7 +388,7 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(13)]
-    public async Task DeleteAdmin_UsernameMismatchWrongKey_Returns403()
+    public async Task DeleteOtherAdmin_UsernameJwtMismatchWrongKey_Returns403()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -416,9 +420,11 @@ public sealed class AdminRegistrationAndDeletionTests
             errors.Should().BeEquivalentTo(expectedErrors);
         }
     }
+    #endregion
 
+    #region Deletion Happy Paths
     [Fact, Order(14)]
-    public async Task DeleteAdmin_UsernameMismatchCorrectKey_Returns200()
+    public async Task DeleteOtherAdmin_UsernameMismatchCorrectKey_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -444,7 +450,7 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(15)]
-    public async Task DeleteUserAsAdmin_ValidUser_Returns200()
+    public async Task DeleteUserAsAdmin_ValidUserNoAdminKey_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -493,47 +499,101 @@ public sealed class AdminRegistrationAndDeletionTests
             TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
         }
     }
+    #endregion
 
+    #region Ensure Accounts Deleted
     [Fact, Order(17)]
-    public async Task GetAdmin_DeletedAdmin_Returns404()
+    public async Task DeleteUserAsAdmin_UserNoLongerExists_Returns404()
     {
+        //Arrange
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.UsernameRequestKey, _fixture.DifferentUserUsername }
+            });
+
         //Act
-        var (user, statusCode) = await TestHelpers.GetUser(_fixture.Username);
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+            {
+                Content = requestBody
+            });
 
         //Assert
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
+
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(404, $"No user could be found with username: {_fixture.DifferentUserUsername}")
+            });
+
         using (new AssertionScope())
         {
-            statusCode.Should().Be(HttpStatusCode.NotFound);
-            user.Should().BeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            errors.Should().BeEquivalentTo(expectedErrors);
         }
     }
 
     [Fact, Order(18)]
-    public async Task GetAdmin_DeletedByDifferentAdmin_Returns404()
+    public async Task GetAdmin_DeletedAdmin_Returns404()
     {
         //Act
-        var (user, statusCode) = await TestHelpers.GetUser(_fixture.DifferentAdminUsername);
+        var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.Username);
 
         //Assert
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(404, $"No user could be found with username: {_fixture.Username}")
+            });
+
         using (new AssertionScope())
         {
             statusCode.Should().Be(HttpStatusCode.NotFound);
-            user.Should().BeNull();
+            errors.Should().BeEquivalentTo(expectedErrors);
         }
     }
 
     [Fact, Order(19)]
-    public async Task GetUser_DeletedByAdmin_Returns404()
+    public async Task GetDifferentAdmin_DeletedByDifferentAdmin_Returns404()
     {
         //Act
-        var (user, statusCode) = await TestHelpers.GetUser(_fixture.DifferentUserUsername);
+        var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.DifferentAdminUsername);
 
         //Assert
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(404, $"No user could be found with username: {_fixture.DifferentAdminUsername}")
+            });
+
         using (new AssertionScope())
         {
             statusCode.Should().Be(HttpStatusCode.NotFound);
-            user.Should().BeNull();
+            errors.Should().BeEquivalentTo(expectedErrors);
         }
     }
+
+    [Fact, Order(20)]
+    public async Task GetUser_DeletedByAdmin_Returns404()
+    {
+        //Act
+        var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.DifferentUserUsername);
+
+        //Assert
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(404, $"No user could be found with username: {_fixture.DifferentUserUsername}")
+            });
+
+        using (new AssertionScope())
+        {
+            statusCode.Should().Be(HttpStatusCode.NotFound);
+            errors.Should().BeEquivalentTo(expectedErrors);
+        }
+    }
+    #endregion
     #endregion
 }

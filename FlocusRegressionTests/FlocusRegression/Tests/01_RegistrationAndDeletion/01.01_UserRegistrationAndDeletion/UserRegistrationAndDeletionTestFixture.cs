@@ -9,12 +9,12 @@ public sealed class UserRegistrationAndDeletionTestFixture : IDisposable
     public string AccessToken { get; set; }
 
     public readonly string Username = "lukosparta123";
-    public readonly string Password = "rollo123";
+    public readonly string Password = "Rollo!234";
     public readonly string EmailAddress = "lukewwaterhouse@hotmail.co.uk";
     public readonly bool IsAdmin = false;
     public readonly string Key = "n/a";
 
-    public readonly string DifferentUserUsername = "differentUserName";
+    public readonly string DifferentUserUsername = "differentUsername";
 
     public UserRegistrationAndDeletionTestFixture()
     {
@@ -22,7 +22,6 @@ public sealed class UserRegistrationAndDeletionTestFixture : IDisposable
         {
             BaseAddress = new Uri(Constants.BaseUrl),
         };
-
         Cleanup().Wait();
     }
 

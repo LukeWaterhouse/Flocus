@@ -11,13 +11,12 @@ public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
     public string AccessToken { get; set; }
 
     public readonly string Username = "MasterChief";
-    public readonly string Password = "Kratos1234";
+    public readonly string Password = "Kratos!234";
     public readonly string EmailAddress = "MasterChief@hotmail.co.uk";
     public readonly bool IsAdmin = true;
 
     public readonly string DifferentAdminUsername = "differentAdminName";
     public readonly string DifferentUserUsername = "differentUserName";
-
 
     public AdminRegistrationAndDeletionTestFixture()
     {
@@ -28,8 +27,8 @@ public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
 
         Cleanup().Wait();
 
-        TestHelpers.CreateUser(DifferentAdminUsername, "differentAdminPassword", "differentAdminEmail@hotmail.com", true).Wait();
-        TestHelpers.CreateUser(DifferentUserUsername, "differentUserPassword", "differentUserEmail@hotmail.com", false).Wait();
+        TestHelpers.CreateUser(DifferentAdminUsername, "differentAdminPassword!234", "differentAdminEmail@hotmail.com", true).Wait();
+        TestHelpers.CreateUser(DifferentUserUsername, "differentUserPassword!234", "differentUserEmail@hotmail.com", false).Wait();
     }
 
     public void Dispose()

@@ -1,4 +1,5 @@
-﻿using FlocusRegressionTests.Common.Models.UserResponse;
+﻿using FlocusRegressionTests.Common.Models.ErrorResponse;
+using FlocusRegressionTests.Common.Models.UserResponse;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,7 +10,7 @@ namespace FlocusRegressionTests.Common.HelperMethods;
 public static class TestHelpers
 {
     private readonly static string testHelperUserUsername = "testHelperUser";
-    private readonly static string testHelperUserPassword = "testHelperUserPassword";
+    private readonly static string testHelperUserPassword = "testHelperUserPassword!234";
     private readonly static string testHelperUserEmail = "testHelperUserEmail@hotmail.com";
 
     private readonly static HttpClient HttpClient = new HttpClient
@@ -83,7 +84,7 @@ public static class TestHelpers
         }
     }
 
-    public static async Task<(UserDto? User, HttpStatusCode statusCode)> GetUser(string username)
+    public static async Task<(HttpStatusCode statusCode, UserDto? User, ErrorsDto? Errors)> TryGetUser(string username)
     {
         await EnsureTestHelperUserAndGetToken();
 
@@ -91,12 +92,13 @@ public static class TestHelpers
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            return (null, response.StatusCode);
+            var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+            return (response.StatusCode, null, errors);
         }
 
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            return (DeserializeHttpResponseBody<UserDto>(response), response.StatusCode);
+            return (response.StatusCode, DeserializeHttpResponseBody<UserDto>(response), null);
         }
         throw new Exception("Get user status code was not 200 or 404");
     }
@@ -110,7 +112,8 @@ public static class TestHelpers
     public static T DeserializeHttpResponseBody<T>(HttpResponseMessage httpResponseMessage)
     {
         var body = httpResponseMessage.Content.ReadAsStringAsync().Result;
-        return JsonSerializer.Deserialize<T>(body, Constants.JsonSerializerOptions) ?? throw new Exception($"Failed to deserialize string into {typeof(T).Name}: {body}");
+        return JsonSerializer.Deserialize<T>(body, Constants.JsonSerializerOptions)
+            ?? throw new Exception($"Failed to deserialize string into {typeof(T).Name}: {body}");
     }
 
     public static string GetHttpResponseBodyAsString(HttpResponseMessage httpResponseMessage)
@@ -134,7 +137,7 @@ public static class TestHelpers
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
-    #region Helper Methods
+    #region Private Methods
     private static async Task EnsureTestHelperUserAndGetToken()
     {
         //Create admin user
@@ -149,7 +152,8 @@ public static class TestHelpers
         var response = await HttpClient.PostAsync(Constants.RegisterSegment, GetStringContentFromDict(adminUserRegisterRequestBody));
         if (response.StatusCode != HttpStatusCode.OK && response.StatusCode != HttpStatusCode.Conflict)
         {
-            throw new Exception("failed to create admin user for test preparation");
+            var errors = DeserializeHttpResponseBody<ErrorsDto>(response);
+            throw new Exception($"failed to create admin user for test preparation: {errors}");
         }
 
         var adminUserGetTokenRequestBody = new FormUrlEncodedContent(
@@ -160,6 +164,10 @@ public static class TestHelpers
             });
 
         var getAdminTokenResponse = await HttpClient.PostAsync(Constants.GetTokenSegment, adminUserGetTokenRequestBody);
+        if (getAdminTokenResponse.StatusCode != HttpStatusCode.OK)
+        {
+            throw new Exception("Issue when retrieving access token for test helper admin account");
+        }
         var adminToken = await getAdminTokenResponse.Content.ReadAsStringAsync();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminToken);
     }

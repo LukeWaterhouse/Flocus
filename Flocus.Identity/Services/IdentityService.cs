@@ -72,6 +72,7 @@ public class IdentityService : IIdentityService
 
     public async Task DeleteUserAsAdmin(string username)
     {
+        //TODO: need to check admin still exists or a rampant deleted admin with a token still valid can continue to do damage.
         var user = await _repositoryService.GetUserAsync(username);
         EnsureUserNotAdmin(user);
         await DeleteUser(user);
