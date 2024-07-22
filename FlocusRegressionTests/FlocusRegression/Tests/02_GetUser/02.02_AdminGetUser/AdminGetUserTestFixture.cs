@@ -1,26 +1,26 @@
 ﻿using FlocusRegressionTests.Common;
 using FlocusRegressionTests.Common.HelperMethods;
 
-namespace FlocusRegressionTests.Tests._02_GetUser._02._01_UserGetUser;
+namespace FlocusRegressionTests.Tests._02_GetUser._02._02_AdminGetUser;
 
-public sealed class UserGetUserTestFixture : IDisposable
+public sealed class AdminGetUserTestFixture : IDisposable
 {
     public HttpClient HttpClient { get; set; }
     public string AccessToken { get; set; } = "";
     public string DifferentAccessToken { get; set; } = "";
 
-    public readonly string Username = "userGetUser";
+    public readonly string Username = "adminGetUser";
     public readonly string Password = "Rollo!234";
     public readonly string EmailAddress = "lukewwaterhouse@hotmail.co.uk";
-    public readonly bool IsAdmin = false;
+    public readonly bool IsAdmin = true;
     public readonly string Key = "n/a";
 
-    public readonly string DifferentUsername = "differentUser";
-    private readonly string DifferentPassword = "differentPassword!234";
-    private readonly string DifferentEmailAddress = "differentEmail@hotmail.com";
-    private readonly bool DifferentIsAdmin = false;
+    public readonly string DifferentUsername = "randomUser";
+    public readonly string DifferentPassword = "differentPassword!234";
+    public readonly string DifferentEmailAddress = "differentEmail@hotmail.com";
+    public readonly bool DifferentIsAdmin = false;
 
-    public UserGetUserTestFixture()
+    public AdminGetUserTestFixture()
     {
         HttpClient = new HttpClient
         {

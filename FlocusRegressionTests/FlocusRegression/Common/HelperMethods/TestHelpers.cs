@@ -19,9 +19,9 @@ public static class TestHelpers
         BaseAddress = new Uri(Constants.BaseUrl)
     };
 
-    public static async Task EnsureNoExsitingAccount(string username, bool isAdmin)
+    public static async Task EnsureNoExistingAccount(string username, bool isAdmin)
     {
-        await EnsureTestHelperUserAndGetToken();
+        await EnsureTestHelperUserAndSetToken();
         HttpStatusCode? deleteStatusCode = null;
 
         if (!isAdmin)
@@ -87,7 +87,7 @@ public static class TestHelpers
 
     public static async Task<(HttpStatusCode statusCode, UserDto? User, ErrorsDto? Errors)> TryGetUser(string username)
     {
-        await EnsureTestHelperUserAndGetToken();
+        await EnsureTestHelperUserAndSetToken();
 
         var response = await HttpClient.GetAsync(Constants.GetUserSegment + $"?username={username}");
 
@@ -155,7 +155,7 @@ public static class TestHelpers
     }
 
     #region Private Methods
-    private static async Task EnsureTestHelperUserAndGetToken()
+    private static async Task EnsureTestHelperUserAndSetToken()
     {
         //Create admin user
         var adminUserRegisterRequestBody = new Dictionary<string, object>
