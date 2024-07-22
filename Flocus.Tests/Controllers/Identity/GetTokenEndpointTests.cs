@@ -1,6 +1,8 @@
-﻿using Flocus.Controllers;
+﻿using AutoMapper;
+using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
+using Flocus.Mapping;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +16,23 @@ public class GetTokenEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IIdentityService _identityServiceMock;
+    private readonly IClaimsService _claimsServiceMock;
+    private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
 
     public GetTokenEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IIdentityService>();
-        _identityController = new IdentityController(_loggerMock, _identityServiceMock);
+        _claimsServiceMock = Substitute.For<IClaimsService>();
+
+        var mappingConfig = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(typeof(RegistrationModelMappingProfile));
+        });
+        _mapper = mappingConfig.CreateMapper();
+
+        _identityController = new IdentityController(_loggerMock, _mapper, _claimsServiceMock, _identityServiceMock);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 ﻿using Flocus.Domain.Interfacesl;
 using Flocus.Domain.Models;
+using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services;
 using Flocus.Repository.Exceptions;
@@ -20,6 +21,7 @@ namespace Flocus.Identity.Tests.Services.Identity;
 public class GetAuthTokenAsyncTests
 {
     private readonly IRepositoryService _repositoryServiceMock;
+    private readonly IRegisterValidationService _registerValidationService;
     private readonly IdentitySettings _identitySettings;
     private readonly IdentityService _identityService;
     private readonly string _signingKey;
@@ -33,8 +35,9 @@ public class GetAuthTokenAsyncTests
             "audience", 
             "adminKey");
         _repositoryServiceMock = Substitute.For<IRepositoryService>();
+        _registerValidationService = Substitute.For<IRegisterValidationService>();
 
-        _identityService = new IdentityService(_repositoryServiceMock, _identitySettings);
+        _identityService = new IdentityService(_repositoryServiceMock, _registerValidationService, _identitySettings);
     }
 
     [Fact]

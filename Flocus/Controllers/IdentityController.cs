@@ -1,7 +1,6 @@
 using AutoMapper;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
-using Flocus.Models.Errors;
 using Flocus.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,6 @@ public class IdentityController : ControllerBase
     private readonly IClaimsService _claimsService;
     private readonly IMapper _mapper;
 
-
     public IdentityController(ILogger<IdentityController> logger, IMapper mapper, IClaimsService claimsService, IIdentityService identityService)
     {
         _logger = logger;
@@ -29,25 +27,12 @@ public class IdentityController : ControllerBase
     [HttpPost("register", Name = "Register")]
     public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequestDto request, CancellationToken ct)
     {
-        if (!ModelState.IsValid)
-        {
-            var errors = new List<ErrorDto>();
-            foreach (var error in ModelState)
-            {
-                if (error.Value != null && error.Value.Errors.Any())
-                {
-                    errors.Add(new ErrorDto(StatusCodes.Status400BadRequest, error.Value.Errors.First().ErrorMessage));
-                }
-            }
-            return BadRequest(new ErrorsDto(errors));
-        }
-
         var registrationModel = _mapper.Map<RegistrationModel>(request);
         await _identityService.RegisterAsync(registrationModel);
         return Ok();
     }
 
-    [HttpPost("getToken", Name = "getToken")]
+    [HttpPost("getToken", Name = "GetToken")]
     public async Task<IActionResult> GetTokenAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
     {
         var token = await _identityService.GetAuthTokenAsync(username, password);
@@ -55,7 +40,7 @@ public class IdentityController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("deleteUserAsUser", Name = "deleteUserAsUser")]
+    [HttpDelete("deleteUserAsUser", Name = "DeleteUserAsUser")]
     public async Task<IActionResult> DeleteUserAsUserAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
@@ -70,7 +55,7 @@ public class IdentityController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("deleteUserAsAdmin", Name = "deleteUserAsAdmin")]
+    [HttpDelete("deleteUserAsAdmin", Name = "DeleteUserAsAdmin")]
     public async Task<IActionResult> DeleteUserAsAdminAsync([FromForm] string username, CancellationToken ct)
     {
         await _identityService.DeleteUserAsAdmin(username);
@@ -78,7 +63,7 @@ public class IdentityController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("deleteAdmin", Name = "deleteAdmin")]
+    [HttpDelete("deleteAdmin", Name = "DeleteAdmin")]
     public async Task<IActionResult> DeleteAdminAsync([FromForm] string username, [FromForm] string? password, [FromForm] string? key, CancellationToken ct)
     {
         var claims = _claimsService.GetClaimsFromUser(User);

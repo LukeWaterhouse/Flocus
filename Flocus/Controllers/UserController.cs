@@ -25,7 +25,7 @@ public class UserController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("getUser", Name = "getUser")]
+    [HttpGet("getUser", Name = "GetUser")]
     public async Task<IActionResult> GetUserAsync(string? username)
     {
         var claims = _claimsService.GetClaimsFromUser(User);

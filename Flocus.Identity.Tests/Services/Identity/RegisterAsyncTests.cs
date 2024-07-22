@@ -1,4 +1,5 @@
 ﻿using Flocus.Domain.Interfacesl;
+using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services;
 using FluentAssertions;
@@ -14,14 +15,16 @@ namespace Flocus.Identity.Tests.Services.Identity;
 public class RegisterAsyncTests
 {
     private readonly IRepositoryService _repositoryServiceMock;
+    private readonly IRegisterValidationService _registerValidationServiceMock;
     private readonly IdentitySettings _identitySettings;
     private readonly IdentityService _identityService;
 
     public RegisterAsyncTests()
     {
         _repositoryServiceMock = Substitute.For<IRepositoryService>();
+        _registerValidationServiceMock = Substitute.For<IRegisterValidationService>();
         _identitySettings = new IdentitySettings("signingKey", "issuer", "audience", "adminKey");
-        _identityService = new IdentityService(_repositoryServiceMock, _identitySettings);
+        _identityService = new IdentityService(_repositoryServiceMock, _registerValidationServiceMock, _identitySettings);
     }
 
     [Fact]
@@ -34,8 +37,15 @@ public class RegisterAsyncTests
         var email = "luke@hotmail.com";
         var key = "key";
 
+        var registrationModel = new RegistrationModel(
+            username,
+            password,
+            email,
+            isAdmin,
+            key);
+
         //Act
-        await _identityService.RegisterAsync(username, password, email, isAdmin, key);
+        await _identityService.RegisterAsync(registrationModel);
 
         //Assert
         await _repositoryServiceMock.Received().CreateDbUserAsync(
@@ -55,8 +65,15 @@ public class RegisterAsyncTests
         var email = "luke@hotmail.com";
         var key = "adminKey";
 
+        var registrationModel = new RegistrationModel(
+            username,
+            password,
+            email,
+            isAdmin,
+            key);
+
         //Act
-        await _identityService.RegisterAsync(username, password, email, isAdmin, key);
+        await _identityService.RegisterAsync(registrationModel);
 
         //Assert
         await _repositoryServiceMock.Received().CreateDbUserAsync(
@@ -76,10 +93,17 @@ public class RegisterAsyncTests
         var email = "luke@hotmail.com";
         var key = "incorrectValue";
 
+        var registrationModel = new RegistrationModel(
+            username,
+            password,
+            email,
+            isAdmin,
+            key);
+
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            await _identityService.RegisterAsync(username, password, email, isAdmin, key);
+            await _identityService.RegisterAsync(registrationModel);
         });
 
         //Assert
