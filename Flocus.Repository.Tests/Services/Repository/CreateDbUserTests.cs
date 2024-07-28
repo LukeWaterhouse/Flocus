@@ -14,8 +14,8 @@ namespace Flocus.Repository.Tests.Services.Repository;
 public class CreateDbUserTests
 {
     private readonly IMapper _mapper;
-    private readonly ISqlQueryService _sqlQueryService;
-    private readonly RepositoryService _repositoryService;
+    private readonly IUserSqlService _sqlQueryService;
+    private readonly UserRepositoryService _repositoryService;
 
     public CreateDbUserTests()
     {
@@ -26,8 +26,8 @@ public class CreateDbUserTests
         });
 
         _mapper = mappingConfig.CreateMapper();
-        _sqlQueryService = Substitute.For<ISqlQueryService>();
-        _repositoryService = new RepositoryService(_mapper, _sqlQueryService);
+        _sqlQueryService = Substitute.For<IUserSqlService>();
+        _repositoryService = new UserRepositoryService(_mapper, _sqlQueryService);
     }
 
     [Fact]

@@ -1,10 +1,17 @@
 ﻿using Flocus.Identity.Interfaces;
+using Flocus.Identity.Interfaces.AdminKeyInterfaces;
+using Flocus.Identity.Interfaces.AuthTokenInterfaces;
+using Flocus.Identity.Interfaces.RegisterInterfaces;
 using Flocus.Identity.Interfaces.RegisterValidationInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services;
+using Flocus.Identity.Services.AdminKeyServices;
+using Flocus.Identity.Services.AuthTokenServices;
 using Flocus.Identity.Services.RegisterValidation;
-using Flocus.Identity.Services.RegisterValidation.Factories;
 using Flocus.Identity.Services.RegisterValidation.Handlers;
+using Flocus.Identity.Services.RegistrationServices;
+using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Factories;
+using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,10 +56,19 @@ public static class IdentityServiceExtensions
         });
         services.AddAuthorization();
 
-        services.AddScoped<IIdentityService, IdentityService>();
-        services.AddScoped<IRegisterValidationService, RegisterValidationService>();
-        services.AddScoped<IRegistrationValidationChainFactory, RegistrationValidationChainFactory>();
+        services.AddScoped<IRemoveAccountService, RemoveAccountService>();
         services.AddScoped<IClaimsService, ClaimsService>();
+        services.AddScoped<IAdminKeyService, AdminKeyService>();
+        services.AddScoped<IRegistrationService, RegistrationService>();
+        services.AddScoped<IAuthTokenService, AuthTokenService>();
+
+        //Validation Handling
+        services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();
+        services.AddScoped<IRegistrationValidationChainFactory, RegistrationValidationChainFactory>();
+        services.AddScoped<EmailValidationHandler>();
+        services.AddScoped<IsAdminValidationHandler>();
+        services.AddScoped<PasswordValidationHandler>();
+        services.AddScoped<UsernameValidationHandler>();
 
         return services;
     }

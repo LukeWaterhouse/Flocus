@@ -37,8 +37,7 @@ public sealed class ExceptionMiddleware : IMiddleware
         }
         catch (InputValidationException ex)
         {
-            var errorDtos = _mapper.Map<List<ErrorDto>>(ex.Errors);
-            await WriteMultiErrorResponseAsync(context, errorDtos);
+            await WriteMultiErrorResponseAsync(context, MapErrorsToErrorDtos(ex.Errors));
         }
         catch (AuthenticationException ex)
         {
@@ -54,7 +53,8 @@ public sealed class ExceptionMiddleware : IMiddleware
         }
     }
 
-    private static async Task WriteSingleErrorResponseAsync(HttpContext context, int status, string message)
+    #region Private Methods
+    private async Task WriteSingleErrorResponseAsync(HttpContext context, int status, string message)
     {
         context.Response.StatusCode = status;
         await context.Response.WriteAsJsonAsync(
@@ -65,14 +65,14 @@ public sealed class ExceptionMiddleware : IMiddleware
                 }));
     }
 
-    private static async Task WriteMultiErrorResponseAsync(HttpContext context, List<ErrorDto> errors)
+    private async Task WriteMultiErrorResponseAsync(HttpContext context, List<ErrorDto> errors)
     {
         context.Response.StatusCode = GetAppropriateStatusCode(errors);
         await context.Response.WriteAsJsonAsync(
             new ErrorsDto(errors));
     }
 
-    private static int GetAppropriateStatusCode(List<ErrorDto> errors)
+    private int GetAppropriateStatusCode(List<ErrorDto> errors)
     {
         var firstStatus = errors[0].Status;
         if (errors.All(x => x.Status == firstStatus))
@@ -82,4 +82,12 @@ public sealed class ExceptionMiddleware : IMiddleware
 
         return StatusCodes.Status207MultiStatus;
     }
+
+    private List<ErrorDto> MapErrorsToErrorDtos(List<Error> errors)
+    {
+        var errorDtos = _mapper.Map<List<ErrorDto>>(errors);
+        return errorDtos;
+
+    }
+    #endregion
 }

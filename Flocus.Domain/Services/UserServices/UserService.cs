@@ -1,14 +1,13 @@
 ﻿using Flocus.Domain.Interfaces;
-using Flocus.Domain.Interfacesl;
 using Flocus.Domain.Models;
 
-namespace Flocus.Domain.Services;
+namespace Flocus.Domain.Services.UserServices;
 
 public class UserService : IUserService
 {
-    private readonly IRepositoryService _repositoryService;
+    private readonly IUserRepositoryService _repositoryService;
 
-    public UserService(IRepositoryService repositoryService)
+    public UserService(IUserRepositoryService repositoryService)
     {
         _repositoryService = repositoryService;
     }

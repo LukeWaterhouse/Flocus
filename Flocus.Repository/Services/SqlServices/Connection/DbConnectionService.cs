@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Flocus.Repository.Services;
+namespace Flocus.Repository.Services.Sql.Connection;
 
 [ExcludeFromCodeCoverage]
 public class DbConnectionService : IDbConnectionService

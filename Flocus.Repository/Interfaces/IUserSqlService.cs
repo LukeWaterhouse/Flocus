@@ -2,7 +2,7 @@
 
 namespace Flocus.Repository.Interfaces;
 
-public interface ISqlQueryService
+public interface IUserSqlService
 {
     Task<bool> CreateUserAsync(DbUser dbUser);
 

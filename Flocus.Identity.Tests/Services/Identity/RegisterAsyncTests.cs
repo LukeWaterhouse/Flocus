@@ -1,4 +1,4 @@
-﻿using Flocus.Domain.Interfacesl;
+﻿using Flocus.Domain.Interfaces;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services;
@@ -14,15 +14,15 @@ namespace Flocus.Identity.Tests.Services.Identity;
 
 public class RegisterAsyncTests
 {
-    private readonly IRepositoryService _repositoryServiceMock;
-    private readonly IRegisterValidationService _registerValidationServiceMock;
+    private readonly IUserRepositoryService _repositoryServiceMock;
+    private readonly IRegistrationValidationService _registerValidationServiceMock;
     private readonly IdentitySettings _identitySettings;
-    private readonly IdentityService _identityService;
+    private readonly RemoveAccountService _identityService;
 
     public RegisterAsyncTests()
     {
-        _repositoryServiceMock = Substitute.For<IRepositoryService>();
-        _registerValidationServiceMock = Substitute.For<IRegisterValidationService>();
+        _repositoryServiceMock = Substitute.For<IUserRepositoryService>();
+        _registerValidationServiceMock = Substitute.For<IRegistrationValidationService>();
         _identitySettings = new IdentitySettings("signingKey", "issuer", "audience", "adminKey");
         _identityService = new IdentityService(_repositoryServiceMock, _registerValidationServiceMock, _identitySettings);
     }

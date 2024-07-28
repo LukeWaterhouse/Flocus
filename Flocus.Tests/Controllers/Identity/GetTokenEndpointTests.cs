@@ -14,7 +14,7 @@ namespace Flocus.Tests.Controllers.Identity;
 public class GetTokenEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
-    private readonly IIdentityService _identityServiceMock;
+    private readonly IRemoveAccountService _identityServiceMock;
     private readonly IClaimsService _claimsServiceMock;
     private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
@@ -22,7 +22,7 @@ public class GetTokenEndpointTests
     public GetTokenEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
-        _identityServiceMock = Substitute.For<IIdentityService>();
+        _identityServiceMock = Substitute.For<IRemoveAccountService>();
         _claimsServiceMock = Substitute.For<IClaimsService>();
 
         var mappingConfig = new MapperConfiguration(cfg =>

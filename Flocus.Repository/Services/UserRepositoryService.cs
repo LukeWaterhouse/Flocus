@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Flocus.Domain.Interfacesl;
+using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
 using Flocus.Repository.Exceptions;
 using Flocus.Repository.Interfaces;
@@ -7,15 +7,15 @@ using Flocus.Repository.Models;
 
 namespace Flocus.Repository.Services;
 
-public class RepositoryService : IRepositoryService
+public class UserRepositoryService : IUserRepositoryService
 {
 
     private readonly IMapper _mapper;
-    private readonly ISqlQueryService _sqlQueryService;
+    private readonly IUserSqlService _sqlQueryService;
 
-    public RepositoryService(
+    public UserRepositoryService(
         IMapper mapper,
-        ISqlQueryService sqlQueryFactory)
+        IUserSqlService sqlQueryFactory)
     {
         _mapper = mapper;
         _sqlQueryService = sqlQueryFactory;

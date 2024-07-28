@@ -3,20 +3,16 @@ using Flocus.Identity.Models;
 
 namespace Flocus.Identity.Services.RegisterValidation.Handlers;
 
-public class PasswordValidationHandler : BaseRegisterValidationHandler
+public sealed class PasswordValidationHandler : BaseRegistrationValidationHandler
 {
     private readonly int PasswordLengthLimit = 30;
     private readonly int PasswordLengthMinimum = 8;
     private readonly string PasswordRequiredSpecialCharOptions = @"%!@#$%^&*()?/>.<,:;'\|}]{[_~`+=-" + "\"";
 
-    public PasswordValidationHandler(RegistrationModel registrationModel) : base(registrationModel)
-    {
-    }
-
-    public override List<Error> Validate(List<Error> errors)
+    public override (List<Error>, RegistrationModel) Validate(List<Error> errors, RegistrationModel registrationModel)
     {
         var passwordReference = "Password";
-        var password = RegistrationModel.Password;
+        var password = registrationModel.Password;
 
         if (password.Length > PasswordLengthLimit)
         {
@@ -53,7 +49,7 @@ public class PasswordValidationHandler : BaseRegisterValidationHandler
                 errors);
         }
 
-        return base.Validate(errors);
+        return base.Validate(errors, registrationModel);
     }
 
     private bool ContainsSpecialChar(string password)

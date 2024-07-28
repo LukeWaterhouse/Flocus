@@ -4,16 +4,16 @@ using Flocus.Repository.Models;
 using Npgsql;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Flocus.Repository.Services;
+namespace Flocus.Repository.Services.Sql;
 
 // Mocking is very awkward here just do sanity testing and integration tests to cover this.
 // The methods here should have as little logic as possible.
 [ExcludeFromCodeCoverage]
-public class SqlQueryService : ISqlQueryService
+public class UserSqlService : IUserSqlService
 {
     private readonly IDbConnectionService _dbConnectionService;
 
-    public SqlQueryService(IDbConnectionService dbConnectionService)
+    public UserSqlService(IDbConnectionService dbConnectionService)
     {
         _dbConnectionService = dbConnectionService;
     }

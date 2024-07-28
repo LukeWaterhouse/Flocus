@@ -16,8 +16,8 @@ public class GetUserTests
 {
     private readonly IMapper _mapper;
     private readonly IDbConnectionService _dbConnectionService;
-    private readonly ISqlQueryService _sqlQueryService;
-    private readonly RepositoryService _repositoryService;
+    private readonly IUserSqlService _sqlQueryService;
+    private readonly UserRepositoryService _repositoryService;
 
     public GetUserTests()
     {
@@ -29,8 +29,8 @@ public class GetUserTests
 
         _mapper = mappingConfig.CreateMapper();
         _dbConnectionService = Substitute.For<IDbConnectionService>();
-        _sqlQueryService = Substitute.For<ISqlQueryService>();
-        _repositoryService = new RepositoryService(_mapper, _sqlQueryService);
+        _sqlQueryService = Substitute.For<IUserSqlService>();
+        _repositoryService = new UserRepositoryService(_mapper, _sqlQueryService);
     }
 
     [Fact]

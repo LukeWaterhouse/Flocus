@@ -1,5 +1,5 @@
 ﻿using Flocus.Domain.Interfaces;
-using Flocus.Domain.Services;
+using Flocus.Domain.Services.UserServices;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;

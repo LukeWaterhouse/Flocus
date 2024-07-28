@@ -2,10 +2,8 @@
 
 namespace Flocus.Identity.Interfaces;
 
-public interface IIdentityService
+public interface IRemoveAccountService
 {
-    Task RegisterAsync(RegistrationModel registrationModel);
-    Task<string> GetAuthTokenAsync(string username, string password);
     Task DeleteUserAsUser(string username, string password);
     Task DeleteUserAsAdmin(string username);
     Task DeleteAdminAsAdmin(string username, string password);

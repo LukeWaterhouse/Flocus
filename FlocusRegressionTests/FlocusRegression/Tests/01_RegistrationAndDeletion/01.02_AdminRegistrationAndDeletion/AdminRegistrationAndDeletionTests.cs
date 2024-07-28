@@ -193,7 +193,7 @@ public sealed class AdminRegistrationAndDeletionTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(401, "Invalid username and password combination")
+                new ErrorDto(401, "Incorrect username and password combination")
             });
 
         using (new AssertionScope())

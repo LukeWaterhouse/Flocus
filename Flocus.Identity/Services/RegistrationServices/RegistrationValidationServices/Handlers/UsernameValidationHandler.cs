@@ -1,23 +1,20 @@
 ﻿using Flocus.Domain.Models.Errors;
 using Flocus.Identity.Models;
+using Flocus.Identity.Services.RegisterValidation.Handlers;
 
-namespace Flocus.Identity.Services.RegisterValidation.Handlers;
+namespace Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers;
 
-public class UsernameValidationHandler : BaseRegisterValidationHandler
+public sealed class UsernameValidationHandler : BaseRegistrationValidationHandler
 {
     private readonly int UsernameLengthLimit = 20;
     private readonly int UsernameLengthMinimum = 4;
 
     private ProfanityFilter.ProfanityFilter ProfanityFilter = new ProfanityFilter.ProfanityFilter();
 
-    public UsernameValidationHandler(RegistrationModel registrationModel) : base(registrationModel)
-    {
-    }
-
-    public override List<Error> Validate(List<Error> errors)
+    public override (List<Error>, RegistrationModel) Validate(List<Error> errors, RegistrationModel registrationModel)
     {
         var usernameReference = "Username";
-        var username = RegistrationModel.Username;
+        var username = registrationModel.Username;
 
         if (username.Length > UsernameLengthLimit)
         {
@@ -47,6 +44,6 @@ public class UsernameValidationHandler : BaseRegisterValidationHandler
                 errors);
         }
 
-        return base.Validate(errors);
+        return base.Validate(errors, registrationModel);
     }
 }

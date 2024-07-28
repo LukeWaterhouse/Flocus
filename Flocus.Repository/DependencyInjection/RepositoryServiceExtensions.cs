@@ -1,7 +1,9 @@
-﻿using Flocus.Domain.Interfacesl;
+﻿using Flocus.Domain.Interfaces;
 using Flocus.Repository.Interfaces;
 using Flocus.Repository.Mapping;
 using Flocus.Repository.Services;
+using Flocus.Repository.Services.Sql;
+using Flocus.Repository.Services.Sql.Connection;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -13,9 +15,9 @@ public static class RepositoryServiceExtensions
 {
     public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
     {
-        services.AddScoped<IRepositoryService, RepositoryService>();
+        services.AddScoped<IUserRepositoryService, UserRepositoryService>();
         services.AddScoped<IDbConnectionService, DbConnectionService>();
-        services.AddScoped<ISqlQueryService, SqlQueryService>();
+        services.AddScoped<IUserSqlService, UserSqlService>();
         services.AddAutoMapper(Assembly.GetAssembly(typeof(UserMappingProfile)));
 
         return services;
