@@ -51,7 +51,7 @@ public class RemoveAccountService : IRemoveAccountService
         await DeleteUser(user);
     }
 
-    #region HelperMethods
+    #region Private Methods
     private void EnsureUserNotAdmin(User user)
     {
         if (user.IsAdmin)

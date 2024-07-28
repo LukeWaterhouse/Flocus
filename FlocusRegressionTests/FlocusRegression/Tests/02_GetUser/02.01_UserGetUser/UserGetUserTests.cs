@@ -51,7 +51,7 @@ public sealed class UserGetUserTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(403, "Must be admin to access other users.")
+                new ErrorDto(403, "Must be 'Admin' to access other users.")
             });
 
         using (new AssertionScope())

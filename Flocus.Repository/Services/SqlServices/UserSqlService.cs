@@ -4,7 +4,7 @@ using Flocus.Repository.Models;
 using Npgsql;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Flocus.Repository.Services.Sql;
+namespace Flocus.Repository.Services.SqlServices;
 
 // Mocking is very awkward here just do sanity testing and integration tests to cover this.
 // The methods here should have as little logic as possible.

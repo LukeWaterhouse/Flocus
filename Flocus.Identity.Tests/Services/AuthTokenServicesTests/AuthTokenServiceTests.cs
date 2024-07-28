@@ -1,8 +1,8 @@
 ﻿using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
-using Flocus.Identity.Interfaces;
+using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Models;
-using Flocus.Identity.Services.RemoveAccountServices;
+using Flocus.Identity.Services.AuthTokenServices;
 using Flocus.Repository.Exceptions;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -15,28 +15,25 @@ using Xunit;
 using BC = BCrypt.Net.BCrypt;
 
 
-namespace Flocus.Identity.Tests.Services.Identity;
+namespace Flocus.Identity.Tests.Services.AuthTokenServicesTests;
 
-public class GetAuthTokenAsyncTests
+public class AuthTokenServiceTests
 {
-    private readonly IUserRepositoryService _repositoryServiceMock;
-    private readonly IRegistrationValidationService _registerValidationService;
+    private readonly IUserRepositoryService _userRepositoryServiceMock;
     private readonly IdentitySettings _identitySettings;
-    private readonly RemoveAccountService _identityService;
-    private readonly string _signingKey;
 
-    public GetAuthTokenAsyncTests()
+    private readonly IAuthTokenService _authTokenService;
+
+    public AuthTokenServiceTests()
     {
-        _signingKey = GenerateRandomId(200);
         _identitySettings = new IdentitySettings(
             "signingKey-13123190283jh19028n12983n190238n190283n109283n109283n109283n09812n309182n3109283n098n",
             "issuer",
             "audience",
             "adminKey");
-        _repositoryServiceMock = Substitute.For<IUserRepositoryService>();
-        _registerValidationService = Substitute.For<IRegistrationValidationService>();
+        _userRepositoryServiceMock = Substitute.For<IUserRepositoryService>();
 
-        _identityService = new IdentityService(_repositoryServiceMock, _registerValidationService, _identitySettings);
+        _authTokenService = new AuthTokenService(_userRepositoryServiceMock, _identitySettings);
     }
 
     [Fact]
@@ -48,7 +45,7 @@ public class GetAuthTokenAsyncTests
         var email = "luklerollo@hotmail.co.uk";
         var passwordHash = BC.HashPassword(password);
 
-        _repositoryServiceMock.GetUserAsync(username).Returns(
+        _userRepositoryServiceMock.GetUserAsync(username).Returns(
             new User(
                 "clientId",
                 email,
@@ -58,7 +55,7 @@ public class GetAuthTokenAsyncTests
                 passwordHash));
 
         //Act
-        var token = await _identityService.GetAuthTokenAsync(username, password);
+        var token = await _authTokenService.GetAuthTokenAsync(username, password);
 
         //Assert
         var jwtHandler = new JwtSecurityTokenHandler();
@@ -91,7 +88,7 @@ public class GetAuthTokenAsyncTests
         var incorrectPassword = "rollo1234";
         var passwordHash = BC.HashPassword(correctPassword);
 
-        _repositoryServiceMock.GetUserAsync(username).Returns(
+        _userRepositoryServiceMock.GetUserAsync(username).Returns(
             new User(
                 "clientId",
                 "lukerollo@hotmail.co.uk",
@@ -103,14 +100,14 @@ public class GetAuthTokenAsyncTests
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            var token = await _identityService.GetAuthTokenAsync(username, incorrectPassword);
+            var token = await _authTokenService.GetAuthTokenAsync(username, incorrectPassword);
         });
 
         //Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<AuthenticationException>();
-            exception.Message.Should().Be("Invalid username and password combination");
+            exception.Message.Should().Be("Incorrect username and password combination");
         }
     }
 
@@ -122,19 +119,19 @@ public class GetAuthTokenAsyncTests
         var password = "rollo123";
         var passwordHash = BC.HashPassword(password);
 
-        _repositoryServiceMock.GetUserAsync(username).Throws(new RecordNotFoundException("user not found"));
+        _userRepositoryServiceMock.GetUserAsync(username).Throws(new RecordNotFoundException("user not found"));
 
         //Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
-            var token = await _identityService.GetAuthTokenAsync(username, password);
+            var token = await _authTokenService.GetAuthTokenAsync(username, password);
         });
 
         //Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<AuthenticationException>();
-            exception.Message.Should().Be("Invalid username and password combination");
+            exception.Message.Should().Be("Incorrect username and password combination");
         }
     }
 
@@ -152,14 +149,14 @@ public class GetAuthTokenAsyncTests
         return idBuilder.ToString();
     }
 
-    private DateTime UnixTimeStampStringToDateTime(string unixTimestampString)
+    private DateTime UnixTimeStampStringToDateTime(string timestampString)
     {
-        if (!long.TryParse(unixTimestampString, out long unixTimestamp))
+        if (!long.TryParse(timestampString, out long timestamp))
         {
-            throw new ArgumentException("Invalid Unix timestamp string", nameof(unixTimestampString));
+            throw new ArgumentException("Invalid Unix timestamp string", nameof(timestampString));
         }
 
         DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return unixEpoch.AddSeconds(unixTimestamp);
+        return unixEpoch.AddSeconds(timestamp);
     }
 }

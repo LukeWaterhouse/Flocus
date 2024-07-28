@@ -76,13 +76,13 @@ public class IdentityController : ControllerBase
 
         if (claims.Username == username)
         {
-            var notNullPassword = password ?? throw new UnauthorizedAccessException("You must provide a password when deleting your own admin account");
-            await _removeAccountService.DeleteAdminAsAdmin(username, notNullPassword);
+            var nullCheckedPassword = password ?? throw new UnauthorizedAccessException("You must provide a password when deleting your own admin account");
+            await _removeAccountService.DeleteAdminAsAdmin(username, nullCheckedPassword);
             return Ok();
         }
 
-        var notNullAdminKey = key ?? throw new UnauthorizedAccessException($"You must provide an admin key when deleting another admin account: {username}");
-        await _removeAccountService.DeleteAdminAsAdminWithKey(username, notNullAdminKey);
+        var nullCheckedAdminKey = key ?? throw new UnauthorizedAccessException($"You must provide an admin key when deleting another admin account: {username}");
+        await _removeAccountService.DeleteAdminAsAdminWithKey(username, nullCheckedAdminKey);
         return Ok();
     }
 }

@@ -29,16 +29,20 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUserAsync(string? username)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
+        var adminRole = "Admin";
         var usernameToRetrieve = claims.Username;
 
-        if (claims.Role != "Admin" && username != null && username != claims.Username)
+        if (username != null && username != claims.Username)
         {
-            throw new UnauthorizedAccessException("Must be admin to access other users.");
-        }
+            if (claims.Role != adminRole)
+            {
+                throw new UnauthorizedAccessException($"Must be '{adminRole}' to access other users.");
+            }
 
-        if (claims.Role == "Admin" && username != null && claims.Username != username)
-        {
-            usernameToRetrieve = username;
+            if (claims.Role == adminRole)
+            {
+                usernameToRetrieve = username;
+            }
         }
 
         var user = await _userService.GetUserAsync(usernameToRetrieve);

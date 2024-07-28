@@ -2,8 +2,8 @@
 using Flocus.Repository.Interfaces;
 using Flocus.Repository.Mapping;
 using Flocus.Repository.Services;
-using Flocus.Repository.Services.Sql;
 using Flocus.Repository.Services.Sql.Connection;
+using Flocus.Repository.Services.SqlServices;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;

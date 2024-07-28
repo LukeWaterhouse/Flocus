@@ -17,7 +17,6 @@ public class RegistrationService : IRegistrationService
         IRegistrationValidationService registerValidationService,
         IUserRepositoryService userRepositoryService,
         IAdminKeyService checkAdminKeyService)
-
     {
         _registerValidationService = registerValidationService;
         _userRepositoryService = userRepositoryService;

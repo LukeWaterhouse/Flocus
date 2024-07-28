@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
+using Flocus.Identity.Interfaces.AuthTokenInterfaces;
+using Flocus.Identity.Interfaces.RegisterInterfaces;
 using Flocus.Mapping;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -16,6 +18,8 @@ public class GetTokenEndpointTests
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IRemoveAccountService _identityServiceMock;
     private readonly IClaimsService _claimsServiceMock;
+    private readonly IRegistrationService _registrationServiceMock;
+    private readonly IAuthTokenService _authTokenServiceMock;
     private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
 
@@ -24,6 +28,9 @@ public class GetTokenEndpointTests
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IRemoveAccountService>();
         _claimsServiceMock = Substitute.For<IClaimsService>();
+        _registrationServiceMock = Substitute.For<IRegistrationService>();
+        _authTokenServiceMock = Substitute.For<IAuthTokenService>();
+
 
         var mappingConfig = new MapperConfiguration(cfg =>
         {
@@ -31,7 +38,13 @@ public class GetTokenEndpointTests
         });
         _mapper = mappingConfig.CreateMapper();
 
-        _identityController = new IdentityController(_loggerMock, _mapper, _claimsServiceMock, _identityServiceMock);
+        _identityController = new IdentityController(
+            _loggerMock,
+            _mapper,
+            _claimsServiceMock,
+            _registrationServiceMock,
+            _authTokenServiceMock,
+            _identityServiceMock);
     }
 
     [Fact]
@@ -41,7 +54,7 @@ public class GetTokenEndpointTests
         var username = "luke";
         var password = "rollo123";
 
-        _identityServiceMock.GetAuthTokenAsync(username, password).Returns(Task.FromResult("token"));
+        _authTokenServiceMock.GetAuthTokenAsync(username, password).Returns(Task.FromResult("token"));
 
         //Act
         var result = await _identityController.GetTokenAsync(username, password, CancellationToken.None);
@@ -52,28 +65,6 @@ public class GetTokenEndpointTests
             result.Should().BeOfType<OkObjectResult>();
             var body = ((OkObjectResult)result).Value!;
             body.Should().BeEquivalentTo("token");
-        }
-    }
-
-    [Fact]
-    public async Task GetTokenAsync_IssueWithGetToken_ReturnsInternalServerError()
-    {
-        //Arrange
-        var username = "luke";
-        var password = "rollo123";
-
-        _identityServiceMock.GetAuthTokenAsync(username, password).Returns(Task.FromResult<string>(null));
-
-        //Act
-        var result = await _identityController.GetTokenAsync(username, password, CancellationToken.None);
-
-        //Assert
-        using (new AssertionScope())
-        {
-            result.Should().BeOfType<ObjectResult>();
-            var objectResult = (ObjectResult)result;
-            objectResult.Value.Should().Be("Error generating token");
-            objectResult.StatusCode.Should().Be(500);
         }
     }
 }

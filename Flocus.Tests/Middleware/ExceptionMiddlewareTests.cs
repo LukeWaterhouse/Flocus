@@ -1,4 +1,6 @@
-﻿using Flocus.Middleware;
+﻿using AutoMapper;
+using Flocus.Mapping;
+using Flocus.Middleware;
 using Flocus.Models.Errors;
 using Flocus.Repository.Exceptions;
 using FluentAssertions;
@@ -11,15 +13,25 @@ using Xunit;
 
 namespace Flocus.Tests.Middleware;
 
+
+//TODO: Add assertion scopes
 public class ExceptionMiddlewareTests
 {
     private readonly ILogger<ExceptionMiddleware> _loggerMock;
     private readonly ExceptionMiddleware _exceptionMiddleware;
+    private readonly IMapper _mapper;
 
     public ExceptionMiddlewareTests()
     {
         _loggerMock = Substitute.For<ILogger<ExceptionMiddleware>>();
-        _exceptionMiddleware = new ExceptionMiddleware(_loggerMock);
+
+        var mappingConfig = new MapperConfiguration(cfg =>
+        {
+            cfg.AddMaps(typeof(ErrorDtoMappingProfile));
+        });
+        _mapper = mappingConfig.CreateMapper();        
+
+        _exceptionMiddleware = new ExceptionMiddleware(_loggerMock, _mapper);
     }
 
     [Fact]

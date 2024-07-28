@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
+using Flocus.Identity.Interfaces.AuthTokenInterfaces;
+using Flocus.Identity.Interfaces.RegisterInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Mapping;
 using Flocus.Models.Requests;
@@ -18,6 +20,8 @@ public class RegisterEndpointTests
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IRemoveAccountService _identityServiceMock;
     private readonly IClaimsService _claimsServiceMock;
+    private readonly IRegistrationService _registrationServiceMock;
+    private readonly IAuthTokenService _authTokenService;
     private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
 
@@ -26,6 +30,8 @@ public class RegisterEndpointTests
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _identityServiceMock = Substitute.For<IRemoveAccountService>();
         _claimsServiceMock = Substitute.For<IClaimsService>();
+        _registrationServiceMock = Substitute.For<IRegistrationService>();
+        _authTokenService = Substitute.For<IAuthTokenService>();
 
         var mappingConfig = new MapperConfiguration(cfg =>
         {
@@ -33,7 +39,13 @@ public class RegisterEndpointTests
         });
         _mapper = mappingConfig.CreateMapper();
 
-        _identityController = new IdentityController(_loggerMock, _mapper, _claimsServiceMock, _identityServiceMock);
+        _identityController = new IdentityController(
+            _loggerMock,
+            _mapper,
+            _claimsServiceMock,
+            _registrationServiceMock,
+            _authTokenService,
+            _identityServiceMock);
     }
 
     [Fact]
@@ -56,7 +68,7 @@ public class RegisterEndpointTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _identityServiceMock.Received().RegisterAsync(expectedCallParameter);
+            await _registrationServiceMock.Received().RegisterAsync(expectedCallParameter);
         }
     }
 
@@ -80,7 +92,7 @@ public class RegisterEndpointTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _identityServiceMock.Received().RegisterAsync(expectedCallParameter);
+            await _registrationServiceMock.Received().RegisterAsync(expectedCallParameter);
         }
     }
 }

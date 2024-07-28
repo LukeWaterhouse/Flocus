@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Flocus.Identity\Flocus.Identity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\AdminKeyServicesTests\" />
+  </ItemGroup>
+
 </Project>
