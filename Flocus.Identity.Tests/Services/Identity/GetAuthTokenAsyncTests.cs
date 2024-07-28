@@ -8,7 +8,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using NSubstitute.ReturnsExtensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using System.Text;
@@ -30,9 +29,9 @@ public class GetAuthTokenAsyncTests
     {
         _signingKey = GenerateRandomId(200);
         _identitySettings = new IdentitySettings(
-            "signingKey-13123190283jh19028n12983n190238n190283n109283n109283n109283n09812n309182n3109283n098n", 
-            "issuer", 
-            "audience", 
+            "signingKey-13123190283jh19028n12983n190238n190283n109283n109283n109283n09812n309182n3109283n098n",
+            "issuer",
+            "audience",
             "adminKey");
         _repositoryServiceMock = Substitute.For<IRepositoryService>();
         _registerValidationService = Substitute.For<IRegisterValidationService>();

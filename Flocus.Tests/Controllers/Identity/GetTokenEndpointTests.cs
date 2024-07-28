@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
-using Flocus.Identity.Models;
 using Flocus.Mapping;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace Flocus.Tests.Controllers.IdentityControllerTests;
+namespace Flocus.Tests.Controllers.Identity;
 
 public class GetTokenEndpointTests
 {

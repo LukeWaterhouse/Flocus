@@ -15,6 +15,7 @@ namespace FlocusRegressionTests.Tests.Registration.UserRegistration;
 public sealed class UserRegistrationAndDeletionTests
 {
     private readonly UserRegistrationAndDeletionTestFixture _fixture;
+    private readonly string SpecialCharacterList = @"%!@#$%^&*()?/>.<,:;'\|}]{[_~`+=-" + "\"";
 
     public UserRegistrationAndDeletionTests(UserRegistrationAndDeletionTestFixture fixture)
     {
@@ -94,7 +95,7 @@ public sealed class UserRegistrationAndDeletionTests
     public async Task RegisterUser_UsernameIncludesWhitespace_ShouldReturn400()
     {
         //Arrange
-        var usernameWhitespace = "whitespace username";
+        var usernameWhitespace = "user name";
 
         var requestBody = new Dictionary<string, object>
             {
@@ -360,7 +361,6 @@ public sealed class UserRegistrationAndDeletionTests
     {
         //Arrange
         var passwordNoSpecialChars = "Password123";
-        var specialCharactersList = @"%!@#$%^&*()?/>.<,:;'\|}]{[_~`+=-" + "\"";
 
         var requestBody = new Dictionary<string, object>
             {
@@ -379,7 +379,48 @@ public sealed class UserRegistrationAndDeletionTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(400, $"Password must have at least one special character ({specialCharactersList}): {passwordNoSpecialChars}")
+                new ErrorDto(400, $"Password must have at least one special character ({SpecialCharacterList}): {passwordNoSpecialChars}")
+            });
+
+        using (new AssertionScope())
+        {
+            errors.Should().BeEquivalentTo(expectedErrors);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+    }
+
+    [Fact, Order(12)]
+    public async Task RegisterUser_MultipleIssues_ShouldReturnMultipleErrors400()
+    {
+        //Arrange
+        var userNameMultipleIssues = "fuck u";
+        var passwordMultipleIssues = "p a s";
+        var invalidEmail = "invalidEmail";
+
+        var requestBody = new Dictionary<string, object>
+            {
+                { Constants.UsernameRequestKey, userNameMultipleIssues },
+                { Constants.PasswordRequestKey, passwordMultipleIssues },
+                { Constants.EmailAddressRequestKey, invalidEmail },
+                { Constants.IsAdminRequestKey, _fixture.IsAdmin },
+                { Constants.AdminKeyRequestKey, _fixture.Key }
+            };
+
+        //Act
+        var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
+
+        //Assert
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(400, $"Username cannot contain whitespace: {userNameMultipleIssues}"),
+                new ErrorDto(400, $"Profanity detected in username: {userNameMultipleIssues}"),
+                new ErrorDto(400, $"Password must be at least 8 characters: {passwordMultipleIssues}"),
+                new ErrorDto(400, $"Password cannot contain whitespace: {passwordMultipleIssues}"),
+                new ErrorDto(400, $"Password must have at least one upper and lower character: {passwordMultipleIssues}"),
+                new ErrorDto(400, $"Password must have at least one special character ({SpecialCharacterList}): {passwordMultipleIssues}"),
+                new ErrorDto(400, $"Email is not a valid format: {invalidEmail}")
             });
 
         using (new AssertionScope())
@@ -391,7 +432,7 @@ public sealed class UserRegistrationAndDeletionTests
     #endregion
 
 
-    [Fact, Order(12)]
+    [Fact, Order(13)]
     public async Task RegisterUser_ValidInputs_ShouldReturn200()
     {
         //Arrange
@@ -415,7 +456,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(13)]
+    [Fact, Order(14)]
     public async Task RegisterUser_ExistingUsername_ShouldReturn409()
     {
         //Arrange
@@ -447,7 +488,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(14)]
+    [Fact, Order(15)]
     public async Task RegisterUser_ExistingEmail_ShouldReturn409()
     {
         //Arrange
@@ -479,7 +520,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(15)]
+    [Fact, Order(16)]
     public async Task GetToken_IncorrectPassword_ShouldReturn401()
     {
         //Arrange
@@ -509,7 +550,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(16)]
+    [Fact, Order(17)]
     public async Task GetToken_CorrectDetails_ShouldReturn200()
     {
         //Arrange
@@ -552,7 +593,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(17)]
+    [Fact, Order(18)]
     public async Task GetUser_Unauthenticated_Returns401()
     {
         //Arrange
@@ -569,7 +610,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(18)]
+    [Fact, Order(19)]
     public async Task GetUser_Authenticated_Returns200()
     {
         //Arrange
@@ -593,7 +634,7 @@ public sealed class UserRegistrationAndDeletionTests
     #endregion
 
     #region Deletion
-    [Fact, Order(19)]
+    [Fact, Order(20)]
     public async Task DeleteUser_Unauthenticated_Returns401()
     {
         //Arrange
@@ -621,7 +662,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(20)]
+    [Fact, Order(21)]
     public async Task DeleteUser_WrongPassword_Returns401()
     {
         //Arrange
@@ -657,7 +698,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(21)]
+    [Fact, Order(22)]
     public async Task DeleteUser_UsernameMismatch_Returns403()
     {
         //Arrange
@@ -691,7 +732,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(22)]
+    [Fact, Order(23)]
     public async Task DeleteUser_ValidCredentials_Returns200()
     {
         //Arrange
@@ -717,7 +758,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(23)]
+    [Fact, Order(24)]
     public async Task GetUser_DeletedUser_Returns404()
     {
         //Act

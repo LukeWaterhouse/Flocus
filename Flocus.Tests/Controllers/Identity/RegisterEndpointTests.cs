@@ -3,7 +3,6 @@ using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
 using Flocus.Mapping;
-using Flocus.Models.Errors;
 using Flocus.Models.Requests;
 using FluentAssertions;
 using FluentAssertions.Execution;

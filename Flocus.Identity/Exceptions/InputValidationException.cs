@@ -1,6 +1,13 @@
-﻿namespace Flocus.Identity.Exceptions;
+﻿using Flocus.Domain.Models.Errors;
+
+namespace Flocus.Identity.Exceptions;
 
 public sealed class InputValidationException : Exception
 {
-    public InputValidationException(string message) : base(message) { }
+    public List<Error> Errors { get; init; }
+
+    public InputValidationException(List<Error> errors) : base("input validation error") 
+    { 
+        Errors = errors;
+    }
 }

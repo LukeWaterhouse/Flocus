@@ -1,6 +1,10 @@
 ﻿using Flocus.Identity.Interfaces;
+using Flocus.Identity.Interfaces.RegisterValidationInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services;
+using Flocus.Identity.Services.RegisterValidation;
+using Flocus.Identity.Services.RegisterValidation.Factories;
+using Flocus.Identity.Services.RegisterValidation.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +51,9 @@ public static class IdentityServiceExtensions
 
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IRegisterValidationService, RegisterValidationService>();
+        services.AddScoped<IRegistrationValidationChainFactory, RegistrationValidationChainFactory>();
         services.AddScoped<IClaimsService, ClaimsService>();
+
         return services;
     }
 }

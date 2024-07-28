@@ -1,4 +1,6 @@
-﻿using Flocus.Identity.Exceptions;
+﻿using AutoMapper;
+using Flocus.Domain.Models.Errors;
+using Flocus.Identity.Exceptions;
 using Flocus.Models.Errors;
 using Flocus.Repository.Exceptions;
 using System.Security.Authentication;
@@ -11,10 +13,12 @@ public sealed class ExceptionMiddleware : IMiddleware
 
 
     private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly IMapper _mapper;
 
-    public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger)
+    public ExceptionMiddleware(ILogger<ExceptionMiddleware> logger, IMapper mapper)
     {
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -25,31 +29,32 @@ public sealed class ExceptionMiddleware : IMiddleware
         }
         catch (DuplicateRecordException ex)
         {
-            await WriteResponseAsync(context, StatusCodes.Status409Conflict, ex.Message);
+            await WriteSingleErrorResponseAsync(context, StatusCodes.Status409Conflict, ex.Message);
         }
         catch (RecordNotFoundException ex)
         {
-            await WriteResponseAsync(context, StatusCodes.Status404NotFound, ex.Message);
+            await WriteSingleErrorResponseAsync(context, StatusCodes.Status404NotFound, ex.Message);
         }
         catch (InputValidationException ex)
         {
-            await WriteResponseAsync(context, StatusCodes.Status400BadRequest, ex.Message);
+            var errorDtos = _mapper.Map<List<ErrorDto>>(ex.Errors);
+            await WriteMultiErrorResponseAsync(context, errorDtos);
         }
         catch (AuthenticationException ex)
         {
-            await WriteResponseAsync(context, StatusCodes.Status401Unauthorized, ex.Message);
+            await WriteSingleErrorResponseAsync(context, StatusCodes.Status401Unauthorized, ex.Message);
         }
         catch (UnauthorizedAccessException ex)
         {
-            await WriteResponseAsync(context, StatusCodes.Status403Forbidden, ex.Message);
+            await WriteSingleErrorResponseAsync(context, StatusCodes.Status403Forbidden, ex.Message);
         }
         catch (Exception ex)
         {
-            await WriteResponseAsync(context, StatusCodes.Status500InternalServerError, UnhandledExceptionTitle);
+            await WriteSingleErrorResponseAsync(context, StatusCodes.Status500InternalServerError, UnhandledExceptionTitle);
         }
     }
 
-    private static async Task WriteResponseAsync(HttpContext context, int status, string message)
+    private static async Task WriteSingleErrorResponseAsync(HttpContext context, int status, string message)
     {
         context.Response.StatusCode = status;
         await context.Response.WriteAsJsonAsync(
@@ -58,5 +63,23 @@ public sealed class ExceptionMiddleware : IMiddleware
                 {
                     new ErrorDto(status, message)
                 }));
+    }
+
+    private static async Task WriteMultiErrorResponseAsync(HttpContext context, List<ErrorDto> errors)
+    {
+        context.Response.StatusCode = GetAppropriateStatusCode(errors);
+        await context.Response.WriteAsJsonAsync(
+            new ErrorsDto(errors));
+    }
+
+    private static int GetAppropriateStatusCode(List<ErrorDto> errors)
+    {
+        var firstStatus = errors[0].Status;
+        if (errors.All(x => x.Status == firstStatus))
+        {
+            return firstStatus;
+        }
+
+        return StatusCodes.Status207MultiStatus;
     }
 }
