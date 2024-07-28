@@ -699,47 +699,12 @@ public sealed class UserRegistrationAndDeletionTests
     }
 
     [Fact, Order(22)]
-    public async Task DeleteUser_UsernameMismatch_Returns403()
-    {
-        //Arrange
-        var requestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, _fixture.DifferentUserUsername },
-                { Constants.PasswordRequestKey, _fixture.Password }
-            });
-
-        //Act
-        var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
-            {
-                Content = requestBody
-            });
-
-        //Assert
-        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
-
-        var expectedErrors = new ErrorsDto(
-            new List<ErrorDto>
-            {
-                new ErrorDto(403, $"Not authorized to delete user: '{_fixture.DifferentUserUsername}'")
-            });
-
-        using (new AssertionScope())
-        {
-            response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            errors.Should().BeEquivalentTo(expectedErrors);
-        }
-    }
-
-    [Fact, Order(23)]
     public async Task DeleteUser_ValidCredentials_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
@@ -758,7 +723,7 @@ public sealed class UserRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(24)]
+    [Fact, Order(23)]
     public async Task GetUser_DeletedUser_Returns404()
     {
         //Act

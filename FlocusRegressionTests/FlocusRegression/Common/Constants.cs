@@ -12,13 +12,13 @@ public static class Constants
     public static readonly string UserController = "User";
 
     //URL Segments
-    public static readonly string GetTokenSegment = IdentityController + "/getToken";
+    public static readonly string GetTokenSegment = IdentityController + "/token";
     public static readonly string RegisterSegment = IdentityController + "/register";
-    public static readonly string DeleteUserAsUserSegment = IdentityController + "/deleteUserAsUser";
-    public static readonly string DeleteUserAsAdmin = IdentityController + "/deleteUserAsAdmin";
-    public static readonly string DeleteAdmin = IdentityController + "/deleteAdmin";
+    public static readonly string DeleteUserAsUserSegment = IdentityController + "/user";
+    public static readonly string DeleteUserAsAdminSegment = IdentityController + "/userAsAdmin";
+    public static readonly string DeleteAdminSegment = IdentityController + "/adminUser";
 
-    public static readonly string GetUserSegment = UserController + "/getUser";
+    public static readonly string GetUserSegment = UserController;
 
     //Request Form Keys
     public static readonly string UsernameRequestKey = "username";

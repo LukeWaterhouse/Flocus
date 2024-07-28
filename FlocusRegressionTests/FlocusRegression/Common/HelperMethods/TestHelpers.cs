@@ -33,7 +33,7 @@ public static class TestHelpers
             });
 
             var deleteResponse = await HttpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdminSegment)
                 {
                     Content = deleteUserAsAdminRequestBody
                 });
@@ -50,7 +50,7 @@ public static class TestHelpers
             });
 
             var deleteResponse = await HttpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
                 {
                     Content = deleteAdminAsAdminRequestBody
                 });

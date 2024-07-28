@@ -304,7 +304,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
             {
                 Content = requestBody
             });
@@ -332,7 +332,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
             {
                 Content = requestBody
             });
@@ -366,7 +366,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
             {
                 Content = requestBody
             });
@@ -400,7 +400,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
             {
                 Content = requestBody
             });
@@ -436,7 +436,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
             {
                 Content = requestBody
             });
@@ -461,7 +461,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdminSegment)
             {
                 Content = requestBody
             });
@@ -487,7 +487,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
             {
                 Content = requestBody
             });
@@ -514,7 +514,7 @@ public sealed class AdminRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdmin)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdminSegment)
             {
                 Content = requestBody
             });

@@ -1,7 +1,7 @@
 ﻿using Flocus.Domain.Interfaces;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
-using Flocus.Identity.Services;
+using Flocus.Identity.Services.RemoveAccountServices;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NSubstitute;

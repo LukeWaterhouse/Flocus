@@ -12,6 +12,7 @@ using Flocus.Identity.Services.RegisterValidation.Handlers;
 using Flocus.Identity.Services.RegistrationServices;
 using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Factories;
 using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers;
+using Flocus.Identity.Services.RemoveAccountServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

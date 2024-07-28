@@ -2,7 +2,7 @@
 using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
-using Flocus.Identity.Services;
+using Flocus.Identity.Services.RemoveAccountServices;
 using Flocus.Repository.Exceptions;
 using FluentAssertions;
 using FluentAssertions.Execution;

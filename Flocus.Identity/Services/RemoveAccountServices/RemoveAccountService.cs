@@ -5,8 +5,10 @@ using Flocus.Identity.Interfaces.AdminKeyInterfaces;
 using System.Security.Authentication;
 using BC = BCrypt.Net.BCrypt;
 
-namespace Flocus.Identity.Services;
+namespace Flocus.Identity.Services.RemoveAccountServices;
 
+
+//TOOD: this needs a redesign, and move the controller logic into here too
 public class RemoveAccountService : IRemoveAccountService
 {
     private readonly IUserRepositoryService _userRepositoryService;
@@ -30,7 +32,6 @@ public class RemoveAccountService : IRemoveAccountService
 
     public async Task DeleteUserAsAdmin(string username)
     {
-        //TODO: need to check admin still exists or a rampant deleted admin with a token still valid can continue to do damage.
         var user = await _userRepositoryService.GetUserAsync(username);
         EnsureUserNotAdmin(user);
         await DeleteUser(user);
@@ -44,6 +45,7 @@ public class RemoveAccountService : IRemoveAccountService
 
     public async Task DeleteAdminAsAdminWithKey(string username, string key)
     {
+        //TODO: need to check admin still exists or a rampant deleted admin with a token still valid can continue to do damage.
         var user = await _userRepositoryService.GetUserAsync(username);
         _checkAdminKeyService.CheckAdminKeyCorrect(key);
         await DeleteUser(user);

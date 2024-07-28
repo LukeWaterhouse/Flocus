@@ -21,8 +21,8 @@ public class IdentityController : ControllerBase
     private readonly IMapper _mapper;
 
     public IdentityController(
-        ILogger<IdentityController> logger, 
-        IMapper mapper, 
+        ILogger<IdentityController> logger,
+        IMapper mapper,
         IClaimsService claimsService,
         IRegistrationService registrationService,
         IAuthTokenService authTokenService,
@@ -44,30 +44,24 @@ public class IdentityController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("getToken", Name = "GetToken")]
+    [HttpPost("token", Name = "GetToken")]
     public async Task<IActionResult> GetTokenAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
     {
         var token = await _authTokenService.GetAuthTokenAsync(username, password);
-        return token != null ? Ok(token) : StatusCode(500, "Error generating token");
+        return Ok(token);
     }
 
     [Authorize]
-    [HttpDelete("deleteUserAsUser", Name = "DeleteUserAsUser")]
-    public async Task<IActionResult> DeleteUserAsUserAsync([FromForm] string username, [FromForm] string password, CancellationToken ct)
+    [HttpDelete("user", Name = "DeleteUserAsUser")]
+    public async Task<IActionResult> DeleteUserAsUserAsync([FromForm] string password, CancellationToken ct)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
-
-        if (claims.Username != username)
-        {
-            throw new UnauthorizedAccessException($"Not authorized to delete user: '{username}'");
-        }
-
-        await _removeAccountService.DeleteUserAsUser(username, password);
+        await _removeAccountService.DeleteUserAsUser(claims.Username, password);
         return Ok();
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("deleteUserAsAdmin", Name = "DeleteUserAsAdmin")]
+    [HttpDelete("userAsAdmin", Name = "DeleteUserAsAdmin")]
     public async Task<IActionResult> DeleteUserAsAdminAsync([FromForm] string username, CancellationToken ct)
     {
         await _removeAccountService.DeleteUserAsAdmin(username);
@@ -75,7 +69,7 @@ public class IdentityController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("deleteAdmin", Name = "DeleteAdmin")]
+    [HttpDelete("adminUser", Name = "DeleteAdmin")]
     public async Task<IActionResult> DeleteAdminAsync([FromForm] string username, [FromForm] string? password, [FromForm] string? key, CancellationToken ct)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
