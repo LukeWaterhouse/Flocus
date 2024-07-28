@@ -1,5 +1,6 @@
 ﻿using Flocus.Domain.Models.Errors;
 using Flocus.Identity.Models;
+using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers.Base;
 
 namespace Flocus.Identity.Services.RegisterValidation.Handlers;
 

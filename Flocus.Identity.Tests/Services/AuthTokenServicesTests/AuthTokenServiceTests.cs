@@ -39,7 +39,7 @@ public class AuthTokenServiceTests
     [Fact]
     public async Task GetAuthAsync_WithValidCredentials_ReturnsValidToken()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var password = "rollo123";
         var email = "luklerollo@hotmail.co.uk";
@@ -54,10 +54,10 @@ public class AuthTokenServiceTests
                 false,
                 passwordHash));
 
-        //Act
+        // Act
         var token = await _authTokenService.GetAuthTokenAsync(username, password);
 
-        //Assert
+        // Assert
         var jwtHandler = new JwtSecurityTokenHandler();
         var jwt = jwtHandler.ReadJwtToken(token);
         var claims = jwt.Claims.ToList();
@@ -82,7 +82,7 @@ public class AuthTokenServiceTests
     [Fact]
     public async Task GetAuthAsync_WithIncorrectPassword_ThrowsCorrectException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var correctPassword = "rollo123";
         var incorrectPassword = "rollo1234";
@@ -97,7 +97,7 @@ public class AuthTokenServiceTests
                 false,
                 passwordHash));
 
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             var token = await _authTokenService.GetAuthTokenAsync(username, incorrectPassword);
@@ -114,20 +114,20 @@ public class AuthTokenServiceTests
     [Fact]
     public async Task GetAuthAsync_NonExistingUser_ThrowsCorrectException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var password = "rollo123";
         var passwordHash = BC.HashPassword(password);
 
         _userRepositoryServiceMock.GetUserAsync(username).Throws(new RecordNotFoundException("user not found"));
 
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             var token = await _authTokenService.GetAuthTokenAsync(username, password);
         });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<AuthenticationException>();

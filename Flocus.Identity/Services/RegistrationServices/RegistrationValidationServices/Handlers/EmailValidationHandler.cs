@@ -1,6 +1,6 @@
 ﻿using Flocus.Domain.Models.Errors;
 using Flocus.Identity.Models;
-using Flocus.Identity.Services.RegisterValidation.Handlers;
+using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers.Base;
 using System.Net.Mail;
 
 namespace Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers;

@@ -50,16 +50,16 @@ public class GetTokenEndpointTests
     [Fact]
     public async Task GetTokenAsync_ValidRequest_ReturnsOkWithToken()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var password = "rollo123";
 
         _authTokenServiceMock.GetAuthTokenAsync(username, password).Returns(Task.FromResult("token"));
 
-        //Act
+        // Act
         var result = await _identityController.GetTokenAsync(username, password, CancellationToken.None);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkObjectResult>();

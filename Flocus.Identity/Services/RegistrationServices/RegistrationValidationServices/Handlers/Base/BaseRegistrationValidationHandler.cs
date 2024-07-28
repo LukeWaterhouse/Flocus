@@ -2,8 +2,9 @@
 using Flocus.Identity.Interfaces.RegisterValidationInterfaces;
 using Flocus.Identity.Models;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Flocus.Identity.Services.RegisterValidation.Handlers;
+namespace Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers.Base;
 
 public abstract class BaseRegistrationValidationHandler : IRegistrationValidationHandler
 {
@@ -32,7 +33,8 @@ public abstract class BaseRegistrationValidationHandler : IRegistrationValidatio
         }
     }
 
-    internal void AddBadRequestError(string errorMessage, List<Error> errors) {
+    internal void AddBadRequestError(string errorMessage, List<Error> errors)
+    {
         var error = new Error(StatusCodes.Status400BadRequest, errorMessage);
         errors.Add(error);
     }

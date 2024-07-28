@@ -51,13 +51,13 @@ public class RegisterEndpointTests
     [Fact]
     public async Task RegisterAsync_ValidNonAdminRequest_CallsIdentityServiceReturnsOk()
     {
-        //Arrange
+        // Arrange
         var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", false, null);
 
-        //Act
+        // Act
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
 
-        //Assert
+        // Assert
         var expectedCallParameter = new RegistrationModel(
             registerRequest.Username,
             registerRequest.Password,
@@ -75,13 +75,13 @@ public class RegisterEndpointTests
     [Fact]
     public async Task RegisterAsync_ValidAdminRequest_CallsIdentityServiceReturnsOk()
     {
-        //Arrange
+        // Arrange
         var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, "123");
 
-        //Act
+        // Act
         var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
 
-        //Assert
+        // Assert
         var expectedCallParameter = new RegistrationModel(
             registerRequest.Username,
             registerRequest.Password,

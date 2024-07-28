@@ -87,7 +87,6 @@ public sealed class ExceptionMiddleware : IMiddleware
     {
         var errorDtos = _mapper.Map<List<ErrorDto>>(errors);
         return errorDtos;
-
     }
     #endregion
 }

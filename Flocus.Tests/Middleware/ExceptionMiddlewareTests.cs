@@ -37,7 +37,7 @@ public class ExceptionMiddlewareTests
     [Fact]
     public async Task InvokeAsync_DelegateThrowsDuplicateRecordException_Generates409()
     {
-        //Arrange
+        // Arrange
         var duplicateRecordException = new DuplicateRecordException("duplicate record found.");
         HttpContext context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
@@ -49,10 +49,10 @@ public class ExceptionMiddlewareTests
             new ErrorDto(409, "duplicate record found.")
             }));
 
-        //Act
+        // Act
         await _exceptionMiddleware.InvokeAsync(context, next);
 
-        //Assert
+        // Assert
         var responseBody = await DeserializeResponseBody(context);
         context.Response.ContentType.Should().Be("application/json; charset=utf-8");
         responseBody.Should().BeEquivalentTo(expectedResponseBody.ToLower());
@@ -61,7 +61,7 @@ public class ExceptionMiddlewareTests
     [Fact]
     public async Task InvokeAsync_DelegateThrowsRecordNotFoundException_Generates404()
     {
-        //Arrange
+        // Arrange
         var recordNotFoundException = new RecordNotFoundException("record not found.");
         HttpContext context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
@@ -73,10 +73,10 @@ public class ExceptionMiddlewareTests
             new ErrorDto(404, "record not found.")
             }));
 
-        //Act
+        // Act
         await _exceptionMiddleware.InvokeAsync(context, next);
 
-        //Assert
+        // Assert
         var responseBody = await DeserializeResponseBody(context);
         context.Response.ContentType.Should().Be("application/json; charset=utf-8");
         responseBody.Should().BeEquivalentTo(expectedResponseBody.ToLower());
@@ -85,7 +85,7 @@ public class ExceptionMiddlewareTests
     [Fact]
     public async Task InvokeAsync_DelegateThrowsAuthenticationException_Generates401()
     {
-        //Arrange
+        // Arrange
         var authenticationException = new AuthenticationException("password username combo incorrect");
         HttpContext context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
@@ -97,10 +97,10 @@ public class ExceptionMiddlewareTests
             new ErrorDto(401, "password username combo incorrect")
             }));
 
-        //Act
+        // Act
         await _exceptionMiddleware.InvokeAsync(context, next);
 
-        //Assert
+        // Assert
         var responseBody = await DeserializeResponseBody(context);
         context.Response.ContentType.Should().Be("application/json; charset=utf-8");
         responseBody.Should().BeEquivalentTo(expectedResponseBody.ToLower());
@@ -109,7 +109,7 @@ public class ExceptionMiddlewareTests
     [Fact]
     public async Task InvokeAsync_DelegateThrowsException_Generates500()
     {
-        //Arrange
+        // Arrange
         var exception = new Exception("uh oh idk what to do :/");
         HttpContext context = new DefaultHttpContext();
         context.Response.Body = new MemoryStream();
@@ -121,15 +121,14 @@ public class ExceptionMiddlewareTests
             new ErrorDto(500, "An unhandled exception occurred.")
             }));
 
-        //Act
+        // Act
         await _exceptionMiddleware.InvokeAsync(context, next);
 
-        //Assert
+        // Assert
         var responseBody = await DeserializeResponseBody(context);
         context.Response.ContentType.Should().Be("application/json; charset=utf-8");
         responseBody.Should().BeEquivalentTo(expectedResponseBody.ToLower());
     }
-
 
     public async Task<string> DeserializeResponseBody(HttpContext context)
     {
@@ -140,6 +139,5 @@ public class ExceptionMiddlewareTests
 
             return responseBody;
         }
-
     }
 }
