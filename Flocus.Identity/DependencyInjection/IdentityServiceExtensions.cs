@@ -63,13 +63,14 @@ public static class IdentityServiceExtensions
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IAuthTokenService, AuthTokenService>();
 
-        //Validation Handling
+        #region Input validation handling
         services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();
         services.AddScoped<IRegistrationValidationChainFactory, RegistrationValidationChainFactory>();
         services.AddScoped<EmailValidationHandler>();
         services.AddScoped<IsAdminValidationHandler>();
         services.AddScoped<PasswordValidationHandler>();
         services.AddScoped<UsernameValidationHandler>();
+        #endregion
 
         return services;
     }

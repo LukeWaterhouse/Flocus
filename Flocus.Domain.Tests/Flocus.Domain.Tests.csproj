@@ -21,4 +21,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Flocus.Domain\Flocus.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
