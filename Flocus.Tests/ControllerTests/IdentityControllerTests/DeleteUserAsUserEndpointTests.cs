@@ -3,34 +3,35 @@ using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
+using Flocus.Identity.Models;
 using Flocus.Mapping;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System.Security.Claims;
 using Xunit;
 
-namespace Flocus.Tests.Controllers.Identity;
+namespace Flocus.Tests.ControllerTests.IdentityControllerTests;
 
-public class GetTokenEndpointTests
+public class DeleteUserAsUserEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
-    private readonly IRemoveAccountService _identityServiceMock;
+    private readonly IRemoveAccountService _removeAccountServiceMock;
     private readonly IClaimsService _claimsServiceMock;
     private readonly IRegistrationService _registrationServiceMock;
     private readonly IAuthTokenService _authTokenServiceMock;
     private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
 
-    public GetTokenEndpointTests()
+    public DeleteUserAsUserEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
-        _identityServiceMock = Substitute.For<IRemoveAccountService>();
+        _removeAccountServiceMock = Substitute.For<IRemoveAccountService>();
         _claimsServiceMock = Substitute.For<IClaimsService>();
         _registrationServiceMock = Substitute.For<IRegistrationService>();
         _authTokenServiceMock = Substitute.For<IAuthTokenService>();
-
 
         var mappingConfig = new MapperConfiguration(cfg =>
         {
@@ -44,27 +45,30 @@ public class GetTokenEndpointTests
             _claimsServiceMock,
             _registrationServiceMock,
             _authTokenServiceMock,
-            _identityServiceMock);
+            _removeAccountServiceMock);
     }
 
     [Fact]
-    public async Task GetTokenAsync_ValidRequest_ReturnsOkWithToken()
+    public async Task DeleteUserAsUserAsync_ValidPasswordAndClaims_ReturnsOk()
     {
         // Arrange
-        var username = "luke";
+        var username = "lukosparta123";
+        var email = "lukewwaterhouse@hotmail.com";
+        var role = "Admin";
         var password = "rollo123";
+        var cancellationToken = CancellationToken.None;
 
-        _authTokenServiceMock.GetAuthTokenAsync(username, password).Returns(Task.FromResult("token"));
+        var claims = new Claims(username, email, role, DateTime.UtcNow);
+        _claimsServiceMock.GetClaimsFromUser(Arg.Any<ClaimsPrincipal>()).Returns(claims);
 
         // Act
-        var result = await _identityController.GetTokenAsync(username, password, CancellationToken.None);
+        var result = await _identityController.DeleteUserAsUserAsync(password, cancellationToken);
 
         // Assert
         using (new AssertionScope())
         {
-            result.Should().BeOfType<OkObjectResult>();
-            var body = ((OkObjectResult)result).Value!;
-            body.Should().BeEquivalentTo("token");
+            result.Should().BeOfType<OkResult>();
+            await _removeAccountServiceMock.Received(1).DeleteUserAsUser(username, password);
         }
     }
 }

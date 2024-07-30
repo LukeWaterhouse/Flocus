@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using System.Security.Claims;
 
-namespace Flocus.Identity.Services;
+namespace Flocus.Identity.Services.ClaimsServices;
 
 internal sealed class ClaimsService : IClaimsService
 {

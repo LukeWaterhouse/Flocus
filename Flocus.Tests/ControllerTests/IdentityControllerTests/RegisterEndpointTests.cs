@@ -13,25 +13,25 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Xunit;
 
-namespace Flocus.Tests.Controllers.Identity;
+namespace Flocus.Tests.ControllerTests.IdentityControllerTests;
 
 public class RegisterEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
-    private readonly IRemoveAccountService _identityServiceMock;
+    private readonly IRemoveAccountService _removeAccountServiceMock;
     private readonly IClaimsService _claimsServiceMock;
     private readonly IRegistrationService _registrationServiceMock;
-    private readonly IAuthTokenService _authTokenService;
+    private readonly IAuthTokenService _authTokenServiceMock;
     private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
 
     public RegisterEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
-        _identityServiceMock = Substitute.For<IRemoveAccountService>();
+        _removeAccountServiceMock = Substitute.For<IRemoveAccountService>();
         _claimsServiceMock = Substitute.For<IClaimsService>();
         _registrationServiceMock = Substitute.For<IRegistrationService>();
-        _authTokenService = Substitute.For<IAuthTokenService>();
+        _authTokenServiceMock = Substitute.For<IAuthTokenService>();
 
         var mappingConfig = new MapperConfiguration(cfg =>
         {
@@ -44,8 +44,8 @@ public class RegisterEndpointTests
             _mapper,
             _claimsServiceMock,
             _registrationServiceMock,
-            _authTokenService,
-            _identityServiceMock);
+            _authTokenServiceMock,
+            _removeAccountServiceMock);
     }
 
     [Fact]

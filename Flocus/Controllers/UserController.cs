@@ -16,6 +16,8 @@ public class UserController : ControllerBase
     private readonly IClaimsService _claimsService;
     private readonly IMapper _mapper;
 
+    private readonly string AdminClaimsRole = "Admin";
+
     public UserController(ILogger<UserController> logger, IUserService userService, IClaimsService claimsService, IMapper mapper)
     {
         _logger = logger;
@@ -29,20 +31,15 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUserAsync(string? username)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
-        var adminRole = "Admin";
         var usernameToRetrieve = claims.Username;
 
         if (username != null && username != claims.Username)
         {
-            if (claims.Role != adminRole)
+            if (claims.Role != AdminClaimsRole)
             {
-                throw new UnauthorizedAccessException($"Must be '{adminRole}' to access other users.");
+                throw new UnauthorizedAccessException($"Must be '{AdminClaimsRole}' to access other users.");
             }
-
-            if (claims.Role == adminRole)
-            {
-                usernameToRetrieve = username;
-            }
+            usernameToRetrieve = username;
         }
 
         var user = await _userService.GetUserAsync(usernameToRetrieve);

@@ -36,7 +36,7 @@ public class GetUserTests
     [Fact]
     public async Task GetUserTests_ValidUsername_ReturnsUser()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
 
         _sqlQueryService.GetUsersByUsernameAsync(username).Returns(
@@ -52,10 +52,10 @@ public class GetUserTests
             });
 
 
-        //Act
+        // Act
         var result = await _repositoryService.GetUserAsync(username);
 
-        //Assert
+        // Assert
         var expectedUser = new User(
             "123",
             "luke@hotmail.com",
@@ -74,19 +74,17 @@ public class GetUserTests
     [Fact]
     public async Task GetUserTests_NoMatchingUser_ThrowsException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
-
         _sqlQueryService.GetUsersByUsernameAsync(username).Returns(new List<DbUser>());
 
-
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             var result = await _repositoryService.GetUserAsync(username);
         });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<RecordNotFoundException>();
@@ -98,7 +96,7 @@ public class GetUserTests
     [Fact]
     public async Task GetUserTests_InvalidNumberUsersRetrieved_ThrowsException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
 
         _sqlQueryService.GetUsersByUsernameAsync(username).Returns(
@@ -120,14 +118,13 @@ public class GetUserTests
                     false)
             });
 
-
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             var result = await _repositoryService.GetUserAsync(username);
         });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<Exception>();

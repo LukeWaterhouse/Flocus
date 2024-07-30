@@ -2,7 +2,6 @@
 using Flocus.Identity.Interfaces.RegisterValidationInterfaces;
 using Flocus.Identity.Models;
 using Microsoft.AspNetCore.Http;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Handlers.Base;
 
