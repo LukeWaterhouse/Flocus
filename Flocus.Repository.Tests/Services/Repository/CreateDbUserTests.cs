@@ -33,7 +33,7 @@ public class CreateDbUserTests
     [Fact]
     public async Task CreateDbUser_ValidCredentials_ReturnsTrue()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var passwordHash = "passwordHash";
         var emailAddress = "luke@hotmail.com";
@@ -55,10 +55,10 @@ public class CreateDbUserTests
             user.Password_hash == dbUser.Password_hash &&
             user.Admin_rights == dbUser.Admin_rights)).Returns(true);
 
-        //Act
+        // Act
         await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
@@ -74,7 +74,7 @@ public class CreateDbUserTests
     [Fact]
     public async Task CreateDbUser_IssueSaving_ThrowsException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var passwordHash = "passwordHash";
         var emailAddress = "luke@hotmail.com";
@@ -96,13 +96,13 @@ public class CreateDbUserTests
            user.Password_hash == dbUser.Password_hash &&
            user.Admin_rights == dbUser.Admin_rights)).Returns(false);
 
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
         });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<Exception>();
@@ -120,7 +120,7 @@ public class CreateDbUserTests
     [Fact]
     public async Task CreateDbUser_DuplicateUsernameUser_ThrowsException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var passwordHash = "passwordHash";
         var emailAddress = "luke@hotmail.com";
@@ -136,13 +136,13 @@ public class CreateDbUserTests
 
         _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser> { dbUser });
 
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
         });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<DuplicateRecordException>();
@@ -155,7 +155,7 @@ public class CreateDbUserTests
     [Fact]
     public async Task CreateDbUser_DuplicateEmailUser_ThrowsException()
     {
-        //Arrange
+        // Arrange
         var username = "luke";
         var passwordHash = "passwordHash";
         var emailAddress = "luke@hotmail.com";
@@ -171,13 +171,13 @@ public class CreateDbUserTests
 
         _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser> { dbUser });
 
-        //Act
+        // Act
         Exception exception = await Record.ExceptionAsync(async () =>
         {
             await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
         });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             exception.Should().BeOfType<DuplicateRecordException>();
@@ -187,7 +187,7 @@ public class CreateDbUserTests
         }
     }
 
-    public static bool EqualWithinFiveMinutes(DateTime dateTime1, DateTime dateTime2)
+    private bool EqualWithinFiveMinutes(DateTime dateTime1, DateTime dateTime2)
     {
         TimeSpan difference = dateTime1 - dateTime2;
         double absoluteDifferenceMinutes = Math.Abs(difference.TotalMinutes);

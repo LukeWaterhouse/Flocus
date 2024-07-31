@@ -15,7 +15,6 @@ namespace Flocus.Repository.Tests.Services.Repository;
 public class GetUserTests
 {
     private readonly IMapper _mapper;
-    private readonly IDbConnectionService _dbConnectionService;
     private readonly IUserSqlService _sqlQueryService;
     private readonly UserRepositoryService _repositoryService;
 
@@ -28,7 +27,6 @@ public class GetUserTests
         });
 
         _mapper = mappingConfig.CreateMapper();
-        _dbConnectionService = Substitute.For<IDbConnectionService>();
         _sqlQueryService = Substitute.For<IUserSqlService>();
         _repositoryService = new UserRepositoryService(_mapper, _sqlQueryService);
     }
@@ -50,7 +48,6 @@ public class GetUserTests
                     "hash-123",
                     true)
             });
-
 
         // Act
         var result = await _repositoryService.GetUserAsync(username);

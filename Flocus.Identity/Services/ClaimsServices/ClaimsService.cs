@@ -1,4 +1,5 @@
-﻿using Flocus.Identity.Interfaces;
+﻿using Flocus.Domain.Common;
+using Flocus.Identity.Interfaces;
 using Flocus.Identity.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
@@ -6,7 +7,7 @@ using System.Security.Claims;
 
 namespace Flocus.Identity.Services.ClaimsServices;
 
-internal sealed class ClaimsService : IClaimsService
+public sealed class ClaimsService : IClaimsService
 {
     private readonly string MissingClaimErrorMessage = "Could not find required claim from the JWT: {0}";
 
@@ -19,7 +20,7 @@ internal sealed class ClaimsService : IClaimsService
         var role = GetClaimByType(userClaimsDictionary, ClaimTypes.Role);
         var expiry = GetClaimByType(userClaimsDictionary, JwtRegisteredClaimNames.Exp);
 
-        return new Claims(name, email, role, new DateTime(long.Parse(expiry)));
+        return new Claims(name, email, role, Utilities.UnixTimeStampStringToDateTime(expiry));
     }
 
     private string GetClaimByType(Dictionary<string, string> claimTypeValueDict, string claimType)

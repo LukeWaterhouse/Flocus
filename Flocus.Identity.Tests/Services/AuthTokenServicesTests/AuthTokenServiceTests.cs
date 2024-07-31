@@ -1,4 +1,5 @@
-﻿using Flocus.Domain.Interfaces;
+﻿using Flocus.Domain.Common;
+using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Models;
@@ -10,7 +11,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
-using System.Text;
 using Xunit;
 using BC = BCrypt.Net.BCrypt;
 
@@ -75,7 +75,7 @@ public class AuthTokenServiceTests
             claims[2].Value.Should().Be("User");
 
             claims[3].Type.Should().Be("exp");
-            UnixTimeStampStringToDateTime(claims[3].Value).Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
+            Utilities.UnixTimeStampStringToDateTime(claims[3].Value).Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
         }
     }
 
@@ -133,30 +133,5 @@ public class AuthTokenServiceTests
             exception.Should().BeOfType<AuthenticationException>();
             exception.Message.Should().Be("Incorrect username and password combination");
         }
-    }
-
-    private string GenerateRandomId(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        var idBuilder = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++)
-        {
-            idBuilder.Append(chars[random.Next(chars.Length)]);
-        }
-
-        return idBuilder.ToString();
-    }
-
-    private DateTime UnixTimeStampStringToDateTime(string timestampString)
-    {
-        if (!long.TryParse(timestampString, out long timestamp))
-        {
-            throw new ArgumentException("Invalid Unix timestamp string", nameof(timestampString));
-        }
-
-        DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        return unixEpoch.AddSeconds(timestamp);
     }
 }
