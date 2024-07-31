@@ -6,7 +6,7 @@ using Flocus.Identity.Models;
 
 namespace Flocus.Identity.Services.RegisterValidation;
 
-internal class RegistrationValidationService : IRegistrationValidationService
+public sealed class RegistrationValidationService : IRegistrationValidationService
 {
 
     private readonly IRegistrationValidationChainFactory _registrationValidationChainFactory;
@@ -20,8 +20,8 @@ internal class RegistrationValidationService : IRegistrationValidationService
     {
         var errors = new List<Error>();
 
-        var registrationValidationChain = _registrationValidationChainFactory.CreateChain();
-        registrationValidationChain.Validate(errors, registrationModel);
+        var registrationValidationHandlerChain = _registrationValidationChainFactory.CreateChain();
+        registrationValidationHandlerChain.Validate(errors, registrationModel);
 
         if (errors.Any())
         {

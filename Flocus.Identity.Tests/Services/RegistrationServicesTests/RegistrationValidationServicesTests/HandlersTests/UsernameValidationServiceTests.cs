@@ -58,7 +58,6 @@ public sealed class UsernameValidationServiceTests
         {
             new Error(400, $"Username must be less than 20 characters: {username}")
         };
-
         errors.Should().BeEquivalentTo(expectedErrors);
     }
 
@@ -84,7 +83,6 @@ public sealed class UsernameValidationServiceTests
         {
             new Error(400, $"Username must be at least 4 characters: {username}")
         };
-
         errors.Should().BeEquivalentTo(expectedErrors);
     }
 
@@ -110,7 +108,6 @@ public sealed class UsernameValidationServiceTests
         {
             new Error(400, $"Username cannot contain whitespace: {username}")
         };
-
         errors.Should().BeEquivalentTo(expectedErrors);
     }
 
@@ -136,5 +133,6 @@ public sealed class UsernameValidationServiceTests
         {
             new Error(400, $"Profanity detected in username: {username}")
         };
+        errors.Should().BeEquivalentTo(expectedErrors);
     }
 }
