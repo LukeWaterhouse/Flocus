@@ -1,10 +1,8 @@
-﻿using Flocus.Domain.Models;
-using Flocus.Identity.Models;
+﻿using Flocus.Identity.Models;
 using Flocus.Identity.Services.AdminKeyServices;
-using FluentAssertions.Execution;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using System.Security.Authentication;
-using System.Security.Claims;
 using Xunit;
 
 namespace Flocus.Identity.Tests.Services.AdminKeyServicesTests;
