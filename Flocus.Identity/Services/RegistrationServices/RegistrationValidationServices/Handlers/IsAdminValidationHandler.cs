@@ -6,7 +6,6 @@ namespace Flocus.Identity.Services.RegistrationServices.RegistrationValidationSe
 
 public sealed class IsAdminValidationHandler : BaseRegistrationValidationHandler
 {
-
     public override (List<Error>, RegistrationModel) Validate(List<Error> errors, RegistrationModel registrationModel)
     {
         var adminKey = registrationModel.Key;
