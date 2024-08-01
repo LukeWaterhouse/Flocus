@@ -1,6 +1,7 @@
 ﻿using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
+using Flocus.Identity.Interfaces.PasswordValidationServices;
 using Flocus.Identity.Models;
 using Flocus.Repository.Exceptions;
 using Microsoft.IdentityModel.Tokens;
@@ -8,20 +9,22 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
-using BC = BCrypt.Net.BCrypt;
 
 namespace Flocus.Identity.Services.AuthTokenServices;
 
 public class AuthTokenService : IAuthTokenService
 {
     private readonly IUserRepositoryService _userRepositoryService;
+    private readonly IPasswordValidationService _passwordValidationService;
     private readonly IdentitySettings _identitySettings;
 
-    private readonly string IncorrectPasswordMessage = "Incorrect username and password combination";
-
-    public AuthTokenService(IUserRepositoryService userRepositoryService, IdentitySettings identitySettings)
+    public AuthTokenService(
+        IUserRepositoryService userRepositoryService,
+        IPasswordValidationService passwordValidationService,
+        IdentitySettings identitySettings)
     {
         _userRepositoryService = userRepositoryService;
+        _passwordValidationService = passwordValidationService;
         _identitySettings = identitySettings;
     }
 
@@ -30,18 +33,12 @@ public class AuthTokenService : IAuthTokenService
         try
         {
             var user = await _userRepositoryService.GetUserAsync(username);
-            var isVerified = BC.Verify(password, user.PasswordHash);
-
-            if (isVerified)
-            {
-                return GenerateToken(user);
-            }
-            throw new AuthenticationException(IncorrectPasswordMessage);
-
+            _passwordValidationService.ValidatePassword(password, user.PasswordHash);
+            return GenerateToken(user);
         }
         catch (RecordNotFoundException)
         {
-            throw new AuthenticationException(IncorrectPasswordMessage);
+            throw new AuthenticationException(_passwordValidationService.IncorrectPasswordMessage);
         }
     }
 

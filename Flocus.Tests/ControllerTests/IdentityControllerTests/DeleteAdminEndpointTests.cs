@@ -70,8 +70,8 @@ public class DeleteAdminEndpointTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _removeAccountServiceMock.Received(1).DeleteAdminAsAdmin(username, password);
-            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminWithKey(Arg.Any<string>(), Arg.Any<string>());
+            await _removeAccountServiceMock.Received(1).DeleteAdminAsAdminAsync(username, password);
+            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminWithKeyAsync(Arg.Any<string>(), Arg.Any<string>());
         }
     }
 
@@ -101,8 +101,8 @@ public class DeleteAdminEndpointTests
         {
             exception.Should().BeOfType<UnauthorizedAccessException>();
             exception.Message.Should().Be("You must provide a password when deleting your own admin account");
-            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdmin(Arg.Any<string>(), Arg.Any<string>());
-            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminWithKey(Arg.Any<string>(), Arg.Any<string>());
+            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminAsync(Arg.Any<string>(), Arg.Any<string>());
+            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminWithKeyAsync(Arg.Any<string>(), Arg.Any<string>());
         }
     }
 
@@ -130,8 +130,8 @@ public class DeleteAdminEndpointTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdmin(Arg.Any<string>(), Arg.Any<string>());
-            await _removeAccountServiceMock.Received(1).DeleteAdminAsAdminWithKey(formUsername, adminKey);
+            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminAsync(Arg.Any<string>(), Arg.Any<string>());
+            await _removeAccountServiceMock.Received(1).DeleteAdminAsAdminWithKeyAsync(formUsername, adminKey);
         }
     }
 
@@ -161,8 +161,8 @@ public class DeleteAdminEndpointTests
         {
             exception.Should().BeOfType<UnauthorizedAccessException>();
             exception.Message.Should().Be($"You must provide an admin key when deleting another admin account: {formUsername}");
-            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdmin(Arg.Any<string>(), Arg.Any<string>());
-            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminWithKey(Arg.Any<string>(), Arg.Any<string>());
+            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminAsync(Arg.Any<string>(), Arg.Any<string>());
+            await _removeAccountServiceMock.DidNotReceiveWithAnyArgs().DeleteAdminAsAdminWithKeyAsync(Arg.Any<string>(), Arg.Any<string>());
         }
     }
 }

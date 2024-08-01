@@ -2,6 +2,7 @@
 using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
+using Flocus.Identity.Interfaces.PasswordValidationServices;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services.AuthTokenServices;
 using Flocus.Repository.Exceptions;
@@ -12,7 +13,6 @@ using NSubstitute.ExceptionExtensions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Authentication;
 using Xunit;
-using BC = BCrypt.Net.BCrypt;
 
 
 namespace Flocus.Identity.Tests.Services.AuthTokenServicesTests;
@@ -20,6 +20,7 @@ namespace Flocus.Identity.Tests.Services.AuthTokenServicesTests;
 public class AuthTokenServiceTests
 {
     private readonly IUserRepositoryService _userRepositoryServiceMock;
+    private readonly IPasswordValidationService _passwordValidationServiceMock;
     private readonly IdentitySettings _identitySettings;
 
     private readonly IAuthTokenService _authTokenService;
@@ -32,8 +33,9 @@ public class AuthTokenServiceTests
             "audience",
             "adminKey");
         _userRepositoryServiceMock = Substitute.For<IUserRepositoryService>();
+        _passwordValidationServiceMock = Substitute.For<IPasswordValidationService>();
 
-        _authTokenService = new AuthTokenService(_userRepositoryServiceMock, _identitySettings);
+        _authTokenService = new AuthTokenService(_userRepositoryServiceMock, _passwordValidationServiceMock, _identitySettings);
     }
 
     [Fact]
@@ -43,7 +45,7 @@ public class AuthTokenServiceTests
         var username = "luke";
         var password = "rollo123";
         var email = "luklerollo@hotmail.co.uk";
-        var passwordHash = BC.HashPassword(password);
+        var passwordHash = "hashedPassword";
 
         _userRepositoryServiceMock.GetUserAsync(username).Returns(
             new User(
@@ -76,38 +78,8 @@ public class AuthTokenServiceTests
 
             claims[3].Type.Should().Be("exp");
             Utilities.UnixTimeStampStringToDateTime(claims[3].Value).Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromMinutes(1));
-        }
-    }
 
-    [Fact]
-    public async Task GetAuthAsync_WithIncorrectPassword_ThrowsCorrectException()
-    {
-        // Arrange
-        var username = "luke";
-        var correctPassword = "rollo123";
-        var incorrectPassword = "rollo1234";
-        var passwordHash = BC.HashPassword(correctPassword);
-
-        _userRepositoryServiceMock.GetUserAsync(username).Returns(
-            new User(
-                "clientId",
-                "lukerollo@hotmail.co.uk",
-                DateTime.UtcNow,
-                username,
-                false,
-                passwordHash));
-
-        // Act
-        Exception exception = await Record.ExceptionAsync(async () =>
-        {
-            var token = await _authTokenService.GetAuthTokenAsync(username, incorrectPassword);
-        });
-
-        //Assert
-        using (new AssertionScope())
-        {
-            exception.Should().BeOfType<AuthenticationException>();
-            exception.Message.Should().Be("Incorrect username and password combination");
+            _passwordValidationServiceMock.Received(1).ValidatePassword(password, passwordHash);
         }
     }
 
@@ -117,9 +89,11 @@ public class AuthTokenServiceTests
         // Arrange
         var username = "luke";
         var password = "rollo123";
-        var passwordHash = BC.HashPassword(password);
+
+        var incorrectPasswordMessage = "Incorrect username and password combination";
 
         _userRepositoryServiceMock.GetUserAsync(username).Throws(new RecordNotFoundException("user not found"));
+        _passwordValidationServiceMock.IncorrectPasswordMessage.Returns(incorrectPasswordMessage);
 
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
@@ -131,7 +105,8 @@ public class AuthTokenServiceTests
         using (new AssertionScope())
         {
             exception.Should().BeOfType<AuthenticationException>();
-            exception.Message.Should().Be("Incorrect username and password combination");
+            exception.Message.Should().Be(incorrectPasswordMessage);
+            _ = _passwordValidationServiceMock.Received(1).IncorrectPasswordMessage;
         }
     }
 }

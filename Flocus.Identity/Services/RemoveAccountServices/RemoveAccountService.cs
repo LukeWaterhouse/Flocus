@@ -2,8 +2,7 @@
 using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AdminKeyInterfaces;
-using System.Security.Authentication;
-using BC = BCrypt.Net.BCrypt;
+using Flocus.Identity.Interfaces.PasswordValidationServices;
 
 namespace Flocus.Identity.Services.RemoveAccountServices;
 
@@ -13,37 +12,41 @@ public class RemoveAccountService : IRemoveAccountService
 {
     private readonly IUserRepositoryService _userRepositoryService;
     private readonly IAdminKeyService _checkAdminKeyService;
+    private readonly IPasswordValidationService _passwordValidationServiceMock;
 
-    private readonly string InvalidPasswordMessage = "Invalid username and password combination";
     private readonly string CannotDeleteAdminUserMessage = "Cannot delete admin user";
 
-    public RemoveAccountService(IUserRepositoryService userRepositoryService, IAdminKeyService checkAdminKeyService)
+    public RemoveAccountService(
+        IUserRepositoryService userRepositoryService,
+        IAdminKeyService checkAdminKeyService,
+        IPasswordValidationService passwordValidationService)
     {
         _userRepositoryService = userRepositoryService;
         _checkAdminKeyService = checkAdminKeyService;
+        _passwordValidationServiceMock = passwordValidationService;
     }
 
-    public async Task DeleteUserAsUser(string username, string password)
+    public async Task DeleteUserAsUserAsync(string username, string password)
     {
         var user = await _userRepositoryService.GetUserAsync(username);
         EnsureUserNotAdmin(user);
         await VerifyAndDeleteUser(user, password);
     }
 
-    public async Task DeleteUserAsAdmin(string username)
+    public async Task DeleteUserAsAdminAsync(string username)
     {
         var user = await _userRepositoryService.GetUserAsync(username);
         EnsureUserNotAdmin(user);
         await DeleteUser(user);
     }
 
-    public async Task DeleteAdminAsAdmin(string username, string password)
+    public async Task DeleteAdminAsAdminAsync(string username, string password)
     {
         var adminUser = await _userRepositoryService.GetUserAsync(username);
         await VerifyAndDeleteUser(adminUser, password);
     }
 
-    public async Task DeleteAdminAsAdminWithKey(string username, string key)
+    public async Task DeleteAdminAsAdminWithKeyAsync(string username, string key)
     {
         //TODO: need to check admin still exists or a rampant deleted admin with a token still valid can continue to do damage.
         var user = await _userRepositoryService.GetUserAsync(username);
@@ -67,13 +70,8 @@ public class RemoveAccountService : IRemoveAccountService
 
     private async Task VerifyAndDeleteUser(User user, string password)
     {
-        var isVerified = BC.Verify(password, user.PasswordHash);
-        if (isVerified)
-        {
-            await DeleteUser(user);
-            return;
-        }
-        throw new AuthenticationException(InvalidPasswordMessage);
+        _passwordValidationServiceMock.ValidatePassword(password, user.PasswordHash);
+        await DeleteUser(user);
     }
     #endregion
 }

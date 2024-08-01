@@ -68,7 +68,7 @@ public class DeleteUserAsUserEndpointTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _removeAccountServiceMock.Received(1).DeleteUserAsUser(username, password);
+            await _removeAccountServiceMock.Received(1).DeleteUserAsUserAsync(username, password);
         }
     }
 }

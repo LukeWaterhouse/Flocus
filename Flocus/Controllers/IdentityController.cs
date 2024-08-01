@@ -56,7 +56,7 @@ public class IdentityController : ControllerBase
     public async Task<IActionResult> DeleteUserAsUserAsync([FromForm] string password, CancellationToken ct)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
-        await _removeAccountService.DeleteUserAsUser(claims.Username, password);
+        await _removeAccountService.DeleteUserAsUserAsync(claims.Username, password);
         return Ok();
     }
 
@@ -64,7 +64,7 @@ public class IdentityController : ControllerBase
     [HttpDelete("userAsAdmin", Name = "DeleteUserAsAdmin")]
     public async Task<IActionResult> DeleteUserAsAdminAsync([FromForm] string username, CancellationToken ct)
     {
-        await _removeAccountService.DeleteUserAsAdmin(username);
+        await _removeAccountService.DeleteUserAsAdminAsync(username);
         return Ok();
     }
 
@@ -77,12 +77,12 @@ public class IdentityController : ControllerBase
         if (claims.Username == username)
         {
             var nullCheckedPassword = password ?? throw new UnauthorizedAccessException("You must provide a password when deleting your own admin account");
-            await _removeAccountService.DeleteAdminAsAdmin(username, nullCheckedPassword);
+            await _removeAccountService.DeleteAdminAsAdminAsync(username, nullCheckedPassword);
             return Ok();
         }
 
         var nullCheckedAdminKey = key ?? throw new UnauthorizedAccessException($"You must provide an admin key when deleting another admin account: {username}");
-        await _removeAccountService.DeleteAdminAsAdminWithKey(username, nullCheckedAdminKey);
+        await _removeAccountService.DeleteAdminAsAdminWithKeyAsync(username, nullCheckedAdminKey);
         return Ok();
     }
 }

@@ -1,12 +1,14 @@
 ﻿using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AdminKeyInterfaces;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
+using Flocus.Identity.Interfaces.PasswordValidationServices;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
 using Flocus.Identity.Interfaces.RegisterValidationInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services.AdminKeyServices;
 using Flocus.Identity.Services.AuthTokenServices;
 using Flocus.Identity.Services.ClaimsServices;
+using Flocus.Identity.Services.PasswordValidationServices;
 using Flocus.Identity.Services.RegisterValidation;
 using Flocus.Identity.Services.RegisterValidation.Handlers;
 using Flocus.Identity.Services.RegistrationServices;
@@ -62,6 +64,7 @@ public static class IdentityServiceExtensions
         services.AddScoped<IAdminKeyService, AdminKeyService>();
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IAuthTokenService, AuthTokenService>();
+        services.AddScoped<IPasswordValidationService, PasswordValidationService>();
 
         #region Input validation handling
         services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();

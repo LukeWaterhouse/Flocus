@@ -60,7 +60,7 @@ public class DeleteUserAsAdminEndpointTests
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _removeAccountServiceMock.Received(1).DeleteUserAsAdmin(username);
+            await _removeAccountServiceMock.Received(1).DeleteUserAsAdminAsync(username);
         }
     }
 }
