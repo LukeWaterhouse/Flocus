@@ -43,7 +43,17 @@ public sealed class PasswordValidationServiceTests
         using (new AssertionScope())
         {
             exception.Should().BeOfType<AuthenticationException>();
-            exception.Message.Should().Be("Invalid username and password combination");
+            exception.Message.Should().Be("Incorrect username and password combination");
         }
+    }
+
+    [Fact]
+    public void GetIncorrectPasswordMessage_ValidCall_GetsCorrectMessage()
+    {
+        // Act
+        var result = _passwordValidationService.IncorrectUsernamePasswordMessage;
+
+        // Assert
+        result.Should().Be("Incorrect username and password combination");
     }
 }

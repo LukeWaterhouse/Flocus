@@ -93,7 +93,7 @@ public class AuthTokenServiceTests
         var incorrectPasswordMessage = "Incorrect username and password combination";
 
         _userRepositoryServiceMock.GetUserAsync(username).Throws(new RecordNotFoundException("user not found"));
-        _passwordValidationServiceMock.IncorrectPasswordMessage.Returns(incorrectPasswordMessage);
+        _passwordValidationServiceMock.IncorrectUsernamePasswordMessage.Returns(incorrectPasswordMessage);
 
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
@@ -106,7 +106,7 @@ public class AuthTokenServiceTests
         {
             exception.Should().BeOfType<AuthenticationException>();
             exception.Message.Should().Be(incorrectPasswordMessage);
-            _ = _passwordValidationServiceMock.Received(1).IncorrectPasswordMessage;
+            _ = _passwordValidationServiceMock.Received(1).IncorrectUsernamePasswordMessage;
         }
     }
 }

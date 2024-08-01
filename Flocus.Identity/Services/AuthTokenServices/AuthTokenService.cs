@@ -38,7 +38,7 @@ public class AuthTokenService : IAuthTokenService
         }
         catch (RecordNotFoundException)
         {
-            throw new AuthenticationException(_passwordValidationService.IncorrectPasswordMessage);
+            throw new AuthenticationException(_passwordValidationService.IncorrectUsernamePasswordMessage);
         }
     }
 
