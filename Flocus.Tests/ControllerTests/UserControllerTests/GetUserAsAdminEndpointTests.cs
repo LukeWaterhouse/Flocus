@@ -3,7 +3,6 @@ using Flocus.Controllers;
 using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
 using Flocus.Identity.Interfaces;
-using Flocus.Identity.Models;
 using Flocus.Mapping;
 using Flocus.Models.ReturnModels.UserReturnModels;
 using FluentAssertions;
@@ -11,12 +10,11 @@ using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System.Security.Claims;
 using Xunit;
 
 namespace Flocus.Tests.ControllerTests.UserControllerTests;
 
-public class GetUserEndpointTests
+public class GetUserAsAdminEndpointTests
 {
     private readonly ILogger<UserController> _loggerMock;
     private readonly IUserService _userServiceMock;
@@ -25,7 +23,7 @@ public class GetUserEndpointTests
 
     private readonly UserController _userController;
 
-    public GetUserEndpointTests()
+    public GetUserAsAdminEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<UserController>>();
         _userServiceMock = Substitute.For<IUserService>();
@@ -40,25 +38,22 @@ public class GetUserEndpointTests
         _userController = new UserController(_loggerMock, _userServiceMock, _claimsServiceMock, _mapper);
     }
 
-    [Theory]
-    [InlineData(true, "Admin")]
-    [InlineData(false, "User")]
-    public async Task GetUserAsync_ValidUser_ReturnsOk(bool isAdmin, string claimsRole)
+    [Fact]
+    public async Task GetUserAsAdminAsync()
     {
         // Arrange
         var username = "lukosparta123";
         var email = "lukewwaterhouse@hotmail.com";
         var createdAtDate = DateTime.UtcNow;
         var clientId = "123123";
-
-        var claims = new Claims(username, email, claimsRole, DateTime.UtcNow);
-        _claimsServiceMock.GetClaimsFromUser(Arg.Any<ClaimsPrincipal>()).Returns(claims);
+        var isAdmin = false;
 
         var user = new User(clientId, email, createdAtDate, username, isAdmin, "passwordHash");
         _userServiceMock.GetUserAsync(username).Returns(user);
 
+
         // Act
-        var result = await _userController.GetUserAsync();
+        var result = await _userController.GetUserAsAdminAsync(username);
 
         // Assert
         var expectedResponse = new UserSensitiveInfoDto(clientId, email, createdAtDate, username, isAdmin);

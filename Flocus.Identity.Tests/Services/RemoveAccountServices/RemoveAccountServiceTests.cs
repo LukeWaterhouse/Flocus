@@ -60,7 +60,7 @@ public sealed class RemoveAccountServiceTests
         using (new AssertionScope())
         {
             await _userRepositoryServiceMock.Received(1).GetUserAsync(username);
-            await _userRepositoryServiceMock.Received(1).DeleteUser(clientId);
+            await _userRepositoryServiceMock.Received(1).DeleteUserAsync(clientId);
             _passwordValidationServiceMock.Received(1).ValidatePassword(password, passwordHash);
         }
     }
@@ -94,7 +94,7 @@ public sealed class RemoveAccountServiceTests
         using (new AssertionScope())
         {
             await _userRepositoryServiceMock.Received(1).GetUserAsync(username);
-            await _userRepositoryServiceMock.Received(1).DeleteUser(clientId);
+            await _userRepositoryServiceMock.Received(1).DeleteUserAsync(clientId);
             _passwordValidationServiceMock.DidNotReceive().ValidatePassword(Arg.Any<string>(), Arg.Any<string>());
             _adminKeyServiceMock.DidNotReceive().CheckAdminKeyCorrect(Arg.Any<string>());
         }
@@ -127,7 +127,7 @@ public sealed class RemoveAccountServiceTests
         using (new AssertionScope())
         {
             await _userRepositoryServiceMock.Received(1).GetUserAsync(username);
-            await _userRepositoryServiceMock.Received(1).DeleteUser(clientId);
+            await _userRepositoryServiceMock.Received(1).DeleteUserAsync(clientId);
             _adminKeyServiceMock.Received(1).CheckAdminKeyCorrect(adminKey);
             _passwordValidationServiceMock.DidNotReceive().ValidatePassword(Arg.Any<string>(), Arg.Any<string>());
         }
@@ -166,7 +166,7 @@ public sealed class RemoveAccountServiceTests
             _passwordValidationServiceMock.DidNotReceive().ValidatePassword(Arg.Any<string>(), Arg.Any<string>());
             _passwordValidationServiceMock.DidNotReceive().ValidatePassword(Arg.Any<string>(), Arg.Any<string>());
             _adminKeyServiceMock.DidNotReceive().CheckAdminKeyCorrect(Arg.Any<string>());
-            await _userRepositoryServiceMock.DidNotReceive().DeleteUser(Arg.Any<string>());
+            await _userRepositoryServiceMock.DidNotReceive().DeleteUserAsync(Arg.Any<string>());
 
         }
     }

@@ -57,7 +57,7 @@ public class DeleteUserByNameEndpointTests
         var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await _identityController.DeleteUserByNameAsync(username, adminKey, cancellationToken);
+        var result = await _identityController.DeleteUserAsAdminAsync(username, adminKey, cancellationToken);
 
         // Assert
         using (new AssertionScope())

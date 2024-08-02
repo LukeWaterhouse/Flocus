@@ -187,6 +187,41 @@ public class CreateDbUserTests
         }
     }
 
+    [Fact]
+    public async Task CreateDbUser_UsersFoundButDoNotMatch_ThrowsException()
+    {
+        // Arrange
+        var username = "luke";
+        var passwordHash = "passwordHash";
+        var emailAddress = "luke@hotmail.com";
+        var adminRights = false;
+
+        var dbUser = new DbUser(
+            Guid.NewGuid().ToString(),
+            "differentEmail",
+            DateTime.UtcNow,
+            "differentUsername",
+            passwordHash,
+            adminRights);
+
+        _sqlQueryService.GetUsersByUsernameOrEmailAsync(username, emailAddress).Returns(new List<DbUser> { dbUser });
+
+        // Act
+        Exception exception = await Record.ExceptionAsync(async () =>
+        {
+            await _repositoryService.CreateDbUserAsync(username, passwordHash, emailAddress, adminRights);
+        });
+
+        // Assert
+        using (new AssertionScope())
+        {
+            exception.Should().BeOfType<Exception>();
+            exception.Message.Should().Be($"Results found when searching users by {username} or {emailAddress} but were not caught.");
+            await _sqlQueryService.Received().GetUsersByUsernameOrEmailAsync(username, emailAddress);
+            await _sqlQueryService.DidNotReceive().CreateUserAsync(Arg.Any<DbUser>());
+        }
+    }
+
     private bool EqualWithinFiveMinutes(DateTime dateTime1, DateTime dateTime2)
     {
         TimeSpan difference = dateTime1 - dateTime2;

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Flocus.Domain.Interfaces;
 using Flocus.Identity.Interfaces;
-using Flocus.Models.ReturnModels;
+using Flocus.Models.ReturnModels.UserReturnModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,8 +16,6 @@ public class UserController : ControllerBase
     private readonly IClaimsService _claimsService;
     private readonly IMapper _mapper;
 
-    private readonly string AdminClaimsRole = "Admin";
-
     public UserController(ILogger<UserController> logger, IUserService userService, IClaimsService claimsService, IMapper mapper)
     {
         _logger = logger;
@@ -28,22 +26,24 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpGet(Name = "GetUser")]
-    public async Task<IActionResult> GetUserAsync(string? username)
+    public async Task<IActionResult> GetUserAsync()
     {
         var claims = _claimsService.GetClaimsFromUser(User);
-        var usernameToRetrieve = claims.Username;
 
-        if (username != null && username != claims.Username)
-        {
-            if (claims.Role != AdminClaimsRole)
-            {
-                throw new UnauthorizedAccessException($"Must be '{AdminClaimsRole}' to access other users.");
-            }
-            usernameToRetrieve = username;
-        }
+        var user = await _userService.GetUserAsync(claims.Username);
+        var userDto = _mapper.Map<UserSensitiveInfoDto>(user);
 
-        var user = await _userService.GetUserAsync(usernameToRetrieve);
-        var userDto = _mapper.Map<UserDto>(user);
+        return Ok(userDto);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("admin/user/{username}", Name = "GetUserAsAdmin")]
+    // TODO: at some point could make this return list of users filterable by username so admin can get all users.
+    public async Task<IActionResult> GetUserAsAdminAsync(string username)
+    {
+        var user = await _userService.GetUserAsync(username);
+        var userDto = _mapper.Map<UserSensitiveInfoDto>(user);
 
         return Ok(userDto);
     }

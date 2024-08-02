@@ -52,7 +52,7 @@ public class RemoveAccountService : IRemoveAccountService
     #region Private Methods
     private async Task DeleteUser(User user)
     {
-        await _userRepositoryService.DeleteUser(user.ClientId);
+        await _userRepositoryService.DeleteUserAsync(user.ClientId);
     }
 
     private async Task VerifyAndDeleteUser(User user, string password)

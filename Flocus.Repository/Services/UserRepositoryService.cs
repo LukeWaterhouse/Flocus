@@ -36,7 +36,7 @@ public class UserRepositoryService : IUserRepositoryService
         if (!success) { throw new Exception("There was an error when creating the user."); }
     }
 
-    public async Task DeleteUser(string userId)
+    public async Task DeleteUserAsync(string userId)
     {
         var success = await _sqlQueryService.DeleteUserWithRelatedTables(userId);
         if (!success) { throw new Exception("There was an error when deleting the user."); }

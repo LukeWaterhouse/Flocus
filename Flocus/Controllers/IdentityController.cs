@@ -1,6 +1,4 @@
 using AutoMapper;
-using Flocus.Domain.Models.Errors;
-using Flocus.Identity.Exceptions;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
@@ -65,7 +63,7 @@ public class IdentityController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("admin/user/{username}", Name = "DeleteUserByName")]
-    public async Task<IActionResult> DeleteUserByNameAsync(string username, [FromForm] string? key, CancellationToken ct)
+    public async Task<IActionResult> DeleteUserAsAdminAsync(string username, [FromForm] string? key, CancellationToken ct)
     {
         await _removeAccountService.DeleteUserByNameAsync(username, key);
         return Ok();
