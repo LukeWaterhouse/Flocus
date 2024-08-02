@@ -1,10 +1,9 @@
 ﻿namespace Flocus.Repository.Models;
 
-internal class DbUser
-{
-    public string Id { get; set; }
-    public DateTime CreationDate { get; set; }
-    public string Username { get; set; }
-    public string PasswordHash { get; set; }
-    public bool AdminRights { get; set; }
-}
+public sealed record DbUser(
+    string Client_id,
+    string Email_address,
+    DateTime Account_creation_date,
+    string Username,
+    string Password_hash,
+    bool Admin_rights);

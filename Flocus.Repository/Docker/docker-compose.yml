@@ -1,17 +1,20 @@
-﻿version: '3.1'
+﻿version: '3.6'
 
 services:
 
-  flocusdb:
-    build:
+  postgres:
+   container_name: flocusDbContainer
+   build:
       context: ./
       dockerfile: Dockerfile
-    restart: always
-    user: postgres
-    environment:
-      POSTGRES_PASSWORD: 123
-    ports:
+   restart: always
+   environment:
+     POSTGRES_PASSWORD: mypassword
+     POSTGRES_USER: myuser
+     POSTGRES_DB: mydatabase
+   ports:
       - 5432:5432
+
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -25,10 +28,10 @@ services:
                 "1": {
                     "Name": "FlocusServer",
                     "Group": "Servers", 
-                    "Host": "flocusDb",
+                    "Host": "flocusDbContainer",
                     "Port": 5432,
-                    "MaintenanceDB": "postgres",
-                    "Username": "postgres",
+                    "MaintenanceDB": "mydatabase",
+                    "Username": "myuser",
                     "SSLMode": "prefer"
                 }
             }
@@ -37,3 +40,5 @@ services:
     restart: always
     ports:
         - 8080:80
+    depends_on:
+        - postgres

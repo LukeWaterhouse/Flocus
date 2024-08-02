@@ -3,11 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus", "Flocus.csproj", "{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus", "Flocus.csproj", "{B2ED8C6A-FB1B-4D9E-905F-5BB142E343AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus.Repository", "..\Flocus.Repository\Flocus.Repository.csproj", "{783EF742-5060-470F-9DEF-8E73EFE2A1AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus.Repository", "..\Flocus.Repository\Flocus.Repository.csproj", "{783EF742-5060-470F-9DEF-8E73EFE2A1AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus.Domain", "..\Flocus.Domain\Flocus.Domain.csproj", "{7A19B551-04BA-4283-9E56-BBF9249AAF15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus.Domain", "..\Flocus.Domain\Flocus.Domain.csproj", "{7A19B551-04BA-4283-9E56-BBF9249AAF15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus.Identity", "..\Flocus.Identity\Flocus.Identity.csproj", "{67F411AB-83EA-42A8-B1D4-173751356B1D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus.Domain.Tests", "..\Flocus.Domain.Tests\Flocus.Domain.Tests.csproj", "{94DA57CB-9F34-41D7-9616-2F1FA21D709B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus.Tests", "..\Flocus.Tests\Flocus.Tests.csproj", "{A920EF20-1454-4856-B7FA-89C3B4F23360}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flocus.Identity.Tests", "..\Flocus.Identity.Tests\Flocus.Identity.Tests.csproj", "{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flocus.Repository.Tests", "..\Flocus.Repository.Tests\Flocus.Repository.Tests.csproj", "{F6A24CFA-B236-4741-8B20-65E9041BB794}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +37,26 @@ Global
 		{7A19B551-04BA-4283-9E56-BBF9249AAF15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A19B551-04BA-4283-9E56-BBF9249AAF15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A19B551-04BA-4283-9E56-BBF9249AAF15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67F411AB-83EA-42A8-B1D4-173751356B1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67F411AB-83EA-42A8-B1D4-173751356B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67F411AB-83EA-42A8-B1D4-173751356B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67F411AB-83EA-42A8-B1D4-173751356B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94DA57CB-9F34-41D7-9616-2F1FA21D709B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DA57CB-9F34-41D7-9616-2F1FA21D709B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DA57CB-9F34-41D7-9616-2F1FA21D709B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DA57CB-9F34-41D7-9616-2F1FA21D709B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A920EF20-1454-4856-B7FA-89C3B4F23360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D52187C-DD0B-4CD4-BC32-EB5F0A50358D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6A24CFA-B236-4741-8B20-65E9041BB794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6A24CFA-B236-4741-8B20-65E9041BB794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6A24CFA-B236-4741-8B20-65E9041BB794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6A24CFA-B236-4741-8B20-65E9041BB794}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

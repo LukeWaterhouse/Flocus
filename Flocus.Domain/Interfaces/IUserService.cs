@@ -1,7 +1,8 @@
-﻿namespace Flocus.Domain.Interfaces;
+﻿using Flocus.Domain.Models;
+
+namespace Flocus.Domain.Interfaces;
 
 public interface IUserService
 {
-    Task CreateUserAsync(string username, string password, bool isAdmin, string? key);
-    Task LoginUserAsync(string username, string password);
+    Task<User> GetUserAsync(string username);
 }
