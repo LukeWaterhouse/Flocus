@@ -3,17 +3,20 @@ using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
+using Flocus.Identity.Interfaces.RemoveAccountInterfaces;
+using Flocus.Identity.Models;
 using Flocus.Mapping;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System.Security.Claims;
 using Xunit;
 
 namespace Flocus.Tests.ControllerTests.IdentityControllerTests;
 
-public class DeleteUserAsAdminEndpointTests
+public class DeleteSelfUserEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IRemoveAccountService _removeAccountServiceMock;
@@ -23,7 +26,7 @@ public class DeleteUserAsAdminEndpointTests
     private readonly IMapper _mapper;
     private readonly IdentityController _identityController;
 
-    public DeleteUserAsAdminEndpointTests()
+    public DeleteSelfUserEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<IdentityController>>();
         _removeAccountServiceMock = Substitute.For<IRemoveAccountService>();
@@ -47,20 +50,26 @@ public class DeleteUserAsAdminEndpointTests
     }
 
     [Fact]
-    public async Task DeleteUserAsAdminAsync_ValidUsername_ReturnsOk()
+    public async Task DeleteSelfUserAsync_ValidPasswordAndClaims_ReturnsOk()
     {
         // Arrange
         var username = "lukosparta123";
+        var email = "lukewwaterhouse@hotmail.com";
+        var role = "Admin";
+        var password = "rollo123";
         var cancellationToken = CancellationToken.None;
 
+        var claims = new Claims(username, email, role, DateTime.UtcNow);
+        _claimsServiceMock.GetClaimsFromUser(Arg.Any<ClaimsPrincipal>()).Returns(claims);
+
         // Act
-        var result = await _identityController.DeleteUserAsAdminAsync(username, cancellationToken);
+        var result = await _identityController.DeleteSelfUserAsync(password, cancellationToken);
 
         // Assert
         using (new AssertionScope())
         {
             result.Should().BeOfType<OkResult>();
-            await _removeAccountServiceMock.Received(1).DeleteUserAsAdminAsync(username);
+            await _removeAccountServiceMock.Received(1).DeleteSelfUserAsync(username, password);
         }
     }
 }

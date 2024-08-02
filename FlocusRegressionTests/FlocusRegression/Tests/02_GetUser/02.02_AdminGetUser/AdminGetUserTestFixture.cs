@@ -11,7 +11,7 @@ public sealed class AdminGetUserTestFixture : IDisposable
 
     public readonly string Username = "adminGetUser";
     public readonly string Password = "Rollo!234";
-    public readonly string EmailAddress = "lukewwaterhouse@hotmail.co.uk";
+    public readonly string EmailAddress = "adminGetUser@hotmail.co.uk";
     public readonly bool IsAdmin = true;
     public readonly string Key = "n/a";
 

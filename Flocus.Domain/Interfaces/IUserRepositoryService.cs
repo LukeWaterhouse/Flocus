@@ -6,5 +6,5 @@ public interface IUserRepositoryService
 {
     Task CreateDbUserAsync(string username, string passwordHash, string emailAddress, bool adminRights);
     Task<User> GetUserAsync(string username);
-    Task DeleteUser(string userId);
+    Task DeleteUser(string clientId);
 }

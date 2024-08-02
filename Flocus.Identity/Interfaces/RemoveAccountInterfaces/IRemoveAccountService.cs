@@ -1,11 +1,7 @@
-﻿using Flocus.Identity.Models;
-
-namespace Flocus.Identity.Interfaces;
+﻿namespace Flocus.Identity.Interfaces.RemoveAccountInterfaces;
 
 public interface IRemoveAccountService
 {
-    Task DeleteUserAsUserAsync(string username, string password);
-    Task DeleteUserAsAdminAsync(string username);
-    Task DeleteAdminAsAdminAsync(string username, string password);
-    Task DeleteAdminAsAdminWithKeyAsync(string username, string key);
+    Task DeleteSelfUserAsync(string username, string password);
+    Task DeleteUserByNameAsync(string username, string? adminKey);
 }

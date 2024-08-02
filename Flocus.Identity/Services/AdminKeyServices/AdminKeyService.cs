@@ -15,7 +15,7 @@ public class AdminKeyService : IAdminKeyService
         _identitySettings = identitySettings;
     }
 
-    public void CheckAdminKeyCorrect(string? adminKey)
+    public void CheckAdminKeyCorrect(string adminKey)
     {
         if (adminKey != _identitySettings.AdminKey)
         {

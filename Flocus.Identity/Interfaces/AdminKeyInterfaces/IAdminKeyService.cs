@@ -2,5 +2,5 @@
 
 public interface IAdminKeyService
 {
-    void CheckAdminKeyCorrect(string? adminKey);
+    void CheckAdminKeyCorrect(string adminKey);
 }

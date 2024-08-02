@@ -3,6 +3,7 @@ using Flocus.Controllers;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
+using Flocus.Identity.Interfaces.RemoveAccountInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Mapping;
 using Flocus.Models.Requests;

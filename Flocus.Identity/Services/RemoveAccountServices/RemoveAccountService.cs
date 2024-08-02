@@ -1,8 +1,8 @@
 ﻿using Flocus.Domain.Interfaces;
 using Flocus.Domain.Models;
-using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AdminKeyInterfaces;
 using Flocus.Identity.Interfaces.PasswordValidationServices;
+using Flocus.Identity.Interfaces.RemoveAccountInterfaces;
 
 namespace Flocus.Identity.Services.RemoveAccountServices;
 
@@ -14,8 +14,6 @@ public class RemoveAccountService : IRemoveAccountService
     private readonly IAdminKeyService _checkAdminKeyService;
     private readonly IPasswordValidationService _passwordValidationServiceMock;
 
-    private readonly string CannotDeleteAdminUserMessage = "Cannot delete admin user";
-
     public RemoveAccountService(
         IUserRepositoryService userRepositoryService,
         IAdminKeyService checkAdminKeyService,
@@ -26,43 +24,32 @@ public class RemoveAccountService : IRemoveAccountService
         _passwordValidationServiceMock = passwordValidationService;
     }
 
-    public async Task DeleteUserAsUserAsync(string username, string password)
+    public async Task DeleteSelfUserAsync(string username, string password)
     {
         var user = await _userRepositoryService.GetUserAsync(username);
-        EnsureUserNotAdmin(user);
         await VerifyAndDeleteUser(user, password);
     }
 
-    public async Task DeleteUserAsAdminAsync(string username)
+    public async Task DeleteUserByNameAsync(string username, string? adminKey)
     {
         var user = await _userRepositoryService.GetUserAsync(username);
-        EnsureUserNotAdmin(user);
-        await DeleteUser(user);
-    }
 
-    public async Task DeleteAdminAsAdminAsync(string username, string password)
-    {
-        var adminUser = await _userRepositoryService.GetUserAsync(username);
-        await VerifyAndDeleteUser(adminUser, password);
-    }
+        if (!user.IsAdmin)
+        {
+            await DeleteUser(user);
+            return;
+        }
 
-    public async Task DeleteAdminAsAdminWithKeyAsync(string username, string key)
-    {
-        //TODO: need to check admin still exists or a rampant deleted admin with a token still valid can continue to do damage.
-        var user = await _userRepositoryService.GetUserAsync(username);
-        _checkAdminKeyService.CheckAdminKeyCorrect(key);
+        if (adminKey == null)
+        {
+            throw new UnauthorizedAccessException($"You must provide an admin key when deleting a different admin account: {username}");
+        }
+
+        _checkAdminKeyService.CheckAdminKeyCorrect(adminKey);
         await DeleteUser(user);
     }
 
     #region Private Methods
-    private void EnsureUserNotAdmin(User user)
-    {
-        if (user.IsAdmin)
-        {
-            throw new UnauthorizedAccessException(CannotDeleteAdminUserMessage);
-        }
-    }
-
     private async Task DeleteUser(User user)
     {
         await _userRepositoryService.DeleteUser(user.ClientId);

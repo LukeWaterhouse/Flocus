@@ -4,6 +4,7 @@ using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Interfaces.PasswordValidationServices;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
 using Flocus.Identity.Interfaces.RegisterValidationInterfaces;
+using Flocus.Identity.Interfaces.RemoveAccountInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Identity.Services.AdminKeyServices;
 using Flocus.Identity.Services.AuthTokenServices;

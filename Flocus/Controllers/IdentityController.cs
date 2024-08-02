@@ -1,7 +1,10 @@
 using AutoMapper;
+using Flocus.Domain.Models.Errors;
+using Flocus.Identity.Exceptions;
 using Flocus.Identity.Interfaces;
 using Flocus.Identity.Interfaces.AuthTokenInterfaces;
 using Flocus.Identity.Interfaces.RegisterInterfaces;
+using Flocus.Identity.Interfaces.RemoveAccountInterfaces;
 using Flocus.Identity.Models;
 using Flocus.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
@@ -52,37 +55,19 @@ public class IdentityController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete("user", Name = "DeleteUserAsUser")]
-    public async Task<IActionResult> DeleteUserAsUserAsync([FromForm] string password, CancellationToken ct)
+    [HttpDelete("user", Name = "DeleteSelf")]
+    public async Task<IActionResult> DeleteSelfUserAsync([FromForm] string password, CancellationToken ct)
     {
         var claims = _claimsService.GetClaimsFromUser(User);
-        await _removeAccountService.DeleteUserAsUserAsync(claims.Username, password);
+        await _removeAccountService.DeleteSelfUserAsync(claims.Username, password);
         return Ok();
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("userAsAdmin", Name = "DeleteUserAsAdmin")]
-    public async Task<IActionResult> DeleteUserAsAdminAsync([FromForm] string username, CancellationToken ct)
+    [HttpDelete("admin/user/{username}", Name = "DeleteUserByName")]
+    public async Task<IActionResult> DeleteUserByNameAsync(string username, [FromForm] string? key, CancellationToken ct)
     {
-        await _removeAccountService.DeleteUserAsAdminAsync(username);
-        return Ok();
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpDelete("adminUser", Name = "DeleteAdmin")]
-    public async Task<IActionResult> DeleteAdminAsync([FromForm] string username, [FromForm] string? password, [FromForm] string? key, CancellationToken ct)
-    {
-        var claims = _claimsService.GetClaimsFromUser(User);
-
-        if (claims.Username == username)
-        {
-            var nullCheckedPassword = password ?? throw new UnauthorizedAccessException("You must provide a password when deleting your own admin account");
-            await _removeAccountService.DeleteAdminAsAdminAsync(username, nullCheckedPassword);
-            return Ok();
-        }
-
-        var nullCheckedAdminKey = key ?? throw new UnauthorizedAccessException($"You must provide an admin key when deleting another admin account: {username}");
-        await _removeAccountService.DeleteAdminAsAdminWithKeyAsync(username, nullCheckedAdminKey);
+        await _removeAccountService.DeleteUserByNameAsync(username, key);
         return Ok();
     }
 }

@@ -540,7 +540,7 @@ public sealed class UserRegistrationAndDeletionTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(401, "Incorrect username and password combination")
+                new ErrorDto(401, "Invalid username and password combination")
             });
 
         using (new AssertionScope())
@@ -635,7 +635,7 @@ public sealed class UserRegistrationAndDeletionTests
 
     #region Deletion
     [Fact, Order(20)]
-    public async Task DeleteUser_Unauthenticated_Returns401()
+    public async Task DeleteSelfUser_Unauthenticated_Returns401()
     {
         //Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
@@ -643,13 +643,12 @@ public sealed class UserRegistrationAndDeletionTests
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
@@ -663,7 +662,7 @@ public sealed class UserRegistrationAndDeletionTests
     }
 
     [Fact, Order(21)]
-    public async Task DeleteUser_WrongPassword_Returns401()
+    public async Task DeleteSelfUser_WrongPassword_Returns401()
     {
         //Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
@@ -671,13 +670,12 @@ public sealed class UserRegistrationAndDeletionTests
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
                 { Constants.PasswordRequestKey, "wrong password" }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
@@ -699,7 +697,7 @@ public sealed class UserRegistrationAndDeletionTests
     }
 
     [Fact, Order(22)]
-    public async Task DeleteUser_ValidCredentials_Returns200()
+    public async Task DeleteSelfUser_ValidCredentials_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
@@ -710,7 +708,7 @@ public sealed class UserRegistrationAndDeletionTests
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsUserSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
@@ -724,7 +722,7 @@ public sealed class UserRegistrationAndDeletionTests
     }
 
     [Fact, Order(23)]
-    public async Task GetUser_DeletedUser_Returns404()
+    public async Task DeleteSelfUser_DeletedUser_Returns404()
     {
         //Act
         var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.Username);

@@ -193,7 +193,7 @@ public sealed class AdminRegistrationAndDeletionTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(401, "Incorrect username and password combination")
+                new ErrorDto(401, "Invalid username and password combination")
             });
 
         using (new AssertionScope())
@@ -298,13 +298,12 @@ public sealed class AdminRegistrationAndDeletionTests
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
@@ -326,13 +325,12 @@ public sealed class AdminRegistrationAndDeletionTests
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
                 { Constants.PasswordRequestKey, "wrong password" }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
@@ -354,22 +352,11 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(12)]
-    public async Task DeleteOtherAdmin_UsernameJwtMismatchNoKey_Returns403()
+    public async Task DeleteOtherAdmin_NoKey_Returns403()
     {
-        //Arrange
-        var requestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
-                { Constants.PasswordRequestKey, _fixture.Password }
-            });
-
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
-            {
-                Content = requestBody
-            });
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentAdminUsername)));
 
         //Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
@@ -377,7 +364,7 @@ public sealed class AdminRegistrationAndDeletionTests
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
-                new ErrorDto(403, $"You must provide an admin key when deleting another admin account: {_fixture.DifferentAdminUsername}")
+                new ErrorDto(403, $"You must provide an admin key when deleting a different admin account: {_fixture.DifferentAdminUsername}")
             });
 
         using (new AssertionScope())
@@ -388,19 +375,18 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(13)]
-    public async Task DeleteOtherAdmin_UsernameJwtMismatchWrongKey_Returns403()
+    public async Task DeleteOtherAdmin_WrongKey_Returns403()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
                 { Constants.AdminKeyRequestKey, "wrong key" }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentAdminUsername))
             {
                 Content = requestBody
             });
@@ -420,48 +406,57 @@ public sealed class AdminRegistrationAndDeletionTests
             errors.Should().BeEquivalentTo(expectedErrors);
         }
     }
+
+    [Fact, Order(14)]
+    public async Task DeleteOtherAccount_AccountDoesNotExist_Returns404()
+    {
+        //Arrange
+        var voidUsername = "voidUsername";
+
+        var requestBody = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+            {
+                { Constants.AdminKeyRequestKey, "wrong key" }
+            });
+
+        //Act
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, voidUsername))
+            {
+                Content = requestBody
+            });
+
+        //Assert
+        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
+
+        var expectedErrors = new ErrorsDto(
+            new List<ErrorDto>
+            {
+                new ErrorDto(404, $"No user could be found with username: {voidUsername}")
+            });
+
+        using (new AssertionScope())
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            errors.Should().BeEquivalentTo(expectedErrors);
+        }
+    }
     #endregion
 
     #region Deletion Happy Paths
-    [Fact, Order(14)]
+    [Fact, Order(15)]
     public async Task DeleteOtherAdmin_UsernameMismatchCorrectKey_Returns200()
     {
         //Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             });
 
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
-            {
-                Content = requestBody
-            });
-
-        //Assert
-        using (new AssertionScope())
-        {
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
-        }
-    }
-
-    [Fact, Order(15)]
-    public async Task DeleteUserAsAdmin_ValidUserNoAdminKey_Returns200()
-    {
-        //Arrange
-        var requestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, _fixture.DifferentUserUsername },
-            });
-
-        //Act
-        var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdminSegment)
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentAdminUsername))
             {
                 Content = requestBody
             });
@@ -475,24 +470,38 @@ public sealed class AdminRegistrationAndDeletionTests
     }
 
     [Fact, Order(16)]
-    public async Task DeleteAdmin_UsernameMatch_Returns200()
+    public async Task DeleteUserAsAdmin_ValidUserNoAdminKey_Returns200()
     {
-        //Arrange
+        //Act
+        var response = await _fixture.HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentUserUsername)));
+
+        //Assert
+        using (new AssertionScope())
+        {
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
+        }
+    }
+
+    [Fact, Order(17)]
+    public async Task DeleteAdminSelf_ValidRequest_Returns200()
+    {
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, _fixture.Username },
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
+            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -502,22 +511,12 @@ public sealed class AdminRegistrationAndDeletionTests
     #endregion
 
     #region Ensure Accounts Deleted
-    [Fact, Order(17)]
+    [Fact, Order(18)]
     public async Task DeleteUserAsAdmin_UserNoLongerExists_Returns404()
     {
-        //Arrange
-        var requestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, _fixture.DifferentUserUsername }
-            });
-
         //Act
         var response = await _fixture.HttpClient.SendAsync(
-            new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdminSegment)
-            {
-                Content = requestBody
-            });
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentUserUsername)));
 
         //Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
@@ -535,7 +534,7 @@ public sealed class AdminRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(18)]
+    [Fact, Order(19)]
     public async Task GetAdmin_DeletedAdmin_Returns404()
     {
         //Act
@@ -555,7 +554,7 @@ public sealed class AdminRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(19)]
+    [Fact, Order(20)]
     public async Task GetDifferentAdmin_DeletedByDifferentAdmin_Returns404()
     {
         //Act
@@ -575,7 +574,7 @@ public sealed class AdminRegistrationAndDeletionTests
         }
     }
 
-    [Fact, Order(20)]
+    [Fact, Order(21)]
     public async Task GetUser_DeletedByAdmin_Returns404()
     {
         //Act

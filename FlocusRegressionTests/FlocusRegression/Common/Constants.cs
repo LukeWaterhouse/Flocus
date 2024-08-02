@@ -14,9 +14,9 @@ public static class Constants
     //URL Segments
     public static readonly string GetTokenSegment = IdentityController + "/token";
     public static readonly string RegisterSegment = IdentityController + "/register";
-    public static readonly string DeleteUserAsUserSegment = IdentityController + "/user";
-    public static readonly string DeleteUserAsAdminSegment = IdentityController + "/userAsAdmin";
-    public static readonly string DeleteAdminSegment = IdentityController + "/adminUser";
+    public static readonly string DeleteSelfSegment = IdentityController + "/user";
+    public static readonly string DeleteByNameSegment = IdentityController + "/admin/user";
+    public static readonly string DeleteByNameSegmentTemplate = DeleteByNameSegment + "/{0}";
 
     public static readonly string GetUserSegment = UserController;
 

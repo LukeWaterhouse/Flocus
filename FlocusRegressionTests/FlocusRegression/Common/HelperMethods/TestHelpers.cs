@@ -26,17 +26,8 @@ public static class TestHelpers
 
         if (!isAdmin)
         {
-            var deleteUserAsAdminRequestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
-            {
-                { Constants.UsernameRequestKey, username }
-            });
-
             var deleteResponse = await HttpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteUserAsAdminSegment)
-                {
-                    Content = deleteUserAsAdminRequestBody
-                });
+                new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, username)));
             deleteStatusCode = deleteResponse.StatusCode;
         }
 
@@ -45,12 +36,11 @@ public static class TestHelpers
             var deleteAdminAsAdminRequestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
-                { Constants.UsernameRequestKey, username },
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             });
 
             var deleteResponse = await HttpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteAdminSegment)
+                new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, username))
                 {
                     Content = deleteAdminAsAdminRequestBody
                 });
@@ -89,7 +79,7 @@ public static class TestHelpers
     {
         await EnsureTestHelperUserAndSetToken();
 
-        var response = await HttpClient.GetAsync(Constants.GetUserSegment + $"?username={username}");
+        var response = await HttpClient.GetAsync(string.Format(Constants.GetUserSegment + $"?username={username}"));
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
