@@ -78,8 +78,7 @@ public static class TestHelpers
     public static async Task<(HttpStatusCode statusCode, UserDto? User, ErrorsDto? Errors)> TryGetUser(string username)
     {
         await EnsureTestHelperUserAndSetToken();
-
-        var response = await HttpClient.GetAsync(string.Format(Constants.GetUserSegment + $"?username={username}"));
+        var response = await HttpClient.GetAsync(string.Format(Constants.GetUserAsAdminSegmentTemplate, username));
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {

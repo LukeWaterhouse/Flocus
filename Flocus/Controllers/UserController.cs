@@ -36,10 +36,11 @@ public class UserController : ControllerBase
         return Ok(userDto);
     }
 
+
+    // TODO: at some point could make this return list of users filterable by username so admin can get all users.
     [Authorize]
     [Authorize(Roles = "Admin")]
     [HttpGet("admin/user/{username}", Name = "GetUserAsAdmin")]
-    // TODO: at some point could make this return list of users filterable by username so admin can get all users.
     public async Task<IActionResult> GetUserAsAdminAsync(string username)
     {
         var user = await _userService.GetUserAsync(username);

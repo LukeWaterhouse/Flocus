@@ -18,6 +18,7 @@ public static class Constants
     public static readonly string DeleteByNameSegmentTemplate = IdentityController + "/admin/user/{0}";
 
     public static readonly string GetUserSegment = UserController;
+    public static readonly string GetUserAsAdminSegmentTemplate = UserController + "/admin/user/{0}";
 
     //Request Form Keys
     public static readonly string UsernameRequestKey = "username";

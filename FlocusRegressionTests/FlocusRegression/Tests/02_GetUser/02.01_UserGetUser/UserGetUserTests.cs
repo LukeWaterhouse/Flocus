@@ -44,20 +44,13 @@ public sealed class UserGetUserTests
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.DifferentAccessToken);
 
         //Act
-        var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment + $"?username={_fixture.Username}");
+        var response = await _fixture.HttpClient.GetAsync(string.Format(Constants.GetUserAsAdminSegmentTemplate, _fixture.Username));
 
         //Assert
-        var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
-        var expectedErrors = new ErrorsDto(
-            new List<ErrorDto>
-            {
-                new ErrorDto(403, "Must be 'Admin' to access other users.")
-            });
-
         using (new AssertionScope())
         {
-            errors.Should().BeEquivalentTo(expectedErrors);
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+            TestHelpers.GetHttpResponseBodyAsString(response).Should().Be("");
         }
     }
 

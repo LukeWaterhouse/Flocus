@@ -23,13 +23,13 @@ public sealed class AdminGetUserTests
     [Fact, Order(1)]
     public async Task GetAdminUser_AsAdminUserBearerToken_Returns200()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         var responseUser = TestHelpers.DeserializeHttpResponseBody<UserDto>(response);
         var expectedUser = new UserDto(_fixture.Username, _fixture.EmailAddress, DateTime.UtcNow);
 
@@ -45,13 +45,13 @@ public sealed class AdminGetUserTests
     [Fact, Order(2)]
     public async Task GetDifferentUser_AsAdminBearerToken_Returns200()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
-        //Act
-        var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment + $"?username={_fixture.DifferentUsername}");
+        // Act
+        var response = await _fixture.HttpClient.GetAsync(string.Format(Constants.GetUserAsAdminSegmentTemplate, _fixture.DifferentUsername));
 
-        //Assert
+        // Assert
         var responseUser = TestHelpers.DeserializeHttpResponseBody<UserDto>(response);
         var expectedUser = new UserDto(_fixture.DifferentUsername, _fixture.DifferentEmailAddress, DateTime.UtcNow);
 
@@ -67,15 +67,15 @@ public sealed class AdminGetUserTests
     [Fact, Order(3)]
     public async Task GetDifferentUser_AsAdminBearerTokenUserNotValid_Returns404()
     {
-        //Arrange
+        // Arrange
         var nonExistingUsername = "invalidUsername";
 
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
-        //Act
-        var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment + $"?username={nonExistingUsername}");
+        // Act
+        var response = await _fixture.HttpClient.GetAsync(string.Format(Constants.GetUserAsAdminSegmentTemplate, nonExistingUsername));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
