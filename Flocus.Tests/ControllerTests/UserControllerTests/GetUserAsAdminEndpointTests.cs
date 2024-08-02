@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Flocus.Tests.ControllerTests.UserControllerTests;
 
-public class GetUserAsAdminEndpointTests
+public sealed class GetUserAsAdminEndpointTests
 {
     private readonly ILogger<UserController> _loggerMock;
     private readonly IUserService _userServiceMock;
@@ -22,7 +22,6 @@ public class GetUserAsAdminEndpointTests
     private readonly IMapper _mapper;
 
     private readonly UserController _userController;
-
     public GetUserAsAdminEndpointTests()
     {
         _loggerMock = Substitute.For<ILogger<UserController>>();
@@ -50,7 +49,6 @@ public class GetUserAsAdminEndpointTests
 
         var user = new User(clientId, email, createdAtDate, username, isAdmin, "passwordHash");
         _userServiceMock.GetUserAsync(username).Returns(user);
-
 
         // Act
         var result = await _userController.GetUserAsAdminAsync(username);

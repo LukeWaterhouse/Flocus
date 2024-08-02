@@ -4,7 +4,7 @@ using System.Security.Authentication;
 
 namespace Flocus.Identity.Services.AdminKeyServices;
 
-public class AdminKeyService : IAdminKeyService
+public sealed class AdminKeyService : IAdminKeyService
 {
     private readonly IdentitySettings _identitySettings;
 

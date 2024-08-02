@@ -6,7 +6,7 @@ namespace Flocus.Identity.Services.PasswordValidationServices;
 
 public sealed class PasswordValidationService : IPasswordValidationService
 {
-    public string IncorrectUsernamePasswordMessage
+    public string InvalidUsernamePasswordMessage
     {
         get { return "Invalid username and password combination"; }
     }
@@ -16,7 +16,7 @@ public sealed class PasswordValidationService : IPasswordValidationService
         var isVerified = BC.Verify(password, passwordHash);
         if (!isVerified)
         {
-            throw new AuthenticationException(IncorrectUsernamePasswordMessage);
+            throw new AuthenticationException(InvalidUsernamePasswordMessage);
         }
     }
 }

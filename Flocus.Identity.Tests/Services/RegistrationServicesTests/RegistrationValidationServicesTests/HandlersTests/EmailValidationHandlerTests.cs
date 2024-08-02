@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Flocus.Identity.Tests.Services.RegistrationServicesTests.RegistrationValidationServicesTests.HandlersTests;
 
-public class EmailValidationHandlerTests
+public sealed class EmailValidationHandlerTests
 {
     private readonly EmailValidationHandler _emailValidationHandler;
 

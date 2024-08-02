@@ -11,7 +11,7 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace Flocus.Identity.Tests.Services.RegistrationServicesTests;
 
-public class RegistrationServiceTests
+public sealed class RegistrationServiceTests
 {
     private readonly IRegistrationValidationService _registerValidationServiceMock;
     private readonly IUserRepositoryService _userRepositoryServiceMock;

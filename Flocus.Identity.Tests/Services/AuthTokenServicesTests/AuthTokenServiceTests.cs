@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Flocus.Identity.Tests.Services.AuthTokenServicesTests;
 
-public class AuthTokenServiceTests
+public sealed class AuthTokenServiceTests
 {
     private readonly IUserRepositoryService _userRepositoryServiceMock;
     private readonly IPasswordValidationService _passwordValidationServiceMock;
@@ -93,7 +93,7 @@ public class AuthTokenServiceTests
         var incorrectPasswordMessage = "Incorrect username and password combination";
 
         _userRepositoryServiceMock.GetUserAsync(username).Throws(new RecordNotFoundException("user not found"));
-        _passwordValidationServiceMock.IncorrectUsernamePasswordMessage.Returns(incorrectPasswordMessage);
+        _passwordValidationServiceMock.InvalidUsernamePasswordMessage.Returns(incorrectPasswordMessage);
 
         // Act
         Exception exception = await Record.ExceptionAsync(async () =>
@@ -106,7 +106,7 @@ public class AuthTokenServiceTests
         {
             exception.Should().BeOfType<AuthenticationException>();
             exception.Message.Should().Be(incorrectPasswordMessage);
-            _ = _passwordValidationServiceMock.Received(1).IncorrectUsernamePasswordMessage;
+            _ = _passwordValidationServiceMock.Received(1).InvalidUsernamePasswordMessage;
         }
     }
 }

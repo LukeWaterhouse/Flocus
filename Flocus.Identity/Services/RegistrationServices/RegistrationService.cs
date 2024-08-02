@@ -7,7 +7,7 @@ using BC = BCrypt.Net.BCrypt;
 
 namespace Flocus.Identity.Services.RegistrationServices;
 
-public class RegistrationService : IRegistrationService
+public sealed class RegistrationService : IRegistrationService
 {
     private readonly IRegistrationValidationService _registerValidationService;
     private readonly IUserRepositoryService _userRepositoryService;

@@ -9,12 +9,11 @@ using Xunit;
 
 namespace Flocus.Repository.Tests.Services.Repository;
 
-public class DeleteUserTests
+public sealed class DeleteUserTests
 {
     private readonly IMapper _mapper;
     private readonly IUserSqlService _sqlQueryService;
     private readonly UserRepositoryService _repositoryService;
-
     public DeleteUserTests()
     {
 

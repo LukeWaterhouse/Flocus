@@ -8,7 +8,7 @@ namespace Flocus.Identity.Services.RemoveAccountServices;
 
 
 //TOOD: this needs a redesign, and move the controller logic into here too
-public class RemoveAccountService : IRemoveAccountService
+public sealed class RemoveAccountService : IRemoveAccountService
 {
     private readonly IUserRepositoryService _userRepositoryService;
     private readonly IAdminKeyService _checkAdminKeyService;

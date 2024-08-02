@@ -7,9 +7,8 @@ using Flocus.Repository.Models;
 
 namespace Flocus.Repository.Services;
 
-public class UserRepositoryService : IUserRepositoryService
+public sealed class UserRepositoryService : IUserRepositoryService
 {
-
     private readonly IMapper _mapper;
     private readonly IUserSqlService _sqlQueryService;
 

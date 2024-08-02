@@ -4,7 +4,7 @@ using Flocus.Models.Errors;
 
 namespace Flocus.Mapping;
 
-public class ErrorDtoMappingProfile : Profile
+public sealed class ErrorDtoMappingProfile : Profile
 {
     public ErrorDtoMappingProfile()
     {

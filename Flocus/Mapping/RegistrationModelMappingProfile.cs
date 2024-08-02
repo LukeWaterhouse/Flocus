@@ -4,7 +4,7 @@ using Flocus.Models.Requests;
 
 namespace Flocus.Mapping;
 
-public class RegistrationModelMappingProfile : Profile
+public sealed class RegistrationModelMappingProfile : Profile
 {
     public RegistrationModelMappingProfile() 
     {

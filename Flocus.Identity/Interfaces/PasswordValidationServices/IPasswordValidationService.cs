@@ -2,6 +2,6 @@
 
 public interface IPasswordValidationService
 {
-    string IncorrectUsernamePasswordMessage { get; }
+    string InvalidUsernamePasswordMessage { get; }
     public void ValidatePassword(string password, string passwordHash);
 }

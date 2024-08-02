@@ -3,7 +3,7 @@ using Flocus.Domain.Models;
 
 namespace Flocus.Domain.Services.UserServices;
 
-public class UserService : IUserService
+public sealed class UserService : IUserService
 {
     private readonly IUserRepositoryService _repositoryService;
 

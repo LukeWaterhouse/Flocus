@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Flocus.Identity.Services.AuthTokenServices;
 
-public class AuthTokenService : IAuthTokenService
+public sealed class AuthTokenService : IAuthTokenService
 {
     private readonly IUserRepositoryService _userRepositoryService;
     private readonly IPasswordValidationService _passwordValidationService;
@@ -38,7 +38,7 @@ public class AuthTokenService : IAuthTokenService
         }
         catch (RecordNotFoundException)
         {
-            throw new AuthenticationException(_passwordValidationService.IncorrectUsernamePasswordMessage);
+            throw new AuthenticationException(_passwordValidationService.InvalidUsernamePasswordMessage);
         }
     }
 

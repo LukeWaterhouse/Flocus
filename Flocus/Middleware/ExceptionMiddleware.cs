@@ -11,7 +11,6 @@ public sealed class ExceptionMiddleware : IMiddleware
 {
     private const string UnhandledExceptionTitle = "An unhandled exception occurred.";
 
-
     private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IMapper _mapper;
 
@@ -47,7 +46,7 @@ public sealed class ExceptionMiddleware : IMiddleware
         {
             await WriteSingleErrorResponseAsync(context, StatusCodes.Status403Forbidden, ex.Message);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await WriteSingleErrorResponseAsync(context, StatusCodes.Status500InternalServerError, UnhandledExceptionTitle);
         }

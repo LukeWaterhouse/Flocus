@@ -4,7 +4,7 @@ using Flocus.Identity.Services.RegistrationServices.RegistrationValidationServic
 
 namespace Flocus.Identity.Services.RegistrationServices.RegistrationValidationServices.Factories;
 
-public class RegistrationValidationChainFactory : IRegistrationValidationChainFactory
+public sealed class RegistrationValidationChainFactory : IRegistrationValidationChainFactory
 {
     private readonly EmailValidationHandler _emailValidationHandler;
     private readonly IsAdminValidationHandler _isAdminValidationHandler;

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Flocus.Domain.Tests.Services.UserServicesTests;
 
-public class UserServiceTests
+public sealed class UserServiceTests
 {
     private readonly IUserRepositoryService _userRepositoryServiceMock;
     private readonly IUserService _userService;

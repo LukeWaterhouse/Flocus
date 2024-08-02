@@ -4,7 +4,7 @@ using Flocus.Models.ReturnModels.UserReturnModels;
 
 namespace Flocus.Mapping;
 
-public class UserDtoMappingProfile : Profile
+public sealed class UserDtoMappingProfile : Profile
 {
     public UserDtoMappingProfile()
     {

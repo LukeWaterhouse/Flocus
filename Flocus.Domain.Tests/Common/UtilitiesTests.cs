@@ -1,9 +1,6 @@
 ﻿using Flocus.Domain.Common;
-using Flocus.Domain.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using System.Security.Authentication;
-using System.Security.Claims;
 using Xunit;
 
 namespace Flocus.Domain.Tests.Common;

@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Flocus.Tests.ControllerTests.IdentityControllerTests;
 
-public class GetTokenEndpointTests
+public sealed class GetTokenEndpointTests
 {
     public readonly ILogger<IdentityController> _loggerMock;
     public readonly IRemoveAccountService _removeAccountServiceMock;

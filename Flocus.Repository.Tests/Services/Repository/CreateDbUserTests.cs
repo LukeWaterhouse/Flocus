@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Flocus.Repository.Tests.Services.Repository;
 
-public class CreateDbUserTests
+public sealed class CreateDbUserTests
 {
     private readonly IMapper _mapper;
     private readonly IUserSqlService _sqlQueryService;

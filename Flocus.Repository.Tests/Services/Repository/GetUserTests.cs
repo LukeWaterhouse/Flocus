@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Flocus.Repository.Tests.Services.Repository;
 
-public class GetUserTests
+public sealed class GetUserTests
 {
     private readonly IMapper _mapper;
     private readonly IUserSqlService _sqlQueryService;

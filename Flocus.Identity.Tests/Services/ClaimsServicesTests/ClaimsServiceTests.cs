@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Flocus.Identity.Tests.Services.ClaimsServicesTests;
 
-public class ClaimsServiceTests
+public sealed class ClaimsServiceTests
 {
     private readonly IClaimsService _claimsService;
 

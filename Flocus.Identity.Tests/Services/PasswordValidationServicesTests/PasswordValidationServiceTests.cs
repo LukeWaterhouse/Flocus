@@ -51,7 +51,7 @@ public sealed class PasswordValidationServiceTests
     public void GetIncorrectPasswordMessage_ValidCall_GetsCorrectMessage()
     {
         // Act
-        var result = _passwordValidationService.IncorrectUsernamePasswordMessage;
+        var result = _passwordValidationService.InvalidUsernamePasswordMessage;
 
         // Assert
         result.Should().Be("Invalid username and password combination");

@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Flocus.Tests.ControllerTests.UserControllerTests;
 
-public class GetUserEndpointTests
+public sealed class GetUserEndpointTests
 {
     private readonly ILogger<UserController> _loggerMock;
     private readonly IUserService _userServiceMock;

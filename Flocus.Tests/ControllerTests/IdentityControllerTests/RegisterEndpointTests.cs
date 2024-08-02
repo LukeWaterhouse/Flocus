@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Flocus.Tests.ControllerTests.IdentityControllerTests;
 
-public class RegisterEndpointTests
+public sealed class RegisterEndpointTests
 {
     private readonly ILogger<IdentityController> _loggerMock;
     private readonly IRemoveAccountService _removeAccountServiceMock;
