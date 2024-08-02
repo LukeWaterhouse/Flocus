@@ -25,7 +25,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(1)]
     public async Task RegisterAdmin_IncorrectAdminUserKey_ShouldReturn401()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
@@ -35,10 +35,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, "incorrect key" }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -57,7 +57,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(2)]
     public async Task RegisterAdmin_NoAdminKey_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.DifferentAdminUsername },
@@ -66,10 +66,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.IsAdminRequestKey, _fixture.IsAdmin }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -88,7 +88,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(3)]
     public async Task RegisterAdmin_ValidInputs_ShouldReturn200()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.Username },
@@ -98,10 +98,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -112,7 +112,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(4)]
     public async Task RegisterAdmin_ExistingUsername_ShouldReturn409()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.Username },
@@ -122,10 +122,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -144,7 +144,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(5)]
     public async Task RegisterAdmin_ExistingEmail_ShouldReturn409()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, "nonExistingName" },
@@ -154,10 +154,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -176,7 +176,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(6)]
     public async Task GetToken_IncorrectPassword_ShouldReturn401()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
@@ -184,10 +184,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, "wrong password" }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -206,7 +206,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(7)]
     public async Task GetToken_CorrectDetails_ShouldReturn200()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
@@ -214,10 +214,10 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
 
-        //Assert
+        // Assert
         var token = TestHelpers.GetHttpResponseBodyAsString(response);
 
         #region Set Access Token
@@ -249,13 +249,13 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(8)]
     public async Task GetAdminUser_Unauthenticated_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -266,13 +266,13 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(9)]
     public async Task GetAdminUser_Authenticated_Returns200()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         var responseUser = TestHelpers.DeserializeHttpResponseBody<UserDto>(response);
         var expectedUser = new UserDto(_fixture.Username, _fixture.EmailAddress, DateTime.UtcNow);
 
@@ -292,7 +292,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(10)]
     public async Task DeleteSelfAdmin_Unauthenticated_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
         var requestBody = new FormUrlEncodedContent(
@@ -301,14 +301,14 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -319,7 +319,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(11)]
     public async Task DeleteSelfAdmin_WrongPassword_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
         var requestBody = new FormUrlEncodedContent(
@@ -328,14 +328,14 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, "wrong password" }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -354,11 +354,11 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(12)]
     public async Task DeleteOtherAdmin_NoKey_Returns403()
     {
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentAdminUsername)));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -377,21 +377,21 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(13)]
     public async Task DeleteOtherAdmin_WrongKey_Returns403()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
                 { Constants.AdminKeyRequestKey, "wrong key" }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentAdminUsername))
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -410,7 +410,7 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(14)]
     public async Task DeleteOtherAccount_AccountDoesNotExist_Returns404()
     {
-        //Arrange
+        // Arrange
         var voidUsername = "voidUsername";
 
         var requestBody = new FormUrlEncodedContent(
@@ -419,14 +419,14 @@ public sealed class AdminRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, "wrong key" }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, voidUsername))
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -447,21 +447,21 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(15)]
     public async Task DeleteOtherAdmin_UsernameMismatchCorrectKey_Returns200()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
                 { Constants.AdminKeyRequestKey, Constants.AdminKey }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentAdminUsername))
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -472,11 +472,11 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(16)]
     public async Task DeleteUserAsAdmin_ValidUserNoAdminKey_Returns200()
     {
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentUserUsername)));
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -514,11 +514,11 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(18)]
     public async Task DeleteUserAsAdmin_UserNoLongerExists_Returns404()
     {
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, _fixture.DifferentUserUsername)));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -537,10 +537,10 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(19)]
     public async Task GetAdmin_DeletedAdmin_Returns404()
     {
-        //Act
+        // Act
         var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.Username);
 
-        //Assert
+        // Assert
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
@@ -557,10 +557,10 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(20)]
     public async Task GetDifferentAdmin_DeletedByDifferentAdmin_Returns404()
     {
-        //Act
+        // Act
         var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.DifferentAdminUsername);
 
-        //Assert
+        // Assert
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {
@@ -577,10 +577,10 @@ public sealed class AdminRegistrationAndDeletionTests
     [Fact, Order(21)]
     public async Task GetUser_DeletedByAdmin_Returns404()
     {
-        //Act
+        // Act
         var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.DifferentUserUsername);
 
-        //Assert
+        // Assert
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {

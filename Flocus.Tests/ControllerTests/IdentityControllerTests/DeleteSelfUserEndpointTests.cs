@@ -57,13 +57,12 @@ public sealed class DeleteSelfUserEndpointTests
         var email = "lukewwaterhouse@hotmail.com";
         var role = "Admin";
         var password = "rollo123";
-        var cancellationToken = CancellationToken.None;
 
         var claims = new Claims(username, email, role, DateTime.UtcNow);
         _claimsServiceMock.GetClaimsFromUser(Arg.Any<ClaimsPrincipal>()).Returns(claims);
 
         // Act
-        var result = await _identityController.DeleteSelfUserAsync(password, cancellationToken);
+        var result = await _identityController.DeleteSelfUserAsync(password);
 
         // Assert
         using (new AssertionScope())

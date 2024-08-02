@@ -21,7 +21,7 @@ public sealed class AdminGetUserTests
     }
 
     [Fact, Order(1)]
-    public async Task GetAdminUser_AsAdminUserBearerToken_Returns200()
+    public async Task GetAdminUser_AsSameAdminUser_Returns200()
     {
         // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
@@ -43,7 +43,7 @@ public sealed class AdminGetUserTests
     }
 
     [Fact, Order(2)]
-    public async Task GetDifferentUser_AsAdminBearerToken_Returns200()
+    public async Task GetDifferentUser_AsAdmin_Returns200()
     {
         // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
@@ -65,7 +65,7 @@ public sealed class AdminGetUserTests
     }
 
     [Fact, Order(3)]
-    public async Task GetDifferentUser_AsAdminBearerTokenUserNotValid_Returns404()
+    public async Task GetDifferentUser_AsAdminUserDoesNotExist_Returns404()
     {
         // Arrange
         var nonExistingUsername = "invalidUsername";

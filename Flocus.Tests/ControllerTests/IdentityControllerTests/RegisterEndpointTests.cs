@@ -56,7 +56,7 @@ public sealed class RegisterEndpointTests
         var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", false, null);
 
         // Act
-        var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
+        var result = await _identityController.RegisterAsync(registerRequest);
 
         // Assert
         var expectedCallParameter = new RegistrationModel(
@@ -80,7 +80,7 @@ public sealed class RegisterEndpointTests
         var registerRequest = new RegisterRequestDto("luke", "rollo123", "luke@hotmail.com", true, "123");
 
         // Act
-        var result = await _identityController.RegisterAsync(registerRequest, CancellationToken.None);
+        var result = await _identityController.RegisterAsync(registerRequest);
 
         // Assert
         var expectedCallParameter = new RegistrationModel(

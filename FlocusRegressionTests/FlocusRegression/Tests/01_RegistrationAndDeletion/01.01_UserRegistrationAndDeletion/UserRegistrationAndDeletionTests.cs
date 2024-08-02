@@ -28,7 +28,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(1)]
     public async Task RegisterUser_UsernameTooLong_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var usernameTooLong = "usernameChar000000000";
 
         var requestBody = new Dictionary<string, object>
@@ -40,10 +40,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -61,7 +61,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(2)]
     public async Task RegisterUser_UsernameTooShort_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var usernameTooShort = "pip";
 
         var requestBody = new Dictionary<string, object>
@@ -73,10 +73,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -94,7 +94,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(3)]
     public async Task RegisterUser_UsernameIncludesWhitespace_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var usernameWhitespace = "user name";
 
         var requestBody = new Dictionary<string, object>
@@ -106,10 +106,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -127,7 +127,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(4)]
     public async Task RegisterUser_UsernameIncludesProfanity_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var usernameProfanity = "twatFace69";
 
         var requestBody = new Dictionary<string, object>
@@ -139,10 +139,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -160,7 +160,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(5)]
     public async Task RegisterUser_EmailInvalidFormat_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var invalidEmail = "notAnEmail";
 
         var requestBody = new Dictionary<string, object>
@@ -172,10 +172,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -193,7 +193,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(6)]
     public async Task RegisterUser_PasswordTooShort_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var passwordTooShort = "Pass!23";
 
         var requestBody = new Dictionary<string, object>
@@ -205,10 +205,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -226,7 +226,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(7)]
     public async Task RegisterUser_PasswordTooLong_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var passwordTooLong = "Pass!23000111111111122222222223";
 
         var requestBody = new Dictionary<string, object>
@@ -238,10 +238,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -260,7 +260,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(8)]
     public async Task RegisterUser_PasswordContainsWhitespace_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var passwordWithWhitespace = "Pass!234 567";
 
         var requestBody = new Dictionary<string, object>
@@ -272,10 +272,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -293,7 +293,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(9)]
     public async Task RegisterUser_PasswordContainsNoUpperChars_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var passwordNoUpperChars = "pass!234567";
 
         var requestBody = new Dictionary<string, object>
@@ -305,10 +305,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -326,7 +326,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(10)]
     public async Task RegisterUser_PasswordContainsNoLowerChars_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var passwordNoLowerChars = "PASS!234567";
 
         var requestBody = new Dictionary<string, object>
@@ -338,10 +338,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -359,7 +359,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(11)]
     public async Task RegisterUser_PasswordContainsNoSpecialChars_ShouldReturn400()
     {
-        //Arrange
+        // Arrange
         var passwordNoSpecialChars = "Password123";
 
         var requestBody = new Dictionary<string, object>
@@ -371,10 +371,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -392,7 +392,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(12)]
     public async Task RegisterUser_MultipleIssues_ShouldReturnMultipleErrors400()
     {
-        //Arrange
+        // Arrange
         var userNameMultipleIssues = "fuck u";
         var passwordMultipleIssues = "p a s";
         var invalidEmail = "invalidEmail";
@@ -406,10 +406,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
@@ -435,7 +435,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(13)]
     public async Task RegisterUser_ValidInputs_ShouldReturn200()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.Username },
@@ -445,10 +445,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -459,7 +459,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(14)]
     public async Task RegisterUser_ExistingUsername_ShouldReturn409()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.Username },
@@ -469,10 +469,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -491,7 +491,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(15)]
     public async Task RegisterUser_ExistingEmail_ShouldReturn409()
     {
-        //Arrange
+        // Arrange
         var requestBody = new Dictionary<string, object>
             {
                 { Constants.UsernameRequestKey, _fixture.DifferentUserUsername },
@@ -501,10 +501,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.AdminKeyRequestKey, _fixture.Key }
             };
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.RegisterSegment, TestHelpers.GetStringContentFromDict(requestBody));
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -523,7 +523,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(16)]
     public async Task GetToken_IncorrectPassword_ShouldReturn401()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
@@ -531,10 +531,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, "wrong password" }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -553,7 +553,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(17)]
     public async Task GetToken_CorrectDetails_ShouldReturn200()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
@@ -561,10 +561,10 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.PostAsync(Constants.GetTokenSegment, requestBody);
 
-        //Assert
+        // Assert
         var token = TestHelpers.GetHttpResponseBodyAsString(response);
 
         #region Set Access Token
@@ -596,13 +596,13 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(18)]
     public async Task GetUser_Unauthenticated_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -613,13 +613,13 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(19)]
     public async Task GetUser_Authenticated_Returns200()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         var responseUser = TestHelpers.DeserializeHttpResponseBody<UserDto>(response);
         var expectedUser = new UserDto(_fixture.Username, _fixture.EmailAddress, DateTime.UtcNow);
 
@@ -637,7 +637,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(20)]
     public async Task DeleteSelfUser_Unauthenticated_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
         var requestBody = new FormUrlEncodedContent(
@@ -646,14 +646,14 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -664,7 +664,7 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(21)]
     public async Task DeleteSelfUser_WrongPassword_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
         var requestBody = new FormUrlEncodedContent(
@@ -673,14 +673,14 @@ public sealed class UserRegistrationAndDeletionTests
                 { Constants.PasswordRequestKey, "wrong password" }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         var errors = TestHelpers.DeserializeHttpResponseBody<ErrorsDto>(response);
 
         var expectedErrors = new ErrorsDto(
@@ -699,21 +699,21 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(22)]
     public async Task DeleteSelfUser_ValidCredentials_Returns200()
     {
-        //Arrange
+        // Arrange
         var requestBody = new FormUrlEncodedContent(
             new Dictionary<string, string>
             {
                 { Constants.PasswordRequestKey, _fixture.Password }
             });
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.SendAsync(
             new HttpRequestMessage(HttpMethod.Delete, Constants.DeleteSelfSegment)
             {
                 Content = requestBody
             });
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -724,10 +724,10 @@ public sealed class UserRegistrationAndDeletionTests
     [Fact, Order(23)]
     public async Task DeleteSelfUser_DeletedUser_Returns404()
     {
-        //Act
+        // Act
         var (statusCode, _, errors) = await TestHelpers.TryGetUser(_fixture.Username);
 
-        //Assert
+        // Assert
         var expectedErrors = new ErrorsDto(
             new List<ErrorDto>
             {

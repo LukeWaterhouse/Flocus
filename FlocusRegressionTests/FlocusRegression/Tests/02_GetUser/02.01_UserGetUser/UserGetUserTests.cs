@@ -23,13 +23,13 @@ public sealed class UserGetUserTests
     [Fact, Order(1)]
     public async Task GetUser_AsUserNoBearerToken_Returns401()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, null);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -40,13 +40,13 @@ public sealed class UserGetUserTests
     [Fact, Order(2)]
     public async Task GetDifferentUser_AsUserBearerToken_Returns403()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.DifferentAccessToken);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(string.Format(Constants.GetUserAsAdminSegmentTemplate, _fixture.Username));
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -57,13 +57,13 @@ public sealed class UserGetUserTests
     [Fact, Order(3)]
     public async Task GetUser_AsUserBearerToken_Returns200()
     {
-        //Arrange
+        // Arrange
         TestHelpers.SetAccessToken(_fixture.HttpClient, _fixture.AccessToken);
 
-        //Act
+        // Act
         var response = await _fixture.HttpClient.GetAsync(Constants.GetUserSegment);
 
-        //Assert
+        // Assert
         var responseUser = TestHelpers.DeserializeHttpResponseBody<UserDto>(response);
         var expectedUser = new UserDto(_fixture.Username, _fixture.EmailAddress, DateTime.UtcNow);
 

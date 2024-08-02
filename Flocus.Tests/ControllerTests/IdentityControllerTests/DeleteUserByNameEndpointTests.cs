@@ -54,10 +54,9 @@ public sealed class DeleteUserByNameEndpointTests
     {
         // Arrange
         var username = "lukosparta123";
-        var cancellationToken = CancellationToken.None;
 
         // Act
-        var result = await _identityController.DeleteUserAsAdminAsync(username, adminKey, cancellationToken);
+        var result = await _identityController.DeleteUserAsAdminAsync(username, adminKey);
 
         // Assert
         using (new AssertionScope())

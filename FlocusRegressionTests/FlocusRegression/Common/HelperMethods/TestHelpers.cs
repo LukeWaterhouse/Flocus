@@ -19,34 +19,23 @@ public static class TestHelpers
         BaseAddress = new Uri(Constants.BaseUrl)
     };
 
-    public static async Task EnsureNoExistingAccount(string username, bool isAdmin)
+    public static async Task EnsureNoExistingAccount(string username)
     {
         await EnsureTestHelperUserAndSetToken();
-        HttpStatusCode? deleteStatusCode = null;
 
-        if (!isAdmin)
+        var deleteAdminAsAdminRequestBody = new FormUrlEncodedContent(
+        new Dictionary<string, string>
         {
-            var deleteResponse = await HttpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, username)));
-            deleteStatusCode = deleteResponse.StatusCode;
-        }
+            { Constants.AdminKeyRequestKey, Constants.AdminKey }
+        });
 
-        if (isAdmin)
-        {
-            var deleteAdminAsAdminRequestBody = new FormUrlEncodedContent(
-            new Dictionary<string, string>
+        var deleteResponse = await HttpClient.SendAsync(
+            new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, username))
             {
-                { Constants.AdminKeyRequestKey, Constants.AdminKey }
+                Content = deleteAdminAsAdminRequestBody
             });
 
-            var deleteResponse = await HttpClient.SendAsync(
-                new HttpRequestMessage(HttpMethod.Delete, string.Format(Constants.DeleteByNameSegmentTemplate, username))
-                {
-                    Content = deleteAdminAsAdminRequestBody
-                });
-            deleteStatusCode = deleteResponse.StatusCode;
-        }
-
+        var deleteStatusCode = deleteResponse.StatusCode;
         if (deleteStatusCode != HttpStatusCode.OK && deleteStatusCode != HttpStatusCode.NotFound)
         {
             throw new Exception($"deleteAccount response during preparation should have status code {HttpStatusCode.NotFound} or {HttpStatusCode.OK}");

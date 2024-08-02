@@ -6,8 +6,8 @@ public sealed class InputValidationException : Exception
 {
     public List<Error> Errors { get; init; }
 
-    public InputValidationException(List<Error> errors) : base("Input validation error(s).") 
-    { 
+    public InputValidationException(List<Error> errors) : base("Input validation error(s).")
+    {
         Errors = errors;
     }
 }

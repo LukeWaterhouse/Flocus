@@ -41,8 +41,8 @@ public sealed class AdminRegistrationAndDeletionTestFixture : IDisposable
 
     private async Task Cleanup()
     {
-        await TestHelpers.EnsureNoExistingAccount(Username, IsAdmin);
-        await TestHelpers.EnsureNoExistingAccount(DifferentAdminUsername, true);
-        await TestHelpers.EnsureNoExistingAccount(DifferentUserUsername, false);
+        await TestHelpers.EnsureNoExistingAccount(Username);
+        await TestHelpers.EnsureNoExistingAccount(DifferentAdminUsername);
+        await TestHelpers.EnsureNoExistingAccount(DifferentUserUsername);
     }
 }

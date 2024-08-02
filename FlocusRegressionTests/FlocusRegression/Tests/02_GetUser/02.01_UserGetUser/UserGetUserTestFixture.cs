@@ -50,7 +50,7 @@ public sealed class UserGetUserTestFixture : IDisposable
 
     private async Task Cleanup()
     {
-        await TestHelpers.EnsureNoExistingAccount(Username, IsAdmin);
-        await TestHelpers.EnsureNoExistingAccount(DifferentUsername, DifferentIsAdmin);
+        await TestHelpers.EnsureNoExistingAccount(Username);
+        await TestHelpers.EnsureNoExistingAccount(DifferentUsername);
     }
 }

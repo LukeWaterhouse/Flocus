@@ -57,7 +57,7 @@ public sealed class GetTokenEndpointTests
         _authTokenServiceMock.GetAuthTokenAsync(username, password).Returns(Task.FromResult("token"));
 
         // Act
-        var result = await _identityController.GetTokenAsync(username, password, CancellationToken.None);
+        var result = await _identityController.GetTokenAsync(username, password);
 
         // Assert
         using (new AssertionScope())

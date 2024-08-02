@@ -32,8 +32,8 @@ public sealed class UserRegistrationAndDeletionTestFixture : IDisposable
 
     private async Task Cleanup()
     {
-        await TestHelpers.EnsureNoExistingAccount(Username, IsAdmin);
-        await TestHelpers.EnsureNoExistingAccount(DifferentUserUsername, false);
+        await TestHelpers.EnsureNoExistingAccount(Username);
+        await TestHelpers.EnsureNoExistingAccount(DifferentUserUsername);
     }
 }
 
