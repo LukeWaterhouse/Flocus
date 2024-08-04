@@ -1,14 +1,18 @@
+import Box from "@mui/material/Box";
 import React from "react";
 import { Unity, useUnityContext } from "react-unity-webgl"
 
 
 export default function UnityComponent() {
-    const { unityProvider } = useUnityContext({
-      loaderUrl: "buildUnity/Notes.loader.js",
-      dataUrl: "buildUnity/webgl.data",
-      frameworkUrl: "buildUnity/Notes.framework.js",
-      codeUrl: "buildUnity/build.wasm",
-    });
+  const { unityProvider } = useUnityContext({
+    loaderUrl: "WebGL/Build/WebGL.loader.js",
+    dataUrl: "WebGL/Build/WebGL.data",
+    frameworkUrl: "WebGL/Build/WebGL.framework.js",
+    codeUrl: "WebGL/Build/WebGL.wasm"});
+    
   
-    return <Unity unityProvider={unityProvider} style={{ width: 800, height: 600 }} />;
+    return (
+    <Box>
+      <Unity unityProvider={unityProvider} style={{ width: "100%", height: "100%" }} />
+    </Box>)
   }
