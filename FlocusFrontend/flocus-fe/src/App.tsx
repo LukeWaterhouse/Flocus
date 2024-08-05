@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
-
+import Box from "@mui/material/Box";
+import RegisterPage from "./Pages/AuthenticationPages/RegisterPage/RegisterPage";
+import LoginPage from "./Pages/AuthenticationPages/LoginPage/LoginPage";
 
 function App() {
 
@@ -22,21 +24,9 @@ function App() {
     }, []);
 
   return (
-    <div style={{ position: "relative", width: 800, height: 600 }}>
-      {showCover && (
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "black"
-          }}
-        />
-      )}
-      {<Unity unityProvider={unityProvider} style={{ width: "100%", height: "100%" }} />}
-    </div>
+    <Box>
+      <RegisterPage/>
+    </Box>
   );
 }
 
