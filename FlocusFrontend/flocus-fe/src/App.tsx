@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Unity, useUnityContext } from "react-unity-webgl";
-import SignInSide from "./Pages/LoginPage/SignIn/SignInSide";
-import LoginPage from "./Pages/LoginPage/LoginPage";
 import Box from "@mui/material/Box";
+import RegisterPage from "./Pages/AuthenticationPages/RegisterPage/RegisterPage";
+import LoginPage from "./Pages/AuthenticationPages/LoginPage/LoginPage";
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
 
   return (
     <Box>
-      <LoginPage/>
+      <RegisterPage/>
     </Box>
   );
 }
