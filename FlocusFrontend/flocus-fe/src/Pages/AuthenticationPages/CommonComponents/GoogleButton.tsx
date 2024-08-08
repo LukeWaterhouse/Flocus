@@ -1,7 +1,7 @@
-import * as React from 'react';
-import SvgIcon from '@mui/joy/SvgIcon';
+import SvgIcon from "@mui/joy/SvgIcon";
+import Button from "@mui/joy/Button";
 
-export default function GoogleIcon() {
+function GoogleIcon() {
   return (
     <SvgIcon fontSize="xl">
       <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -23,5 +23,18 @@ export default function GoogleIcon() {
         />
       </g>
     </SvgIcon>
+  );
+}
+
+export default function GoogleButton() {
+  return (
+    <Button
+      variant="soft"
+      color="neutral"
+      fullWidth
+      startDecorator={<GoogleIcon />}
+    >
+      Continue with Google
+    </Button>
   );
 }
