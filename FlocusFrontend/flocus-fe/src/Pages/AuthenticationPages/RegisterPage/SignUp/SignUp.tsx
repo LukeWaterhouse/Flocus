@@ -10,17 +10,23 @@ import Typography from "@mui/joy/Typography";
 import Stack from "@mui/joy/Stack";
 import GoogleButton from "../../CommonComponents/GoogleButton";
 import AuthenticationStackWrapper from "../../CommonComponents/AuthenticationStackWrapper";
+import { useAuth } from "../../../../Context/useAuth";
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
   password: HTMLInputElement;
-  persistent: HTMLInputElement;
+  username: HTMLInputElement;
 }
+
 interface SignInFormElement extends HTMLFormElement {
   readonly elements: FormElements;
 }
 
-function SignUpStack() {
+interface SignUpStackProps {
+  register: (email: string, username: string, password: string ) => void;
+}
+
+function SignUpStack({ register }: SignUpStackProps) {
   return (
     <Box>
       <Stack gap={4} sx={{ mb: 2 }}>
@@ -51,17 +57,17 @@ function SignUpStack() {
           onSubmit={(event: React.FormEvent<SignInFormElement>) => {
             event.preventDefault();
             const formElements = event.currentTarget.elements;
-            const data = {
-              email: formElements.email.value,
-              password: formElements.password.value,
-              persistent: formElements.persistent.checked,
-            };
-            alert(JSON.stringify(data, null, 2));
+
+            register(
+              formElements.email.value,
+              formElements.username.value,
+              formElements.password.value
+            );
           }}
         >
           <FormControl required>
             <FormLabel>Username</FormLabel>
-            <Input type="username" name="username" />
+            <Input type="text" name="username" />
           </FormControl>
           <FormControl required>
             <FormLabel>Email</FormLabel>
@@ -73,16 +79,9 @@ function SignUpStack() {
           </FormControl>
           <FormControl required>
             <FormLabel>Retype Password</FormLabel>
-            <Input type="password" name="password" />
+            <Input type="password" name="passwordConfirm" />
           </FormControl>
           <Stack gap={4} sx={{ mt: 2 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            ></Box>
             <Button type="submit" fullWidth>
               Sign Up
             </Button>
@@ -94,5 +93,7 @@ function SignUpStack() {
 }
 
 export default function SignUp() {
-  return <AuthenticationStackWrapper StackComp={SignUpStack} />;
+  const { register } = useAuth();
+
+  return <AuthenticationStackWrapper StackComp={() => <SignUpStack register={register} />} />;
 }
