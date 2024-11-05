@@ -1,3 +1,4 @@
+import React from 'react';
 import Box from "@mui/joy/Box";
 import CopyrightFooter from "./CopyrightFooter";
 import { CssVarsProvider } from "@mui/joy/styles/CssVarsProvider";

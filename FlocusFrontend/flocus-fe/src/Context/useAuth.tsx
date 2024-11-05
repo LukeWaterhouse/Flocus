@@ -14,6 +14,7 @@ type UserContextType = {
   token: string | null;
   register: (email: string, username: string, password: string) => void;
   login: (username: string, password: string) => void;
+  getUser: () => void;
   logout: () => void;
   isLoggedIn: () => boolean;
 };
@@ -47,18 +48,15 @@ export const UserProvider = ({ children }: Props) => {
     password: string
   ) => {
     await registerAPI(username, password, email);
-    await login(username, password);
-    navigate("/landingpage");
   };
 
   const login = async (username: string, password: string) => {
     var accessToken = await getAccessTokenAPI(username, password);
     axios.defaults.headers.common["Authorization"] = "Bearer " + accessToken;
     localStorage.setItem(tokenKey, accessToken);
-    getUser(accessToken);
   };
 
-  const getUser = async (accessToken: string) => {
+  const getUser = async () => {
     var user = await getUserAPI();
     setUser(user);
     localStorage.setItem(userKey, JSON.stringify(user));
@@ -76,7 +74,7 @@ export const UserProvider = ({ children }: Props) => {
 
   return (
     <UserContext.Provider
-      value={{ user, token, register, login, logout, isLoggedIn }}
+      value={{ user, token, register, login, getUser, logout, isLoggedIn }}
     >
       {isReady ? children : null}
     </UserContext.Provider>

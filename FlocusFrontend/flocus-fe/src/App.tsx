@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Unity, useUnityContext } from "react-unity-webgl";
 import Box from "@mui/material/Box";
 import RegisterPage from "./Pages/AuthenticationPages/RegisterPage/RegisterPage";
-import { UserProvider } from "./Context/useAuth";
 
 function App() {
-  const { unityProvider } = useUnityContext({
-    loaderUrl: "WebGL/Build/WebGL.loader.js",
-    dataUrl: "WebGL/Build/WebGL.data",
-    frameworkUrl: "WebGL/Build/WebGL.framework.js",
-    codeUrl: "WebGL/Build/WebGL.wasm",
-  });
 
   const [showCover, setShowCover] = useState(true);
 
@@ -25,9 +17,7 @@ function App() {
 
   return (
     <Box>
-      <UserProvider>
         <RegisterPage />
-      </UserProvider>
     </Box>
   );
 }

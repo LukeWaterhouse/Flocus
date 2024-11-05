@@ -31,7 +31,6 @@ export const registerAPI = async (username: string, password: string, email: str
             emailAddress: email,
             isAdmin:false
         })
-
     } catch (error) {
         console.log(error);
     }

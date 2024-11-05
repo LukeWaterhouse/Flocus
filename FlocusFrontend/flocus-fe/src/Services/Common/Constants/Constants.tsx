@@ -5,6 +5,5 @@ const identityControllerSegment = "Identity";
 export const getTokenUrl = baseUrl + identityControllerSegment + "/getToken";
 export const registerUrl = baseUrl + identityControllerSegment + "/register";
 
-
 //User
 export const userControllerSegment = "User";
