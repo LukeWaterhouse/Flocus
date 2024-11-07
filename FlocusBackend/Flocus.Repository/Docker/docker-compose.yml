@@ -1,0 +1,44 @@
+﻿version: '3.6'
+
+services:
+
+  postgres:
+   container_name: flocusDbContainer
+   build:
+      context: ./
+      dockerfile: Dockerfile
+   restart: always
+   environment:
+     POSTGRES_PASSWORD: mypassword
+     POSTGRES_USER: myuser
+     POSTGRES_DB: mydatabase
+   ports:
+      - 5432:5432
+
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: luke@hotmail.com
+      PGADMIN_DEFAULT_PASSWORD: 123
+      PGADMIN_SERVER_JSON_FILE: /tmp/servers.json
+      PGADMIN_SERVER_JSON: |
+        {
+            "Servers": {
+                "1": {
+                    "Name": "FlocusServer",
+                    "Group": "Servers", 
+                    "Host": "flocusDbContainer",
+                    "Port": 5432,
+                    "MaintenanceDB": "mydatabase",
+                    "Username": "myuser",
+                    "SSLMode": "prefer"
+                }
+            }
+        }
+    entrypoint: "/bin/sh -c \"echo $$PGADMIN_SERVER_JSON > /tmp/servers.json; /entrypoint.sh\"" #copying the server json from the environment variables into the right file to initialise a pgadmin server
+    restart: always
+    ports:
+        - 8080:80
+    depends_on:
+        - postgres
