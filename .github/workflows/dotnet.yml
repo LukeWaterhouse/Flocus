@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -24,5 +23,16 @@ jobs:
       run: dotnet restore ./FlocusBackend/Flocus/Flocus.sln
     - name: Build
       run: dotnet build ./FlocusBackend/Flocus/Flocus.sln --no-restore 
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # This makes the test job depend on the build job
+
+    steps:
+    - uses: actions/checkout@v4  # Check out the code again since this is a separate job
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
     - name: Test
       run: dotnet test ./FlocusBackend/Flocus/Flocus.sln --no-build --verbosity normal
