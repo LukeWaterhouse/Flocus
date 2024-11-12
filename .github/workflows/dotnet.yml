@@ -4,8 +4,6 @@
 name: .NET
 
 on:
-  push:
-    branches: [ "*" ]
   pull_request:
     branches: [ "*" ]
 
@@ -55,7 +53,7 @@ jobs:
         hide_complexity: false
         indicators: true
         output: both
-        thresholds: "95 99"
+        thresholds: "100"
     - name: Add Coverage PR Comment
       uses: marocchino/sticky-pull-request-comment@v2
       if: github.event_name == 'pull_request'
