@@ -37,7 +37,7 @@ public sealed class UserServiceTests
         var result = await _userService.GetUserAsync(username);
 
         // Assert
-        var expectedUser = new User("asd", email, createdAt, username, isAdmin, passwordHash);
+        var expectedUser = new User(clientId, email, createdAt, username, isAdmin, passwordHash);
 
         using (new AssertionScope())
         {
