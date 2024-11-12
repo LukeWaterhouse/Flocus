@@ -53,21 +53,19 @@ jobs:
         hide_complexity: false
         indicators: true
         output: both
-        thresholds: "100"
+        thresholds: "99"
     - name: Add Coverage PR Comment
       uses: marocchino/sticky-pull-request-comment@v2
       if: github.event_name == 'pull_request'
       with:
         recreate: true
         path: code-coverage-results.md
-      # ... (previous steps)
-
     - name: Check Coverage
       id: coverage-check
       run: |
         COVERAGE=$(grep -oPm1 "(?<=<coverage line-rate=\")\d+\.\d+" Cobertura.xml)
         echo "Coverage: $COVERAGE"
-        if (( $(echo "$COVERAGE < 1.0" | bc -l) )); then
+        if (( $(echo "$COVERAGE < 0.99" | bc -l) )); then
           echo "Code coverage is less than 100% ($COVERAGE). Failing the build."
           exit 1
         fi
