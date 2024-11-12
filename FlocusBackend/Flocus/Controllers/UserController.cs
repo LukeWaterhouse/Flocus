@@ -36,7 +36,6 @@ public sealed class UserController : ControllerBase
         return Ok(userDto);
     }
 
-
     // TODO: at some point could make this return list of users filterable by username so admin can get all users.
     [Authorize]
     [Authorize(Roles = "Admin")]
