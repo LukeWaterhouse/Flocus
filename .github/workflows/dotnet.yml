@@ -20,5 +20,14 @@ jobs:
       run: dotnet restore ./FlocusBackend/Flocus/Flocus.sln
     - name: Build
       run: dotnet build ./FlocusBackend/Flocus/Flocus.sln --no-restore
-    - name: Test
-      run: dotnet test ./FlocusBackend/Flocus/Flocus.sln --no-build --verbosity normal 
+    # - name: Test
+    #   run: dotnet test ./FlocusBackend/Flocus/Flocus.sln --no-build --verbosity normal 
+    - name: Test with coverage
+      run: |
+        # Run tests and collect coverage in the 'lcov' format
+        dotnet test ./FlocusBackend/Flocus/Flocus.sln --no-build --collect:"XPlat Code Coverage"
+      
+    - name: Upload Code Coverage Results
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./TestResults/*coverage.cobertura.xml
