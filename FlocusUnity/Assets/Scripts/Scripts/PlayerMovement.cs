@@ -6,16 +6,24 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 1f;
     private Vector2 movementInput;
     private Rigidbody2D rb;
+    private Animator animator;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         // Get input
         movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+
+        if(movementInput != Vector2.zero)
+        {
+            animator.SetFloat("XInput", movementInput.x);
+            animator.SetFloat("YInput", movementInput.y);
+        }
     }
 
     private void FixedUpdate()
